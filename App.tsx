@@ -11,22 +11,21 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import HomePage from './src/pages/home/HomePage';
 import { LoginPage } from './src/pages/login';
-import { ConferenceRegistrationPage, ConferenceRegistrationForm, ConferencePaymentDetails, ConferenceQRCode, ConferenceList, ConferenceSessionDetails, MyConference, MyConferenceSession } from './src/pages/conference';
+import { ConferenceRegistrationPage, ConferenceRegistrationForm, ConferencePaymentDetails, ConferenceQRCode, ConferenceList, MyConference, ConferenceSessionDetails } from './src/pages/conference';
 import { colors } from './src/styles/globalStyles';
 
-type PageType = 'login' | 'home' | 'conference' | 'conferenceForm' | 'payment' | 'qrCode' | 'conferenceList' | 'sessionDetails' | 'myConference' | 'myConferenceSession';
+type PageType = 'login' | 'home' | 'conference' | 'conferenceForm' | 'payment' | 'qrCode' | 'conferenceList' | 'myConference' | 'sessionDetails';
 
 function AppContent() {
   const { isAuthenticated, loading, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [selectedTier, setSelectedTier] = useState<'Early Bird' | 'Regular' | 'On Spot'>('Early Bird');
-  const [selectedSession, setSelectedSession] = useState<any>(null);
-  const [myConferenceSessions, setMyConferenceSessions] = useState<string[]>([]);
+  const [selectedSessionData, setSelectedSessionData] = useState<any>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // setCurrentPage('login');
-      setCurrentPage('conferenceList');
+      setCurrentPage('home');
+      // setCurrentPage('sessionDetails');
     }
   }, [isAuthenticated]);
 
@@ -88,40 +87,7 @@ function AppContent() {
     setCurrentPage('home');
   };
 
-  const handleNavigateToSessionDetails = (eventData: any) => {
-    // Transform event data to session data format
-    const sessionData = {
-      id: eventData.id,
-      date: eventData.parsedDate || eventData.date,
-      time: eventData.timeRange,
-      location: eventData.hall || 'Main Hall',
-      workshopNumber: eventData.title.includes('Workshop') ? eventData.title.match(/Workshop \d+/)?.[0] : undefined,
-      title: eventData.title.includes(':') ? eventData.title.split(':')[1].trim() : eventData.title,
-      subtitle: eventData.title.includes('Simulation') ? 'Simulation to Strategy' : undefined,
-      theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
-      overview: 'This hands-on workshop focuses on robotic-assisted surgery for endometriosis. It features console-based simulator training, step-by-step case videos, and real-time guidance from India\'s and the world\'s top robotic endometriosis surgeons. Suitable for beginners to advanced surgeons, this workshop provides comprehensive insight into robotic techniques.',
-    };
-    setSelectedSession(sessionData);
-    setCurrentPage('sessionDetails');
-  };
-
-  const handleBackFromSessionDetails = () => {
-    setCurrentPage('conferenceList');
-    setSelectedSession(null);
-  };
-
-  // My Conference handlers
-  const handleAddToMyConference = (sessionId: string) => {
-    if (!myConferenceSessions.includes(sessionId)) {
-      setMyConferenceSessions([...myConferenceSessions, sessionId]);
-    }
-  };
-
-  const handleRemoveFromMyConference = (sessionId: string) => {
-    setMyConferenceSessions(myConferenceSessions.filter((id) => id !== sessionId));
-  };
-
-  const handleNavigateToMyConference = () => {
+  const handleNavigateToMyConferenceMark = () => {
     setCurrentPage('myConference');
   };
 
@@ -129,32 +95,26 @@ function AppContent() {
     setCurrentPage('home');
   };
 
-  const handleNavigateToMyConferenceSession = (eventData: any) => {
+  const handleNavigateToSessionDetails = (eventData: any) => {
+    // Map event data to SessionData format
     const sessionData = {
       id: eventData.id,
-      date: eventData.parsedDate || eventData.date,
-      time: eventData.timeRange,
-      location: eventData.hall || 'Main Hall',
-      workshopNumber: eventData.title.includes('Workshop') ? eventData.title.match(/Workshop \d+/)?.[0] : undefined,
-      title: eventData.title.includes(':') ? eventData.title.split(':')[1].trim() : eventData.title,
-      subtitle: eventData.title.includes('Simulation') ? 'Simulation to Strategy' : undefined,
-      theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
-      overview: 'This hands-on workshop focuses on robotic-assisted surgery for endometriosis. It features console-based simulator training, step-by-step case videos, and real-time guidance from India\'s and the world\'s top robotic endometriosis surgeons.',
+      date: eventData.parsedDate || eventData.dateLabel || '',
+      time: eventData.timeRange || '',
+      location: eventData.hall || '',
+      workshopNumber: eventData.title?.includes('Workshop') ? eventData.title.split(':')[0].trim() : undefined,
+      title: eventData.title?.includes(':') ? eventData.title.split(':')[1]?.trim() || eventData.title : eventData.title,
+      subtitle: undefined,
+      theme: `"${eventData.title}"`,
+      overview: `This session will cover topics related to ${eventData.title}. Join us for an informative and engaging presentation.`,
+      imageUrl: undefined,
     };
-    setSelectedSession(sessionData);
-    setCurrentPage('myConferenceSession');
+    setSelectedSessionData(sessionData);
+    setCurrentPage('sessionDetails');
   };
 
-  const handleBackFromMyConferenceSession = () => {
-    setCurrentPage('myConference');
-    setSelectedSession(null);
-  };
-
-  const handleRemoveFromMyConferenceSession = () => {
-    if (selectedSession?.id) {
-      handleRemoveFromMyConference(selectedSession.id);
-      handleBackFromMyConferenceSession();
-    }
+  const handleBackFromSessionDetails = () => {
+    setCurrentPage('conferenceList');
   };
 
   if (loading) {
@@ -204,34 +164,20 @@ function AppContent() {
         <ConferenceSessionDetails
           onBack={handleBackFromSessionDetails}
           onNavigateToHome={handleBackToHome}
-          sessionData={selectedSession}
-          onAddToMyConference={handleAddToMyConference}
-          onRemoveFromMyConference={handleRemoveFromMyConference}
-          isInMyConference={myConferenceSessions.includes(selectedSession?.id || '')}
+          sessionData={selectedSessionData}
         />
       ) : currentPage === 'myConference' ? (
         <MyConference
           onBack={handleBackFromMyConference}
           onNavigateToHome={handleBackToHome}
-          onEventPress={handleNavigateToMyConferenceSession}
-          myConferenceSessions={myConferenceSessions}
-          onRemoveSession={handleRemoveFromMyConference}
-        />
-      ) : currentPage === 'myConferenceSession' ? (
-        <MyConferenceSession
-          onBack={handleBackFromMyConferenceSession}
-          onNavigateToHome={handleBackToHome}
-          sessionData={selectedSession}
-          onRemoveFromConference={handleRemoveFromMyConferenceSession}
-          onLiveQA={() => console.log('Live Q&A')}
-          onSessionNotes={() => console.log('Session Notes')}
-          onHandouts={() => console.log('Handouts')}
+          onEventPress={handleNavigateToSessionDetails}
         />
       ) : (
         <HomePage 
           onNavigateToConference={handleNavigateToConference} 
           onLogout={handleLogout}
           onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToMyConference={handleNavigateToMyConferenceMark}
         />
       )}
       {/* <StatusBar barStyle="light-content" backgroundColor="#1a237e" /> */}

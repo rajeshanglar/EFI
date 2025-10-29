@@ -439,6 +439,60 @@ imgBgWave: {
 },
 // Wave Background End
 
+
+// DATE TABS START
+dateTabsContainer: {
+  flexDirection: 'row',
+  paddingHorizontal: spacing.md,
+  paddingVertical: spacing.sm,
+  gap: spacing.md,
+},
+dateTab: {
+  paddingVertical: spacing.sm,
+  paddingHorizontal: spacing.sm,
+  borderRadius: borderRadius.round,
+  backgroundColor: colors.white,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  width:Dimensions.get('window').width * 0.15,
+  lineHeight: screenWidth * 1,
+},
+dateTabActive: {
+  backgroundColor: colors.primaryLight,
+},
+dateTabMonth: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+lineHeight: screenWidth * 0.06,
+},
+dateTabMonthActive: {
+  color: colors.darkGray,
+},
+dateTabDay: {
+  fontSize: screenWidth * 0.05,
+  fontFamily: Fonts.Bold,
+  color: colors.darkGray,
+lineHeight: screenWidth * 0.06,
+},
+dateTabDayActive: {
+  color: colors.primary,
+  fontSize: screenWidth * 0.05,
+},
+dateTabDayName: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+},
+dateTabDayNameActive: {
+  color: colors.darkGray,
+},
+
 });
 
 export default globalStyles;

@@ -24,6 +24,7 @@ interface EventItem {
   id: string;
   hall?: string;
   title: string;
+  eventType: string;
   isClickable?: boolean;
 }
 
@@ -62,32 +63,32 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
               id: '1',
               timeRange: '08.00 am to 12.30 pm',
               events: [
-                { id: '1', hall: 'Hall 1', title: 'Workshop 1: Robotics in Endometriosis', isClickable: true },
-                { id: '2', hall: 'Hall 2', title: 'Workshop 2: USG in Endometriosis', isClickable: true },
-                { id: '3', hall: 'Hall 3', title: 'Workshop 3: Infertility in Endometriosis', isClickable: true },
+                { id: '1', hall: 'Hall 1', eventType: 'Workshop-1', title:'Robotics in Endometriosis', isClickable: true },
+                { id: '2', hall: 'Hall 2', eventType: 'Workshop-2', title:'USG in Endometriosis', isClickable: true },
+                { id: '3', hall: 'Hall 3', eventType: 'Workshop-3', title:'Infertility in Endometriosis', isClickable: true },
               ],
             },
             {
               id: '2',
               timeRange: '12.30 pm to 13.30 pm',
               events: [
-                { id: '4', title: 'Lunch Break', isClickable: false },
+                { id: '4', title: 'Lunch Break', eventType: '', isClickable: false },
               ],
             },
             {
               id: '3',
               timeRange: '13.30 pm to 18.00 pm',
               events: [
-                { id: '5', hall: 'Hall 1', title: 'Workshop 4: Hands on Robotic Simulator', isClickable: true },
-                { id: '6', hall: 'Hall 2', title: 'Workshop 5: MRI in Endometriosis', isClickable: true },
-                { id: '7', hall: 'Hall 3', title: 'Workshop 6: Deep Endometriosis Surgical Workshop', isClickable: true },
+                { id: '5', hall: 'Hall 1', eventType: 'Workshop-4', title: 'Hands on Robotic Simulator', isClickable: true },
+                { id: '6', hall: 'Hall 2', eventType: 'Workshop-5', title: 'MRI in Endometriosis', isClickable: true },
+                { id: '7', hall: 'Hall 3', eventType: 'Workshop-6', title: 'Deep Endometriosis Surgical Workshop', isClickable: true },
               ],
             },
             {
               id: '4',
               timeRange: '18.30 pm to 20.30 pm',
               events: [
-                { id: '8', title: 'Public Awareness Programme followed by dinner', isClickable: false },
+                { id: '8', eventType: '', title: 'Public Awareness Programme followed by dinner', isClickable: false },
               ],
             },
           ],
@@ -105,23 +106,23 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
               id: '1',
               timeRange: '09.00 am to 10.30 am',
               events: [
-                { id: '1', hall: 'Main Hall', title: 'Opening Ceremony', isClickable: true },
-                { id: '2', hall: 'Main Hall', title: 'Keynote Address', isClickable: true },
+                { id: '1', hall: 'Main Hall', eventType: 'Opening Ceremony', title: 'Opening Ceremony', isClickable: true },
+                { id: '2', hall: 'Main Hall', eventType: 'Keynote Address', title: 'Keynote Address', isClickable: true },
               ],
             },
             {
               id: '2',
               timeRange: '10.30 am to 11.00 am',
               events: [
-                { id: '3', title: 'Tea Break', isClickable: false },
+                { id: '3', eventType: '', title: 'Tea Break', isClickable: false },
               ],
             },
             {
               id: '3',
               timeRange: '11.00 am to 12.30 pm',
               events: [
-                { id: '4', hall: 'Main Hall', title: 'Session 1: Advanced Laparoscopic Techniques', isClickable: true },
-                { id: '5', hall: 'Hall 2', title: 'Session 2: Fertility Preservation', isClickable: true },
+                { id: '4', hall: 'Main Hall', eventType: 'Session-1', title: 'Advanced Laparoscopic Techniques', isClickable: true },
+                { id: '5', hall: 'Hall 2', eventType: 'Session-2', title: 'Fertility Preservation', isClickable: true },
               ],
             },
           ],
@@ -139,36 +140,36 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
               id: '1',
               timeRange: '09.00 am to 10.30 am',
               events: [
-                { id: '1', hall: 'Main Hall', title: 'Session 3: Robotic Surgery Innovations', isClickable: true },
+                { id: '1', hall: 'Main Hall', eventType: 'Session-3', title: 'Robotic Surgery Innovations', isClickable: true },
               ],
             },
             {
               id: '2',
               timeRange: '10.30 am to 11.00 am',
               events: [
-                { id: '2', title: 'Coffee Break', isClickable: false },
+                { id: '2', eventType: '', title: 'Coffee Break', isClickable: false },
               ],
             },
             {
               id: '3',
               timeRange: '11.00 am to 12.30 pm',
               events: [
-                { id: '3', hall: 'Main Hall', title: 'Session 4: Case Presentations', isClickable: true },
-                { id: '4', hall: 'Hall 2', title: 'Session 5: Panel Discussion', isClickable: true },
+                { id: '3', hall: 'Main Hall', eventType: 'Session-4', title: 'Case Presentations', isClickable: true },
+                { id: '4', hall: 'Hall 2', eventType: 'Session-5', title: 'Panel Discussion', isClickable: true },
               ],
             },
             {
               id: '4',
               timeRange: '12.30 pm to 13.30 pm',
               events: [
-                { id: '5', title: 'Lunch Break', isClickable: false },
+                { id: '5', eventType: '', title: 'Lunch Break', isClickable: false },
               ],
             },
             {
               id: '5',
               timeRange: '13.30 pm to 15.00 pm',
               events: [
-                { id: '6', hall: 'Main Hall', title: 'Closing Ceremony', isClickable: true },
+                { id: '6', hall: 'Main Hall', eventType: 'Closing Ceremony', title: 'Closing Ceremony', isClickable: true },
               ],
             },
           ],
@@ -220,55 +221,58 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
         style={globalStyles.imgBgContainerWave}
         imageStyle={globalStyles.imgBgWave}
       >
-        <View style={styles.dateTabsContainer}>
+      <View style={globalStyles.dateTabsContainer}>
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar06' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar06' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar06')}
           >
-            <Text
-              style={[
-                styles.dateTabText,
-                selectedDate === 'mar06' && styles.dateTabTextActive,
-              ]}
-            >
-              MAR 06 Mon
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar06' && globalStyles.dateTabMonthActive]}>
+              MAR
+            </Text>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar06' && globalStyles.dateTabDayActive]}>
+              06
+            </Text>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar06' && globalStyles.dateTabDayNameActive]}>
+              Mon
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar07' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar07' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar07')}
           >
-            <Text
-              style={[
-                styles.dateTabText,
-                selectedDate === 'mar07' && styles.dateTabTextActive,
-              ]}
-            >
-              MAR 07 TUE
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar07' && globalStyles.dateTabMonthActive]}>
+              MAR
+            </Text>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar07' && globalStyles.dateTabDayActive]}>
+              07
+            </Text>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar07' && globalStyles.dateTabDayNameActive]}>
+              TUE
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar08' && styles.dateTabActive,
+                globalStyles.dateTab,
+              selectedDate === 'mar08' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar08')}
           >
-            <Text
-              style={[
-                styles.dateTabText,
-                selectedDate === 'mar08' && styles.dateTabTextActive,
-              ]}
-            >
-              MAR 08 WED
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar08' && globalStyles.dateTabMonthActive]}>
+              MAR
+            </Text>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar08' && globalStyles.dateTabDayActive]}>
+              08
+            </Text>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar08' && globalStyles.dateTabDayNameActive]}>
+              WED
             </Text>
           </TouchableOpacity>
         </View>
@@ -282,11 +286,24 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
               <Text style={styles.sectionTitle}>{section.title}</Text>
             )}
 
-            {section.timeSlots.map((timeSlot) => (
+            {section.timeSlots.map((timeSlot) => {       
+              const timeParts = timeSlot.timeRange.split(' to ');
+              const startTime = timeParts[0] || '';
+              const endTime = timeParts[1] || timeSlot.timeRange;
+              
+              return (
               <View key={timeSlot.id} style={styles.timeSlotContainer}>
                 {/* Time Block */}
                 <View style={styles.timeBlock}>
-                  <Text style={styles.timeBlockText}>{timeSlot.timeRange}</Text>
+                  {timeParts.length > 1 ? (
+                    <View style={styles.timeBlockContent}>
+                      <Text style={styles.timeBlockText}>{startTime}</Text>
+                      <Text style={styles.timeBlockSeparator}>to</Text>
+                      <Text style={styles.timeBlockText}>{endTime}</Text>
+                    </View>
+                  ) : (
+                    <Text style={styles.timeBlockText}>{timeSlot.timeRange}</Text>
+                  )}
                 </View>
 
                 {/* Events List */}
@@ -306,9 +323,10 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
                       <View style={styles.eventContent}>
                         {event.hall && (
                           <Text style={styles.eventHall}>
-                            {event.hall} -{' '}
+                            {event.hall} -{' '} {event.eventType}{' '}
                           </Text>
                         )}
+                       
                         <Text
                           style={[
                             styles.eventTitle,
@@ -327,7 +345,7 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
                   ))}
                 </View>
               </View>
-            ))}
+            )})}
           </View>
         ))}
       </ScrollView>
@@ -340,50 +358,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  dateTabsBackground: {
-    backgroundColor: colors.primary,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  dateTabsWaveImage: {
-    opacity: 0.2,
-    resizeMode: 'cover',
-  },
-  dateTabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  dateTab: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.gray,
-  },
-  dateTabActive: {
-    backgroundColor: colors.primaryLight,
-    borderColor: colors.primaryLight,
-  },
-  dateTabText: {
-    fontSize: screenWidth * 0.032,
-    fontFamily: Fonts.Medium,
-    color: colors.black,
-  },
-  dateTabTextActive: {
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-  },
+
+ 
   scrollView: {
     flex: 1,
   },
@@ -401,6 +377,15 @@ const styles = StyleSheet.create({
   timeSlotContainer: {
     flexDirection: 'row',
     marginBottom: spacing.lg,
+    shadowColor: colors.gray,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
+    overflow: 'hidden',
+    
   },
   timeBlock: {
     width: screenWidth * 0.25,
@@ -409,19 +394,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.sm,
     marginRight: spacing.md,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  timeBlockContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   timeBlockText: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Medium,
+    fontSize: screenWidth * 0.033,
+    fontFamily: Fonts.Bold,
     color: colors.black,
     textAlign: 'center',
     lineHeight: screenWidth * 0.04,
   },
+  timeBlockSeparator: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    textAlign: 'center',
+  
+  },
   eventsContainer: {
     flex: 1,
-    backgroundColor: colors.white,
     borderRadius: borderRadius.sm,
     overflow: 'hidden',
   },
@@ -429,9 +424,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.white,
+    paddingVertical: spacing.md, 
+    paddingRight: spacing.md, 
+  
   },
   eventItemBorder: {
     borderBottomWidth: 1,
@@ -439,8 +434,8 @@ const styles = StyleSheet.create({
   },
   eventContent: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+  
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
   },
   eventHall: {

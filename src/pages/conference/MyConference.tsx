@@ -57,7 +57,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
   // Mock data - In real app, this would come from API/state management
   // For demo, we'll use some of the sessions from ConferenceList
   const allSessions: Record<string, DaySchedule> = {
-    mar06: {
+       mar06: {
       date: '2026-03-06',
       dateLabel: 'MAR 06 Mon',
       sections: [
@@ -68,26 +68,32 @@ const MyConference: React.FC<MyConferenceProps> = ({
               id: '1',
               timeRange: '08.00 am to 12.30 pm',
               events: [
-                { 
-                  id: '1', 
-                  hall: 'Hall 1', 
-                  title: 'Robotics in Endometriosis',
-                  description: 'Learn advanced robotic techniques for endometriosis surgery',
-                  isClickable: true 
-                },
+                { id: '1', hall: 'Hall 1', title: 'Workshop 1: Robotics in Endometriosis', isClickable: true },
+                { id: '2', hall: 'Hall 2', title: 'Workshop 2: USG in Endometriosis', isClickable: true },
+                { id: '3', hall: 'Hall 3', title: 'Workshop 3: Infertility in Endometriosis', isClickable: true },
+              ],
+            },
+            {
+              id: '2',
+              timeRange: '12.30 pm to 13.30 pm',
+              events: [
+                { id: '4', title: 'Lunch Break', isClickable: false },
               ],
             },
             {
               id: '3',
               timeRange: '13.30 pm to 18.00 pm',
               events: [
-                { 
-                  id: '6', 
-                  hall: 'Hall 2', 
-                  title: 'MRI in Endometriosis',
-                  description: 'Advanced MRI interpretation for endometriosis',
-                  isClickable: true 
-                },
+                { id: '5', hall: 'Hall 1', title: 'Workshop 4: Hands on Robotic Simulator', isClickable: true },
+                { id: '6', hall: 'Hall 2', title: 'Workshop 5: MRI in Endometriosis', isClickable: true },
+                { id: '7', hall: 'Hall 3', title: 'Workshop 6: Deep Endometriosis Surgical Workshop', isClickable: true },
+              ],
+            },
+            {
+              id: '4',
+              timeRange: '18.30 pm to 20.30 pm',
+              events: [
+                { id: '8', title: 'Public Awareness Programme followed by dinner', isClickable: false },
               ],
             },
           ],
@@ -97,18 +103,96 @@ const MyConference: React.FC<MyConferenceProps> = ({
     mar07: {
       date: '2026-03-07',
       dateLabel: 'MAR 07 TUE',
-      sections: [],
+      sections: [
+        {
+          title: 'Main Congress Day 1',
+          timeSlots: [
+            {
+              id: '1',
+              timeRange: '09.00 am to 10.30 am',
+              events: [
+                { id: '1', hall: 'Main Hall', title: 'Opening Ceremony', isClickable: true },
+                { id: '2', hall: 'Main Hall', title: 'Keynote Address', isClickable: true },
+              ],
+            },
+            {
+              id: '2',
+              timeRange: '10.30 am to 11.00 am',
+              events: [
+                { id: '3', title: 'Tea Break', isClickable: false },
+              ],
+            },
+            {
+              id: '3',
+              timeRange: '11.00 am to 12.30 pm',
+              events: [
+                { id: '4', hall: 'Main Hall', title: 'Session 1: Advanced Laparoscopic Techniques', isClickable: true },
+                { id: '5', hall: 'Hall 2', title: 'Session 2: Fertility Preservation', isClickable: true },
+              ],
+            },
+          ],
+        },
+      ],
     },
     mar08: {
       date: '2026-03-08',
       dateLabel: 'MAR 08 WED',
-      sections: [],
+      sections: [
+        {
+          title: 'Main Congress Day 2',
+          timeSlots: [
+            {
+              id: '1',
+              timeRange: '09.00 am to 10.30 am',
+              events: [
+                { id: '1', hall: 'Main Hall', title: 'Session 3: Robotic Surgery Innovations', isClickable: true },
+              ],
+            },
+            {
+              id: '2',
+              timeRange: '10.30 am to 11.00 am',
+              events: [
+                { id: '2', title: 'Coffee Break', isClickable: false },
+              ],
+            },
+            {
+              id: '3',
+              timeRange: '11.00 am to 12.30 pm',
+              events: [
+                { id: '3', hall: 'Main Hall', title: 'Session 4: Case Presentations', isClickable: true },
+                { id: '4', hall: 'Hall 2', title: 'Session 5: Panel Discussion', isClickable: true },
+              ],
+            },
+            {
+              id: '4',
+              timeRange: '12.30 pm to 13.30 pm',
+              events: [
+                { id: '5', title: 'Lunch Break', isClickable: false },
+              ],
+            },
+            {
+              id: '5',
+              timeRange: '13.30 pm to 15.00 pm',
+              events: [
+                { id: '6', hall: 'Main Hall', title: 'Closing Ceremony', isClickable: true },
+              ],
+            },
+          ],
+        },
+      ],
     },
   };
 
   // Filter to show only sessions that are in "My Conference"
+  // For UI purposes, if myConferenceSessions is empty, show all sessions
   const getFilteredSchedule = () => {
     const schedule = allSessions[selectedDate];
+    
+    // If no sessions are selected, show all sessions for UI demonstration
+    if (myConferenceSessions.length === 0) {
+      return schedule;
+    }
+    
     const filteredSections = schedule.sections.map((section) => ({
       ...section,
       timeSlots: section.timeSlots
@@ -174,57 +258,57 @@ const MyConference: React.FC<MyConferenceProps> = ({
         style={globalStyles.imgBgContainerWave}
         imageStyle={globalStyles.imgBgWave}
       >
-        <View style={styles.dateTabsContainer}>
+        <View style={globalStyles.dateTabsContainer}>
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar06' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar06' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar06')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar06' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar06' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar06' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar06' && globalStyles.dateTabDayActive]}>
               06
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar06' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar06' && globalStyles.dateTabDayNameActive]}>
               Mon
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar07' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar07' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar07')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar07' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar07' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar07' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar07' && globalStyles.dateTabDayActive]}>
               07
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar07' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar07' && globalStyles.dateTabDayNameActive]}>
               TUE
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar08' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar08' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar08')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar08' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar08' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar08' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar08' && globalStyles.dateTabDayActive]}>
               08
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar08' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar08' && globalStyles.dateTabDayNameActive]}>
               WED
             </Text>
           </TouchableOpacity>
@@ -244,67 +328,61 @@ const MyConference: React.FC<MyConferenceProps> = ({
                 <Text style={styles.sectionTitle}>{section.title}</Text>
               )}
 
-              {section.timeSlots.map((timeSlot) => (
-                <View key={timeSlot.id} style={styles.timeSlotContainer}>
-                  {/* Time Block with Remove Icon */}
-                  <View style={styles.timeBlockContainer}>
-                    <View style={styles.timeBlock}>
-                      <Text style={styles.timeBlockText}>{timeSlot.timeRange}</Text>
-                    </View>
+              {/* Cards Grid */}
+              <View style={styles.cardsContainer}>
+                {section.timeSlots.map((timeSlot) =>
+                  timeSlot.events.map((event) => (
                     <TouchableOpacity
-                      style={styles.removeIconContainer}
-                      onPress={() => handleRemoveSession(timeSlot.events[0]?.id)}
+                      key={event.id}
+                      style={styles.sessionCard}
+                      onPress={() => handleEventPress(event, timeSlot.timeRange)}
+                      activeOpacity={0.7}
+                      disabled={!event.isClickable}
                     >
-                      <View style={styles.removeIcon}>
-                        <CloseIcon size={14} color={colors.white} />
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Events List */}
-                  <View style={styles.eventsContainer}>
-                    {timeSlot.events.map((event, eventIndex) => (
+                      {/* Delete Button */}
                       <TouchableOpacity
-                        key={event.id}
-                        style={[
-                          styles.eventItem,
-                          eventIndex !== timeSlot.events.length - 1 &&
-                            styles.eventItemBorder,
-                        ]}
-                        onPress={() => handleEventPress(event, timeSlot.timeRange)}
-                        disabled={!event.isClickable}
-                        activeOpacity={event.isClickable ? 0.7 : 1}
+                        style={styles.deleteButton}
+                        onPress={() => handleRemoveSession(event.id)}
+                        activeOpacity={0.8}
                       >
-                        <View style={styles.eventContent}>
+                        <View style={styles.deleteIcon}>
+                          <CloseIcon size={12} color={colors.white} />
+                        </View>
+                      </TouchableOpacity>
+
+                      {/* Card Content */}
+                      <View style={styles.cardContent}>
+                        {/* Time Badge */}
+                        <View style={styles.timeBadge}>
+                          <Text style={styles.timeBadgeText}>{timeSlot.timeRange}</Text>
+                        </View>
+
+                        {/* Event Details */}
+                        <View style={styles.cardDetails}>
                           {event.hall && (
-                            <Text style={styles.eventHall}>
-                              {event.hall} -{' '}
-                            </Text>
+                            <Text style={styles.cardHall}>{event.hall}</Text>
                           )}
-                          <Text
-                            style={[
-                              styles.eventTitle,
-                              !event.hall && styles.eventTitleNoHall,
-                            ]}
-                          >
+                          <Text style={styles.cardTitle} numberOfLines={2}>
                             {event.title}
                           </Text>
                           {event.description && (
-                            <Text style={styles.eventDescription}>
+                            <Text style={styles.cardDescription} numberOfLines={3}>
                               {event.description}
                             </Text>
                           )}
                         </View>
+
+                        {/* Arrow Icon */}
                         {event.isClickable && (
-                          <View style={styles.eventArrow}>
-                            <CardRightArrowIcon size={16} color={colors.darkGray} />
+                          <View style={styles.cardArrow}>
+                            <CardRightArrowIcon size={18} color={colors.primary} />
                           </View>
                         )}
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-              ))}
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                )}
+              </View>
             </View>
           ))
         )}
@@ -325,56 +403,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  dateTabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  dateTab: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  dateTabActive: {
-    backgroundColor: colors.primaryLight,
-  },
-  dateTabMonth: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabMonthActive: {
-    color: colors.darkGray,
-  },
-  dateTabDay: {
-    fontSize: screenWidth * 0.045,
-    fontFamily: Fonts.Bold,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabDayActive: {
-    color: colors.primary,
-    fontSize: screenWidth * 0.045,
-  },
-  dateTabDayName: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-  },
-  dateTabDayNameActive: {
-    color: colors.darkGray,
-  },
+ 
   scrollView: {
     flex: 1,
   },
@@ -399,38 +428,34 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginBottom: spacing.md,
   },
-  timeSlotContainer: {
+  cardsContainer: {
     flexDirection: 'row',
-    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: spacing.md,
   },
-  timeBlockContainer: {
+  sessionCard: {
+    width: (screenWidth - spacing.md * 3) / 2,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
     position: 'relative',
-    width: screenWidth * 0.25,
-    marginRight: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
   },
-  timeBlock: {
-    width: '100%',
-    backgroundColor: colors.primaryLight,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timeBlockText: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Medium,
-    color: colors.black,
-    textAlign: 'center',
-    lineHeight: screenWidth * 0.04,
-  },
-  removeIconContainer: {
+  deleteButton: {
     position: 'absolute',
-    top: -8,
-    right: -8,
-    zIndex: 1,
+    top: spacing.xs,
+    right: spacing.xs,
+    zIndex: 10,
   },
-  removeIcon: {
+  deleteIcon: {
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -443,53 +468,49 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  eventsContainer: {
+  cardContent: {
     flex: 1,
-    backgroundColor: colors.white,
+  },
+  timeBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
-    overflow: 'hidden',
+    alignSelf: 'flex-start',
+    marginBottom: spacing.sm,
   },
-  eventItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.white,
+  timeBadgeText: {
+    fontSize: screenWidth * 0.026,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
   },
-  eventItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-  },
-  eventContent: {
+  cardDetails: {
     flex: 1,
+    marginBottom: spacing.sm,
   },
-  eventHall: {
-    fontSize: screenWidth * 0.033,
+  cardHall: {
+    fontSize: screenWidth * 0.028,
     fontFamily: Fonts.Regular,
     color: colors.darkGray,
     marginBottom: spacing.xs,
   },
-  eventTitle: {
-    fontSize: screenWidth * 0.038,
+  cardTitle: {
+    fontSize: screenWidth * 0.034,
     fontFamily: Fonts.Bold,
     color: colors.primary,
     marginBottom: spacing.xs,
-  },
-  eventTitleNoHall: {
-    fontSize: screenWidth * 0.038,
-    fontFamily: Fonts.Bold,
-    color: colors.primary,
-  },
-  eventDescription: {
-    fontSize: screenWidth * 0.032,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginTop: spacing.xs,
     lineHeight: screenWidth * 0.045,
   },
-  eventArrow: {
-    marginLeft: spacing.sm,
+  cardDescription: {
+    fontSize: screenWidth * 0.029,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    lineHeight: screenWidth * 0.04,
+    marginTop: spacing.xs,
+  },
+  cardArrow: {
+    alignSelf: 'flex-end',
+    marginTop: spacing.xs,
   },
   ribbonContainer: {
     position: 'absolute',

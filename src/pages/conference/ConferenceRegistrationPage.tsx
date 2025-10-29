@@ -12,10 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { 
-  ArrowRightIcon, 
   InformationIcon,
-  HomeHeaderIcon,
-  BackArrowIcon,
   CardRightArrowIcon,
 } from '../../components/icons';
 import { Header } from '../../components/Header';
@@ -36,7 +33,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
   const [membershipType, setMembershipType] = useState<'efi' | 'nonEfi'>('efi');
   const [registrationTier, setRegistrationTier] = useState<'earlyBird' | 'regular' | 'onSpot'>('earlyBird');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<'mar06' | 'mar07' | 'mar08'>('mar06');
+
 
   // Pricing data for each tier
   const pricingData = {
@@ -86,7 +83,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
       <Header 
         title="Conference Registration"
         onBack={onBack}
-        onNavigateToHome={onNavigateToHome}
+        onNavigateToHome={onNavigateToHome}   
       />
 
         {/* Conference Title */}
@@ -126,68 +123,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
         </ImageBackground>
 
-      {/* Date Selection Tabs */}
-      <ImageBackground
-        source={require('../../assets/images/wave-img.png')}
-        style={globalStyles.imgBgContainerWave}
-        imageStyle={globalStyles.imgBgWave}
-      >
-        <View style={styles.dateTabsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar06' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar06')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar06' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar06' && styles.dateTabDayActive]}>
-              06
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar06' && styles.dateTabDayNameActive]}>
-              Mon
-            </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar07' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar07')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar07' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar07' && styles.dateTabDayActive]}>
-              07
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar07' && styles.dateTabDayNameActive]}>
-              TUE
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar08' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar08')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar08' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar08' && styles.dateTabDayActive]}>
-              08
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar08' && styles.dateTabDayNameActive]}>
-              WED
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
 
         {/* Registration Tier Tabs */}
         <View style={globalStyles.tierTabs}>
@@ -439,56 +375,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Medium,
   },
  
-  dateTabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  dateTab: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  dateTabActive: {
-    backgroundColor: colors.primaryLight,
-  },
-  dateTabMonth: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabMonthActive: {
-    color: colors.darkGray,
-  },
-  dateTabDay: {
-    fontSize: screenWidth * 0.045,
-    fontFamily: Fonts.Bold,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabDayActive: {
-    color: colors.primary,
-    fontSize: screenWidth * 0.045,
-  },
-  dateTabDayName: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-  },
-  dateTabDayNameActive: {
-    color: colors.darkGray,
-  },
+ 
   infoButton: {
     position: 'absolute',
     bottom: 100,

@@ -44,9 +44,10 @@ interface HomePageProps {
   onNavigateToConference?: () => void;
   onLogout?: () => void;
   onNavigateToLogin?: () => void;
+  onNavigateToMyConference?: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onNavigateToConference, onLogout, onNavigateToLogin }) => {
+const HomePage: React.FC<HomePageProps> = ({ onNavigateToConference, onLogout, onNavigateToLogin, onNavigateToMyConference }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const actionButtons = [
@@ -63,6 +64,13 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigateToConference, onLogout, o
   const handleMenuItemPress = (itemId: string) => {
     console.log('Menu item pressed:', itemId);
     // Handle navigation here
+    if (itemId === 'conference') {
+      // Navigate to My Conference page when "My Conference" is clicked from Conference Access menu
+      if (onNavigateToMyConference) {
+        onNavigateToMyConference();
+        setIsMenuVisible(false);
+      }
+    }
   };
 
   return (

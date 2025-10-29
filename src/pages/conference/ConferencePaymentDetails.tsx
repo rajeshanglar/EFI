@@ -45,6 +45,7 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleRegister = () => {
+    console.log('Register button pressed');
     setShowSuccessModal(true);
   };
 
@@ -95,7 +96,11 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
         </View>
       </ImageBackground>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView} 
+        contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Payment Information Section */}
         <View style={styles.paymentSection}>
           <Text style={styles.paymentTitle}>Payment Information</Text>
@@ -130,9 +135,8 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
       </ScrollView>
 
       {/* Register Now Button */}
-  
-      <View style={[globalStyles.footerBtContainer]}>
-         <GradientButton title="REGISTER NOW" onPress={handleRegister} />
+      <View style={[globalStyles.footerBtContainer, styles.footerButtonContainer]}>
+        <GradientButton title="REGISTER NOW" onPress={handleRegister} />
       </View>
 
       {/* Success Modal */}
@@ -183,6 +187,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    marginBottom: 80,
+  },
+  scrollViewContent: {
+    paddingBottom: 20,
   },
   paymentSection: {
     padding: spacing.lg,
@@ -225,7 +233,10 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Bold,
     color: colors.black,
   },
-
+  footerButtonContainer: {
+    zIndex: 1000,
+    elevation: 20,
+  },
 });
 
 export default ConferencePaymentDetails;
