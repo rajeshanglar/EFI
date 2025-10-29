@@ -12,6 +12,7 @@ interface SuccessModalProps {
   onClose: () => void;
   onDownload?: () => void;
   downloadText?: string;
+  icon?: React.ReactNode;
 }
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
@@ -20,6 +21,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
   onClose,
   onDownload,
   downloadText = 'Download Payment Receipt',
+  icon,
 }) => {
   return (
     <Modal
@@ -33,7 +35,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           {/* Success Icon */}
           <View style={styles.iconContainer}>
            
-              <SuccessIcon size={60} color="#4CAF50" />
+          {icon ? icon : <SuccessIcon size={60} color="#4CAF50" />}
            
           </View>
 

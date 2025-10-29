@@ -65,8 +65,8 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
       {/* User Information Section */}
       <ImageBackground
         source={require('../../assets/images/wave-img.png')}
-        style={styles.userSection}
-        imageStyle={styles.userBackgroundImage}
+        style={globalStyles.imgBgContainerWave}
+        imageStyle={globalStyles.imgBgWave}
       >
         <View style={styles.userInfoContainer}>
           {/* Name */}
@@ -155,19 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  userSection: {
-    backgroundColor: colors.primary,
-    paddingTop:spacing.sm,
-    paddingBottom: spacing.lg,
-    paddingHorizontal: spacing.md,
-    borderBottomLeftRadius: borderRadius.lg,
-    borderBottomRightRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  userBackgroundImage: {
-    opacity: 0.2,
-    resizeMode: 'cover',
-  },
+
   userInfoContainer: {
     paddingHorizontal: spacing.md,
     gap: spacing.sm,

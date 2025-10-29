@@ -423,6 +423,21 @@ formRefreshIcon: {
 
 //form container End
 
+// Wave Background
+imgBgContainerWave: {
+  backgroundColor: colors.primary,
+  paddingTop:spacing.sm,
+  paddingBottom: spacing.lg,
+  paddingHorizontal: spacing.md,
+  borderBottomLeftRadius: borderRadius.lg,
+  borderBottomRightRadius: borderRadius.lg,
+  overflow: 'hidden',
+},
+imgBgWave: {
+  opacity: 0.3,
+  resizeMode: 'cover',
+},
+// Wave Background End
 
 });
 

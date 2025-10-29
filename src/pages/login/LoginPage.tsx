@@ -9,11 +9,12 @@ import {
   Dimensions,
   Image,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import authService, { LoginCredentials } from '../../services/authService';
-import { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
+import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { EmailIcon, PasswordIcon, YellowRibbonIcon, LoginImg, ArrowLeftIconYellow,
   RefreshIcon
  } from '../../components/icons'; 
@@ -98,6 +99,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBackToHome }) =
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.LoginHeader}>
+        <ImageBackground
+        source={require('../../assets/images/wave-img.png')}
+        style={globalStyles.imgBgContainerWave}
+        imageStyle={globalStyles.imgBgWave}
+      >
           <View style={styles.LoginLogoContainer}>
             <Image 
               source={require('../../assets/images/logo-w.png')} 
@@ -118,6 +124,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBackToHome }) =
                   </View>
                 </View>
           </View>
+          </ImageBackground>
         </View>
 
         <View style={styles.loginCardContainer}>
@@ -253,7 +260,7 @@ const styles = StyleSheet.create({
   },
   LoginLogoContainer: {
     alignItems: 'center',
-    paddingTop: spacing.lg,
+    paddingTop: spacing.sm,
     
   },
   logo: {
@@ -263,14 +270,17 @@ const styles = StyleSheet.create({
   },
 
   homeBackButtonImgContainer: {
+
     position: 'relative',  
-    marginTop: spacing.md, 
+    marginTop: spacing.sm, 
+    marginBottom:0,
+    paddingBottom:0,
   },
 
   homeBackButton: {
     position: 'absolute',
-    bottom:15,
-    left: 0,
+    bottom:0,
+    left: -13,
     zIndex: 10, 
     flexDirection: 'row',
     alignItems: 'center',
@@ -286,12 +296,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginLeft: spacing.sm,
   },
-  floatingIconContainer: {
+
+  floatingIconContainer: {  
    flexDirection: 'row',
    justifyContent: 'center',
    alignItems: 'center',
    padding: spacing.md,
-   marginBottom:-23,
+   marginBottom:-50,
   },
 
   floatingImgBlock: {
@@ -328,11 +339,11 @@ const styles = StyleSheet.create({
   
     minHeight: screenHeight * 0.5,
     position: 'relative',
-    shadowColor: colors.black,
+    shadowColor: colors.gray,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
-    elevation: 10,
+    elevation: 5,
   },
   ribbonContainer: {
     position: 'absolute',

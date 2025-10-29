@@ -51,6 +51,8 @@ import HomeHeaderIconSvg from '../../assets/images/home-header-icon.svg';
 import SuccessIconSvg from '../../assets/images/success-icon.svg';
 import DownloadIconSvg from '../../assets/images/download-icon.svg';
 
+import EmailModalIconSvg from '../../assets/images/email-modal-icon.svg'; 
+
 interface IconProps {
   size?: number;
   color?: string;
@@ -241,4 +243,8 @@ export const SuccessIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const DownloadIcon = ({ size = 24, color, style }: IconProps) => (
   <DownloadIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const EmailModalIcon = ({ size = 24, color, style }: IconProps) => (
+  <EmailModalIconSvg width={size} height={size} color={color} style={style} />
 );

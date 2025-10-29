@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Image, ScrollView, TouchableOpacity
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { GradientButton } from '../../components/GradientButton';
 import { SuccessModal } from '../../components/SuccessModal';
-import { DownloadIcon, ArrowRightIcon } from '../../components/icons';
+import { DownloadIcon, ArrowRightIcon, BackArrowIcon, EmailModalIcon } from '../../components/icons';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -87,12 +87,13 @@ const ConferenceQRCode: React.FC<ConferenceQRCodeProps> = ({
 
               {/* Proceed To Login Button */}
       <View style={styles.proceedToLoginButton}>
+        <View style={styles.proceedLoginArrow} pointerEvents="none">
+           <BackArrowIcon size={20} style={styles.proceedLoginArrowIcon} />
+        </View>
+     
         <GradientButton
-          title="Proceed To Login"
-          icon={<ArrowRightIcon size={20} style={styles.proceedLoginArrow} />}
-          iconPosition="right"
-          onPress={handleProceedToLogin}     
-              
+          title="Proceed To Login"        
+          onPress={handleProceedToLogin} 
         />
       </View>
       </ScrollView>
@@ -102,8 +103,9 @@ const ConferenceQRCode: React.FC<ConferenceQRCodeProps> = ({
       {/* Success Modal */}
       <SuccessModal
         visible={showModal}
-        message="Your registration has been completed successfully. Please proceed to login."
+        message="Please check your registered email for your username and password to proceed with login."
         onClose={handleModalOkay}
+        icon={<EmailModalIcon size={90} />}
       />
     </View>
   );
@@ -231,13 +233,25 @@ const styles = StyleSheet.create({
   proceedToLoginButton: {
     marginHorizontal: spacing.md,
     marginBottom: spacing.lg,
+    position: 'relative',
+    
   },
 
   proceedLoginArrow: {
-    backgroundColor: colors.primaryLight,
+    position: 'absolute',
+    right: '10%',
+    top: '50%',
+    transform: [{ translateY: '-50%' }],
+    borderRadius: 100,
+    padding: spacing.sm,
+    backgroundColor: colors.primary,
+    zIndex: 1,  
+  },    
+  proceedLoginArrowIcon: {
+    transform: [{ rotate: '180deg' }],
+  },
 
-  
-  },  
+
 });
 
 export default ConferenceQRCode;
