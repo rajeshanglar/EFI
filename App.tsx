@@ -95,26 +95,29 @@ function AppContent() {
     setCurrentPage('home');
   };
 
-  const handleNavigateToSessionDetails = (eventData: any) => {
+  const handleNavigateToSessionDetails = (eventData: any, fromMyConference: boolean = false) => {
     // Map event data to SessionData format
     const sessionData = {
       id: eventData.id,
       date: eventData.parsedDate || eventData.dateLabel || '',
       time: eventData.timeRange || '',
       location: eventData.hall || '',
-      workshopNumber: eventData.title?.includes('Workshop') ? eventData.title.split(':')[0].trim() : undefined,
+      workshopNumber: eventData.eventType || (eventData.title?.includes('Workshop') ? eventData.title.split(':')[0].trim() : undefined),
       title: eventData.title?.includes(':') ? eventData.title.split(':')[1]?.trim() || eventData.title : eventData.title,
       subtitle: undefined,
       theme: `"${eventData.title}"`,
       overview: `This session will cover topics related to ${eventData.title}. Join us for an informative and engaging presentation.`,
       imageUrl: undefined,
+      isFromMyConference: fromMyConference,
     };
     setSelectedSessionData(sessionData);
     setCurrentPage('sessionDetails');
   };
 
   const handleBackFromSessionDetails = () => {
-    setCurrentPage('conferenceList');
+    // Determine where to go back based on where we came from
+    const cameFrom = selectedSessionData?.isFromMyConference ? 'myConference' : 'conferenceList';
+    setCurrentPage(cameFrom);
   };
 
   if (loading) {
@@ -165,6 +168,8 @@ function AppContent() {
           onBack={handleBackFromSessionDetails}
           onNavigateToHome={handleBackToHome}
           sessionData={selectedSessionData}
+          isFromMyConference={selectedSessionData?.isFromMyConference || false}
+          isInMyConference={selectedSessionData?.isFromMyConference || false}
         />
       ) : currentPage === 'myConference' ? (
         <MyConference

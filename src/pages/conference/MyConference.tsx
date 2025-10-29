@@ -17,7 +17,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 interface MyConferenceProps {
   onBack: () => void;
   onNavigateToHome: () => void;
-  onEventPress?: (event: EventItem) => void;
+  onEventPress?: (event: EventItem, fromMyConference?: boolean) => void;
   myConferenceSessions?: string[]; // Array of session IDs that are added to "My Conference"
   onRemoveSession?: (eventId: string) => void;
 }
@@ -173,8 +173,9 @@ const MyConference: React.FC<MyConferenceProps> = ({
         dateLabel: currentSchedule.dateLabel,
         timeRange: timeRange,
         parsedDate: getFormattedDate(currentSchedule.date),
+        isFromMyConference: true,
       };
-      onEventPress(eventData as any);
+      onEventPress(eventData as any, true);
     }
   };
 
