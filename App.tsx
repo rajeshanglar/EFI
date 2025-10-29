@@ -24,8 +24,8 @@ function AppContent() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setCurrentPage('home');
-      // setCurrentPage('sessionDetails');
+      // setCurrentPage('home');
+      setCurrentPage('sessionDetails');
     }
   }, [isAuthenticated]);
 

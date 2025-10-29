@@ -10,8 +10,9 @@ import {
   Image,
 } from 'react-native';
 import { Header } from '../../components/Header';
-import { SuccessIcon, ArrowRightIcon } from '../../components/icons';
-import { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
+import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
+  MapWIcon, TimeWIcon, WorkshopIcon } from '../../components/icons';
+import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -99,17 +100,15 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Session Metadata Card */}
         <ImageBackground
-          source={require('../../assets/images/wave-img.png')}
-          style={styles.metadataBackground}
-          imageStyle={styles.metadataWaveImage}
-        >
+        source={require('../../assets/images/wave-img.png')}
+        style={globalStyles.imgBgContainerWave}
+        imageStyle={globalStyles.imgBgWave}
+      >
           <View style={styles.metadataCard}>
           {/* Date */}
           <View style={styles.metadataRow}>
             <View style={styles.iconContainer}>
-              <View style={styles.calendarIcon}>
-                <SuccessIcon size={20} color={colors.white} />
-              </View>
+            <CalendarIconYellow size={20} color={colors.primaryLight} />
             </View>
             <Text style={styles.dateText}>{session.date}</Text>
           </View>
@@ -117,16 +116,16 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
           {/* Location, Time, and Workshop */}
           <View style={styles.metadataInfoRow}>
             <View style={styles.metadataInfoItem}>
-              <Text style={styles.iconText}>📍</Text>
+              <MapWIcon size={20} color={colors.primaryLight} />
               <Text style={styles.metadataText}>{session.location}</Text>
             </View>
             <View style={styles.metadataInfoItem}>
-              <Text style={styles.iconText}>🕒</Text>
+              <TimeWIcon size={20} color={colors.primaryLight} />
               <Text style={styles.metadataText}>{session.time}</Text>
             </View>
             {session.workshopNumber && (
               <View style={styles.metadataInfoItem}>
-                <Text style={styles.iconText}>↗️</Text>
+                <WorkshopIcon size={20} color={colors.primaryLight} />
                 <Text style={styles.metadataText}>{session.workshopNumber}</Text>
               </View>
             )}
@@ -160,21 +159,8 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
             onPress={handleMoreDetails}
             activeOpacity={0.7}
           >
-            <View style={styles.previewImage}>
-              <Text style={styles.previewTitle}>{session.title}</Text>
-              {session.subtitle && (
-                <Text style={styles.previewSubtitle}>{session.subtitle}</Text>
-              )}
-              <Text style={styles.previewThemeLabel}>Workshop Theme</Text>
-              <Text style={styles.previewTheme} numberOfLines={1}>
-                {session.theme}
-              </Text>
-              <Text style={styles.previewOverviewLabel}>Brief Overview</Text>
-              <Text style={styles.previewOverviewText} numberOfLines={3}>
-                {session.overview}
-              </Text>
-              <Text style={styles.previewHighlightLabel}>Key Highlights</Text>
-            </View>
+            <Image source={require('../../assets/images/pdfscreen.jpg')} style={styles.previewImage} />
+         
             <Text style={styles.moreDetailsText}>Click this for more details</Text>
           </TouchableOpacity>
         </View>
@@ -213,27 +199,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  metadataBackground: {
-    backgroundColor: colors.primary,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-    overflow: 'hidden',
-  },
-  metadataWaveImage: {
-    opacity: 0.2,
-    resizeMode: 'cover',
-  },
   metadataCard: {
-    backgroundColor: colors.white,
-    padding: spacing.lg,
     marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    borderRadius: borderRadius.md,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginTop: spacing.md, 
   },
   metadataRow: {
     flexDirection: 'row',
@@ -259,7 +227,7 @@ const styles = StyleSheet.create({
   metadataInfoRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   metadataInfoItem: {
     flexDirection: 'row',
@@ -272,32 +240,32 @@ const styles = StyleSheet.create({
   metadataText: {
     fontSize: screenWidth * 0.035,
     fontFamily: Fonts.Medium,
-    color: colors.black,
+    color: colors.white,
   },
   contentContainer: {
     padding: spacing.lg,
     paddingBottom: 100,
   },
   sessionTitle: {
-    fontSize: screenWidth * 0.055,
+    fontSize: screenWidth * 0.044,
     fontFamily: Fonts.Bold,
     color: colors.black,
-    marginBottom: spacing.xs,
+
   },
   sessionSubtitle: {
     fontSize: screenWidth * 0.04,
     fontFamily: Fonts.Regular,
     color: colors.black,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   themeContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   sectionLabel: {
     fontSize: screenWidth * 0.04,
     fontFamily: Fonts.Bold,
     color: colors.black,
-    marginBottom: spacing.sm,
+    marginBottom: 0,
   },
   themeText: {
     fontSize: screenWidth * 0.038,
@@ -316,60 +284,19 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   imageContainer: {
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   previewImage: {
-    backgroundColor: colors.lightGray,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.gray,
+    width: Dimensions.get('window').width * 0.7,
+    height: Dimensions.get('window').height * 0.2,
+    resizeMode: 'cover',
   },
-  previewTitle: {
-    fontSize: screenWidth * 0.035,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginBottom: spacing.xs,
-  },
-  previewSubtitle: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginBottom: spacing.sm,
-  },
-  previewThemeLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
-  previewTheme: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginBottom: spacing.sm,
-  },
-  previewOverviewLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
-  previewOverviewText: {
-    fontSize: screenWidth * 0.026,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginTop: spacing.xs,
-  },
-  previewHighlightLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
+ 
   moreDetailsText: {
-    fontSize: screenWidth * 0.033,
-    fontFamily: Fonts.Regular,
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Medium,
     color: colors.blue,
     textAlign: 'center',
     marginTop: spacing.sm,

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Header } from '../../components/Header';
 import { SuccessIcon, CardRightArrowIcon, InformationIcon, DownloadIcon } from '../../components/icons';
-import { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
+import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -80,10 +80,10 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Session Metadata Card */}
         <ImageBackground
-          source={require('../../assets/images/wave-img.png')}
-          style={styles.metadataBackground}
-          imageStyle={styles.metadataWaveImage}
-        >
+        source={require('../../assets/images/wave-img.png')}
+        style={globalStyles.imgBgContainerWave}
+        imageStyle={globalStyles.imgBgWave}
+      >
           <View style={styles.metadataCard}>
             {/* Date */}
             <View style={styles.metadataRow}>
@@ -234,20 +234,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingBottom: 100,
   },
-  metadataBackground: {
-    backgroundColor: colors.primary,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-    overflow: 'hidden',
-  },
-  metadataWaveImage: {
-    opacity: 0.2,
-    resizeMode: 'cover',
-  },
+
   metadataCard: {
-    backgroundColor: colors.white,
-    padding: spacing.lg,
-    marginHorizontal: spacing.md,
+
+
+   
     marginTop: spacing.md,
     borderRadius: borderRadius.md,
     shadowColor: colors.black,
