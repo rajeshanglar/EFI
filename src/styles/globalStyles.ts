@@ -429,6 +429,360 @@ export const globalStyles = StyleSheet.create({
     resizeMode: 'cover',
   },
   // Wave Background End
+
+  // Date Tabs Styles
+  // DATE TABS START
+dateTabsContainer: {
+  flexDirection: 'row',
+  paddingHorizontal: spacing.md,
+  paddingVertical: spacing.sm,
+  gap: spacing.md,
+},
+dateTab: {
+  paddingVertical: spacing.sm,
+  paddingHorizontal: spacing.sm,
+  borderRadius: borderRadius.round,
+  backgroundColor: colors.white,
+  alignItems: 'center',
+  justifyContent: 'center',
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+  width:Dimensions.get('window').width * 0.15,
+  lineHeight: screenWidth * 1,
+},
+dateTabActive: {
+  backgroundColor: colors.primaryLight,
+},
+dateTabMonth: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+lineHeight: screenWidth * 0.06,
+},
+dateTabMonthActive: {
+  color: colors.darkGray,
+},
+dateTabDay: {
+  fontSize: screenWidth * 0.05,
+  fontFamily: Fonts.Bold,
+  color: colors.darkGray,
+lineHeight: screenWidth * 0.06,
+},
+dateTabDayActive: {
+  color: colors.primary,
+  fontSize: screenWidth * 0.05,
+},
+dateTabDayName: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+},
+dateTabDayNameActive: {
+  color: colors.darkGray,
+},
+
+  // Date Tabs Styles End
+
+   // Conference List Styles
+  section: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: screenWidth * 0.042,
+    fontFamily: Fonts.Bold,
+    color: colors.black,
+    marginBottom: spacing.md,
+  },
+  timeSlotContainer: {
+    flexDirection: 'row',
+    marginBottom: spacing.lg,
+    shadowColor: colors.gray,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
+    overflow: 'hidden',
+    
+  },
+  timeBlock: {
+    width: screenWidth * 0.25,
+    backgroundColor: colors.primaryLight,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    marginRight: spacing.md,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  timeBlockContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  timeBlockText: {
+    fontSize: screenWidth * 0.033,
+    fontFamily: Fonts.Bold,
+    color: colors.black,
+    textAlign: 'center',
+    lineHeight: screenWidth * 0.04,
+  },
+  timeBlockSeparator: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    textAlign: 'center',
+  
+  },
+  eventsContainer: {
+    flex: 1,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+  },
+  eventItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md, 
+    paddingRight: spacing.md, 
+  
+  },
+  eventItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGray,
+  },
+  eventContent: {
+    flex: 1,
+  
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+},
+eventHall: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+},
+eventTitle: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+  flex: 1,
+},
+eventTitleNoHall: {
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+},
+eventArrow: {
+  marginLeft: spacing.sm,
+},
+
+  // Conference List Styles End
+
+  //Session Details Styles
+metadataCard: {
+  marginHorizontal: spacing.md,
+  marginTop: spacing.md, 
+},
+metadataRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: spacing.md,
+},
+iconContainer: {
+  marginRight: spacing.sm,
+},
+calendarIcon: {
+  width: 32,
+  height: 32,
+  borderRadius: borderRadius.md,
+  backgroundColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+dateText: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.primaryLight,
+},
+metadataInfoRow: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: spacing.sm,
+},
+metadataInfoItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: spacing.xs,
+},
+iconText: {
+  fontSize: screenWidth * 0.04,
+},
+metadataText: {
+  fontSize: screenWidth * 0.033,
+  fontFamily: Fonts.Medium,
+  color: colors.white,
+},
+contentContainer: {
+  padding: spacing.lg,
+  paddingBottom: 100,
+},
+actionsSection: {
+  marginTop: spacing.xl,
+  marginBottom: spacing.lg,
+},
+actionsSectionTitle: {
+  fontSize: screenWidth * 0.042,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+  marginBottom: spacing.md,
+},
+actionButton: {
+  backgroundColor: colors.accent,
+  borderRadius: borderRadius.md,
+  padding: spacing.md,
+  marginBottom: spacing.md,
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+actionButtonContent: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+},
+actionIconContainer: {
+  width: 40,
+  height: 40,
+  borderRadius: borderRadius.round,
+  backgroundColor: colors.white,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+actionButtonText: {
+  flex: 1,
+  fontSize: screenWidth * 0.038,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+  marginLeft: spacing.md,
+},
+sessionTitle: {
+  fontSize: screenWidth * 0.044,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+
+},
+sessionSubtitle: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  marginBottom: spacing.md,
+},
+themeContainer: {
+  marginBottom: spacing.md,
+},
+sectionLabel: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+  marginBottom: 0,
+},
+themeText: {
+  fontSize: screenWidth * 0.038,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  lineHeight: screenWidth * 0.055,
+},
+overviewContainer: {
+  marginBottom: spacing.lg,
+},
+overviewText: {
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  lineHeight: screenWidth * 0.055,
+  marginTop: spacing.sm,
+},
+imageContainer: {
+  marginTop: spacing.sm,
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+},
+previewImage: {
+  width: Dimensions.get('window').width * 0.7,
+  height: Dimensions.get('window').height * 0.2,
+  resizeMode: 'cover',
+},
+
+moreDetailsText: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Medium,
+  color: colors.blue,
+  textAlign: 'center',
+  marginTop: spacing.sm,
+  textDecorationLine: 'underline',
+},
+bottomActionBar: {
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: colors.primaryLight,
+  paddingVertical: spacing.md,
+  paddingHorizontal: spacing.lg,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: -2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 5,
+},
+addButtonContainer: {
+  flex: 1,
+},
+addButtonText: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+},
+statusContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: spacing.md,
+},
+checkmarkIcon: {
+  width: 28,
+  height: 28,
+  borderRadius: 14,
+  backgroundColor: colors.blue,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+removeText: {
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Medium,
+  color: colors.red,
+},
+removeButton: {
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+removeButtonText: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+},
+//session details styles END
 });
 
 export default globalStyles;

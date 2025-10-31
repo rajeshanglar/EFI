@@ -57,6 +57,13 @@ import TimeWIconSvg from '../../assets/images/time-w-icon.svg';
 import WorkshopIconSvg from '../../assets/images/workshop-w-icon.svg';
 import MapWIconSvg from '../../assets/images/map-w-icon.svg';
 
+import PrivacySettingsIconSvg from '../../assets/images/privacy-settings-icon.svg';
+import MyConferenceIconSvg from '../../assets/images/my-conference-icon.svg';
+import DigitalPostersIconSvg from '../../assets/images/digital-posters-icon.svg';
+import KeynoteSpeakersIconSvg from '../../assets/images/keynote-speakers-icon.svg';
+import DelegateListIconSvg from '../../assets/images/delegate-list-icon.svg';
+import MyAbstractsIconSvg from '../../assets/images/my-abstracts-icon.svg';
+
 interface IconProps {
   size?: number;
   color?: string;
@@ -269,3 +276,26 @@ export const MapWIcon = ({ size = 24, color, style }: IconProps) => (
   <MapWIconSvg width={size} height={size} color={color} style={style} />
 );
 
+export const PrivacySettingsIcon = ({ size = 24, color, style }: IconProps) => (
+  <PrivacySettingsIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MyConferenceIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyConferenceIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const DigitalPostersIcon = ({ size = 24, color, style }: IconProps) => (
+  <DigitalPostersIconSvg width={size} height={size} color={color} style={style} />
+);    
+
+export const KeynoteSpeakersIcon = ({ size = 24, color, style }: IconProps) => (
+  <KeynoteSpeakersIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const DelegateListIcon = ({ size = 24, color, style }: IconProps) => (
+  <DelegateListIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MyAbstractsIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyAbstractsIconSvg width={size} height={size} color={color} style={style} />
+);

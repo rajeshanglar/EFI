@@ -32,6 +32,12 @@ import {
   WhiteUserIcon,
   WhiteLoginIcon,
   WhiteCloseIcon,
+  PrivacySettingsIcon,
+  MyConferenceIcon,
+  DigitalPostersIcon,
+  KeynoteSpeakersIcon,
+  DelegateListIcon,
+  MyAbstractsIcon,
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
 
@@ -52,12 +58,12 @@ interface SlideOutMenuProps {
 }
 
 const conferenceAccessItems = [
-  { id: 'privacy', title: 'Privacy Settings', icon: AbstractIcon },
-  { id: 'conference', title: 'My\nConference', icon: AbstractIcon },
-  { id: 'posters', title: 'Digital\nPosters', icon: AbstractIcon },
-  { id: 'speakers', title: 'Keynote\nSpeakers', icon: AbstractIcon },
-  { id: 'delegates', title: 'Delegate\nList', icon: AbstractIcon },
-  { id: 'abstracts', title: 'My\nAbstracts', icon: AbstractIcon },
+  { id: 'privacy', title: 'Privacy Settings', icon: PrivacySettingsIcon },
+  { id: 'conference', title: 'My\nConference', icon: MyConferenceIcon },
+  { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
+  { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
+  { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
+  { id: 'abstracts', title: 'My\nAbstracts', icon: MyAbstractsIcon },
 ];
 
 const menuItems: MenuItem[] = [
