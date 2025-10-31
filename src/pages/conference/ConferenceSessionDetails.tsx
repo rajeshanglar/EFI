@@ -10,8 +10,9 @@ import {
   Image,
 } from 'react-native';
 import { Header } from '../../components/Header';
-import { SuccessIcon, ArrowRightIcon } from '../../components/icons';
-import { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
+import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
+  MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon } from '../../components/icons';
+import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -22,6 +23,10 @@ interface ConferenceSessionDetailsProps {
   onAddToMyConference?: (sessionId: string) => void;
   onRemoveFromMyConference?: (sessionId: string) => void;
   isInMyConference?: boolean;
+  isFromMyConference?: boolean; // New prop to indicate if accessed from MyConference
+  onLiveQA?: () => void;
+  onSessionNotes?: () => void;
+  onHandouts?: () => void;
 }
 
 interface SessionData {
@@ -44,6 +49,10 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
   onAddToMyConference,
   onRemoveFromMyConference,
   isInMyConference = false,
+  isFromMyConference = false,
+  onLiveQA,
+  onSessionNotes,
+  onHandouts,
 }) => {
   const [isAdded, setIsAdded] = useState(isInMyConference);
 
@@ -91,7 +100,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
     <View style={styles.container}>
       {/* Header */}
       <Header
-        title="Session Details"
+        title={isFromMyConference ? "My Conference Session" : "Session Details"}
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
       />
@@ -99,35 +108,33 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Session Metadata Card */}
         <ImageBackground
-          source={require('../../assets/images/wave-img.png')}
-          style={styles.metadataBackground}
-          imageStyle={styles.metadataWaveImage}
-        >
-          <View style={styles.metadataCard}>
+        source={require('../../assets/images/wave-img.png')}
+        style={globalStyles.imgBgContainerWave}
+        imageStyle={globalStyles.imgBgWave}
+      >
+          <View style={globalStyles.metadataCard}>
           {/* Date */}
-          <View style={styles.metadataRow}>
-            <View style={styles.iconContainer}>
-              <View style={styles.calendarIcon}>
-                <SuccessIcon size={20} color={colors.white} />
-              </View>
+          <View style={globalStyles.metadataRow}>
+            <View style={globalStyles.iconContainer}>
+            <CalendarIconYellow size={20} color={colors.primaryLight} />
             </View>
-            <Text style={styles.dateText}>{session.date}</Text>
+            <Text style={globalStyles.dateText}>{session.date}</Text>
           </View>
 
           {/* Location, Time, and Workshop */}
-          <View style={styles.metadataInfoRow}>
-            <View style={styles.metadataInfoItem}>
-              <Text style={styles.iconText}>📍</Text>
-              <Text style={styles.metadataText}>{session.location}</Text>
+          <View style={globalStyles.metadataInfoRow}>
+            <View style={globalStyles.metadataInfoItem}>
+              <MapWIcon size={20} color={colors.primaryLight} />
+              <Text style={globalStyles.metadataText}>{session.location}</Text>
             </View>
-            <View style={styles.metadataInfoItem}>
-              <Text style={styles.iconText}>🕒</Text>
-              <Text style={styles.metadataText}>{session.time}</Text>
+            <View style={globalStyles.metadataInfoItem}>
+              <TimeWIcon size={20} color={colors.primaryLight} />
+              <Text style={globalStyles.metadataText}>{session.time}</Text>
             </View>
             {session.workshopNumber && (
-              <View style={styles.metadataInfoItem}>
-                <Text style={styles.iconText}>↗️</Text>
-                <Text style={styles.metadataText}>{session.workshopNumber}</Text>
+              <View style={globalStyles.metadataInfoItem}>
+                <WorkshopIcon size={20} color={colors.primaryLight} />
+                <Text style={globalStyles.metadataText}>{session.workshopNumber}</Text>
               </View>
             )}
           </View>
@@ -135,69 +142,121 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         </ImageBackground>
 
         {/* Session Content */}
-        <View style={styles.contentContainer}>
+        <View style={globalStyles.contentContainer}>
           {/* Title */}
-          <Text style={styles.sessionTitle}>{session.title}</Text>
+          <Text style={globalStyles.sessionTitle}>{session.title}</Text>
           {session.subtitle && (
-            <Text style={styles.sessionSubtitle}>{session.subtitle}</Text>
+            <Text style={globalStyles.sessionSubtitle}>{session.subtitle}</Text>
           )}
 
           {/* Workshop Theme */}
-          <View style={styles.themeContainer}>
-            <Text style={styles.sectionLabel}>Workshop Theme</Text>
-            <Text style={styles.themeText}>{session.theme}</Text>
+          <View style={globalStyles.themeContainer}>
+            <Text style={globalStyles.sectionLabel}>Workshop Theme</Text>
+            <Text style={globalStyles.themeText}>{session.theme}</Text>
           </View>
 
           {/* Brief Overview */}
-          <View style={styles.overviewContainer}>
-            <Text style={styles.sectionLabel}>Brief Overview:</Text>
-            <Text style={styles.overviewText}>{session.overview}</Text>
+          <View style={globalStyles.overviewContainer}>
+            <Text style={globalStyles.sectionLabel}>Brief Overview:</Text>
+            <Text style={globalStyles.overviewText}>{session.overview}</Text>
           </View>
 
           {/* Embedded Preview Image */}
           <TouchableOpacity
-            style={styles.imageContainer}
+            style={globalStyles.imageContainer}
             onPress={handleMoreDetails}
             activeOpacity={0.7}
           >
-            <View style={styles.previewImage}>
-              <Text style={styles.previewTitle}>{session.title}</Text>
-              {session.subtitle && (
-                <Text style={styles.previewSubtitle}>{session.subtitle}</Text>
-              )}
-              <Text style={styles.previewThemeLabel}>Workshop Theme</Text>
-              <Text style={styles.previewTheme} numberOfLines={1}>
-                {session.theme}
-              </Text>
-              <Text style={styles.previewOverviewLabel}>Brief Overview</Text>
-              <Text style={styles.previewOverviewText} numberOfLines={3}>
-                {session.overview}
-              </Text>
-              <Text style={styles.previewHighlightLabel}>Key Highlights</Text>
-            </View>
-            <Text style={styles.moreDetailsText}>Click this for more details</Text>
+            <Image source={require('../../assets/images/pdfscreen.jpg')} style={globalStyles.previewImage} />
+         
+            <Text style={globalStyles.moreDetailsText}>Click this for more details</Text>
           </TouchableOpacity>
+
+          {/* My Actions Section - Only show when accessed from MyConference */}
+          {isFromMyConference && (
+            <View style={globalStyles.actionsSection}>
+              <Text style={globalStyles.actionsSectionTitle}>My Actions</Text>
+              
+              {/* Live Q&A Button */}
+              <TouchableOpacity
+                style={globalStyles.actionButton}
+                onPress={onLiveQA || (() => console.log('Live Q&A'))}
+                activeOpacity={0.8}
+              >
+                <View style={globalStyles.actionButtonContent}>
+                  <View style={globalStyles.actionIconContainer}>
+                    <InformationIcon size={24} />
+                  </View>
+                  <Text style={globalStyles.actionButtonText}>Live Q&A</Text>
+                  <CardRightArrowIcon size={20} color={colors.black} />
+                </View>
+              </TouchableOpacity>
+
+              {/* My Session Notes Button */}
+              <TouchableOpacity
+                style={globalStyles.actionButton}
+                onPress={onSessionNotes || (() => console.log('Session Notes'))}
+                activeOpacity={0.8}
+              >
+                <View style={globalStyles.actionButtonContent}>
+                  <View style={globalStyles.actionIconContainer}>
+                    <DownloadIcon size={24} color={colors.black} />
+                  </View>
+                  <Text style={globalStyles.actionButtonText}>My Session Notes</Text>
+                  <CardRightArrowIcon size={20} color={colors.black} />
+                </View>
+              </TouchableOpacity>
+
+              {/* Handouts Button */}
+              <TouchableOpacity
+                style={globalStyles.actionButton}
+                onPress={onHandouts || (() => console.log('Handouts'))}
+                activeOpacity={0.8}
+              >
+                <View style={globalStyles.actionButtonContent}>
+                  <View style={globalStyles.actionIconContainer}>
+                    <DownloadIcon size={24} color={colors.black} />
+                  </View>
+                  <Text style={globalStyles.actionButtonText}>Handouts</Text>
+                  <CardRightArrowIcon size={20} color={colors.black} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </ScrollView>
 
       {/* Bottom Action Bar */}
-      <View style={styles.bottomActionBar}>
-        <TouchableOpacity
-          style={styles.addButtonContainer}
-          onPress={!isAdded ? handleAddToConference : undefined}
-          disabled={isAdded}
-        >
-          <Text style={styles.addButtonText}>Add to my Conference</Text>
-        </TouchableOpacity>
-        {isAdded && (
-          <View style={styles.statusContainer}>
-            <View style={styles.checkmarkIcon}>
-              <SuccessIcon size={20} color={colors.white} />
-            </View>
-            <TouchableOpacity onPress={handleRemoveFromConference}>
-              <Text style={styles.removeText}>X Remove</Text>
+      <View style={globalStyles.bottomActionBar}>
+        {isFromMyConference ? (
+          // When from MyConference, show Remove button
+          <TouchableOpacity
+            style={globalStyles.removeButton}
+            onPress={handleRemoveFromConference}
+          >
+            <Text style={globalStyles.removeButtonText}>Remove from My Conference</Text>
+          </TouchableOpacity>
+        ) : (
+          // When from ConferenceList, show Add/Remove toggle
+          <>
+            <TouchableOpacity
+              style={globalStyles.addButtonContainer}
+              onPress={!isAdded ? handleAddToConference : undefined}
+              disabled={isAdded}
+            >
+              <Text style={globalStyles.addButtonText}>Add to my Conference</Text>
             </TouchableOpacity>
-          </View>
+            {isAdded && (
+              <View style={globalStyles.statusContainer}>
+                <View style={globalStyles.checkmarkIcon}>
+                  <SuccessIcon size={20} color={colors.white} />
+                </View>
+                <TouchableOpacity onPress={handleRemoveFromConference}>
+                  <Text style={globalStyles.removeText}>X Remove</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
         )}
       </View>
     </View>
@@ -213,211 +272,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  metadataBackground: {
-    backgroundColor: colors.primary,
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.md,
-    overflow: 'hidden',
-  },
-  metadataWaveImage: {
-    opacity: 0.2,
-    resizeMode: 'cover',
-  },
-  metadataCard: {
-    backgroundColor: colors.white,
-    padding: spacing.lg,
-    marginHorizontal: spacing.md,
-    marginTop: spacing.md,
-    borderRadius: borderRadius.md,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  metadataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  iconContainer: {
-    marginRight: spacing.sm,
-  },
-  calendarIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: borderRadius.md,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dateText: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Bold,
-    color: colors.primaryLight,
-  },
-  metadataInfoRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.md,
-  },
-  metadataInfoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  iconText: {
-    fontSize: screenWidth * 0.04,
-  },
-  metadataText: {
-    fontSize: screenWidth * 0.035,
-    fontFamily: Fonts.Medium,
-    color: colors.black,
-  },
-  contentContainer: {
-    padding: spacing.lg,
-    paddingBottom: 100,
-  },
-  sessionTitle: {
-    fontSize: screenWidth * 0.055,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginBottom: spacing.xs,
-  },
-  sessionSubtitle: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginBottom: spacing.lg,
-  },
-  themeContainer: {
-    marginBottom: spacing.lg,
-  },
-  sectionLabel: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginBottom: spacing.sm,
-  },
-  themeText: {
-    fontSize: screenWidth * 0.038,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    lineHeight: screenWidth * 0.055,
-  },
-  overviewContainer: {
-    marginBottom: spacing.lg,
-  },
-  overviewText: {
-    fontSize: screenWidth * 0.037,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    lineHeight: screenWidth * 0.055,
-    marginTop: spacing.sm,
-  },
-  imageContainer: {
-    marginTop: spacing.md,
-  },
-  previewImage: {
-    backgroundColor: colors.lightGray,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.gray,
-  },
-  previewTitle: {
-    fontSize: screenWidth * 0.035,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginBottom: spacing.xs,
-  },
-  previewSubtitle: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginBottom: spacing.sm,
-  },
-  previewThemeLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
-  previewTheme: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginBottom: spacing.sm,
-  },
-  previewOverviewLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
-  previewOverviewText: {
-    fontSize: screenWidth * 0.026,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    marginTop: spacing.xs,
-  },
-  previewHighlightLabel: {
-    fontSize: screenWidth * 0.03,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginTop: spacing.sm,
-  },
-  moreDetailsText: {
-    fontSize: screenWidth * 0.033,
-    fontFamily: Fonts.Regular,
-    color: colors.blue,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-    textDecorationLine: 'underline',
-  },
-  bottomActionBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.primaryLight,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  addButtonContainer: {
-    flex: 1,
-  },
-  addButtonText: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  checkmarkIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: colors.blue,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  removeText: {
-    fontSize: screenWidth * 0.037,
-    fontFamily: Fonts.Medium,
-    color: colors.red,
-  },
+ 
 });
 
 export default ConferenceSessionDetails;

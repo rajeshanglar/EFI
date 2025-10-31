@@ -19,8 +19,6 @@ import globalStyles, {
 import {
   ArrowRightIcon,
   InformationIcon,
-  HomeHeaderIcon,
-  BackArrowIcon,
   CardRightArrowIcon,
 } from '../../components/icons';
 import { Header } from '../../components/Header';

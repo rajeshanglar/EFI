@@ -17,7 +17,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 interface MyConferenceProps {
   onBack: () => void;
   onNavigateToHome: () => void;
-  onEventPress?: (event: EventItem) => void;
+  onEventPress?: (event: EventItem, fromMyConference?: boolean) => void;
   myConferenceSessions?: string[]; // Array of session IDs that are added to "My Conference"
   onRemoveSession?: (eventId: string) => void;
 }
@@ -27,6 +27,7 @@ interface EventItem {
   hall?: string;
   title: string;
   description?: string;
+  eventType: string;
   isClickable?: boolean;
 }
 
@@ -57,7 +58,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
   // Mock data - In real app, this would come from API/state management
   // For demo, we'll use some of the sessions from ConferenceList
   const allSessions: Record<string, DaySchedule> = {
-    mar06: {
+       mar06: {
       date: '2026-03-06',
       dateLabel: 'MAR 06 Mon',
       sections: [
@@ -68,28 +69,18 @@ const MyConference: React.FC<MyConferenceProps> = ({
               id: '1',
               timeRange: '08.00 am to 12.30 pm',
               events: [
-                { 
-                  id: '1', 
-                  hall: 'Hall 1', 
-                  title: 'Robotics in Endometriosis',
-                  description: 'Learn advanced robotic techniques for endometriosis surgery',
-                  isClickable: true 
-                },
+                { id: '1', hall: 'Hall 1', eventType: 'Workshop-1', title:'Robotics in Endometriosis', isClickable: true },               
               ],
             },
+            
             {
               id: '3',
               timeRange: '13.30 pm to 18.00 pm',
               events: [
-                { 
-                  id: '6', 
-                  hall: 'Hall 2', 
-                  title: 'MRI in Endometriosis',
-                  description: 'Advanced MRI interpretation for endometriosis',
-                  isClickable: true 
-                },
+                { id: '5', hall: 'Hall 1', eventType: 'Workshop-4', title: 'Hands on Robotic Simulator', isClickable: true },
+               
               ],
-            },
+            },           
           ],
         },
       ],
@@ -97,18 +88,63 @@ const MyConference: React.FC<MyConferenceProps> = ({
     mar07: {
       date: '2026-03-07',
       dateLabel: 'MAR 07 TUE',
-      sections: [],
+      sections: [
+        {
+          title: 'Main Congress Day 1',
+          timeSlots: [
+            {
+              id: '1',
+              timeRange: '09.00 am to 10.30 am',
+              events: [
+                { id: '1', hall: 'Main Hall', eventType: '', title: 'Opening Ceremony', isClickable: true },
+               
+              ],
+            },
+            
+            {
+              id: '3',
+              timeRange: '11.00 am to 12.30 pm',
+              events: [
+                { id: '4', hall: 'Main Hall', eventType: 'Session 1',  title: 'Advanced Laparoscopic Techniques', isClickable: true },
+               
+              ],
+            },
+          ],
+        },
+      ],
     },
     mar08: {
       date: '2026-03-08',
       dateLabel: 'MAR 08 WED',
-      sections: [],
+      sections: [
+        {
+          title: 'Main Congress Day 2',
+          timeSlots: [
+            {
+              id: '1',
+              timeRange: '09.00 am to 10.30 am',
+              events: [
+                { id: '1', hall: 'Main Hall', eventType: 'Session 3', title: 'Robotic Surgery Innovations', isClickable: true },
+              ],
+            },
+            
+            
+          ],
+        },
+      ],
     },
   };
 
   // Filter to show only sessions that are in "My Conference"
+  // For UI purposes, if myConferenceSessions is empty, show all sessions
   const getFilteredSchedule = () => {
     const schedule = allSessions[selectedDate];
+    
+    // If no sessions are selected, show all sessions for UI demonstration
+    if (myConferenceSessions.length === 0) {
+      return schedule;
+    }
+    
     const filteredSections = schedule.sections.map((section) => ({
       ...section,
       timeSlots: section.timeSlots
@@ -137,8 +173,9 @@ const MyConference: React.FC<MyConferenceProps> = ({
         dateLabel: currentSchedule.dateLabel,
         timeRange: timeRange,
         parsedDate: getFormattedDate(currentSchedule.date),
+        isFromMyConference: true,
       };
-      onEventPress(eventData as any);
+      onEventPress(eventData as any, true);
     }
   };
 
@@ -174,57 +211,57 @@ const MyConference: React.FC<MyConferenceProps> = ({
         style={globalStyles.imgBgContainerWave}
         imageStyle={globalStyles.imgBgWave}
       >
-        <View style={styles.dateTabsContainer}>
+        <View style={globalStyles.dateTabsContainer}>
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar06' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar06' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar06')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar06' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar06' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar06' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar06' && globalStyles.dateTabDayActive]}>
               06
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar06' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar06' && globalStyles.dateTabDayNameActive]}>
               Mon
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar07' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar07' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar07')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar07' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar07' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar07' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar07' && globalStyles.dateTabDayActive]}>
               07
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar07' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar07' && globalStyles.dateTabDayNameActive]}>
               TUE
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[
-              styles.dateTab,
-              selectedDate === 'mar08' && styles.dateTabActive,
+              globalStyles.dateTab,
+              selectedDate === 'mar08' && globalStyles.dateTabActive,
             ]}
             onPress={() => setSelectedDate('mar08')}
           >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar08' && styles.dateTabMonthActive]}>
+            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar08' && globalStyles.dateTabMonthActive]}>
               MAR
             </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar08' && styles.dateTabDayActive]}>
+            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar08' && globalStyles.dateTabDayActive]}>
               08
             </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar08' && styles.dateTabDayNameActive]}>
+            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar08' && globalStyles.dateTabDayNameActive]}>
               WED
             </Text>
           </TouchableOpacity>
@@ -233,81 +270,74 @@ const MyConference: React.FC<MyConferenceProps> = ({
 
       {/* Content Area */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {currentSchedule.sections.length === 0 ? (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>No sessions added for this date</Text>
-          </View>
-        ) : (
-          currentSchedule.sections.map((section, sectionIndex) => (
-            <View key={sectionIndex} style={styles.section}>
-              {section.title && (
-                <Text style={styles.sectionTitle}>{section.title}</Text>
-              )}
+        {currentSchedule.sections.map((section, sectionIndex) => (
+          <View key={sectionIndex} style={globalStyles.section}>
+            {section.title && (
+              <Text style={globalStyles.sectionTitle}>{section.title}</Text>
+            )}
 
-              {section.timeSlots.map((timeSlot) => (
-                <View key={timeSlot.id} style={styles.timeSlotContainer}>
-                  {/* Time Block with Remove Icon */}
-                  <View style={styles.timeBlockContainer}>
-                    <View style={styles.timeBlock}>
-                      <Text style={styles.timeBlockText}>{timeSlot.timeRange}</Text>
+            {section.timeSlots.map((timeSlot) => {       
+              const timeParts = timeSlot.timeRange.split(' to ');
+              const startTime = timeParts[0] || '';
+              const endTime = timeParts[1] || timeSlot.timeRange;
+              
+              return (
+              <View key={timeSlot.id} style={globalStyles.timeSlotContainer}>
+                {/* Time Block */}
+                <View style={globalStyles.timeBlock}>
+                  {timeParts.length > 1 ? (
+                    <View style={globalStyles.timeBlockContent}>
+                      <Text style={globalStyles.timeBlockText}>{startTime}</Text>
+                      <Text style={globalStyles.timeBlockSeparator}>to</Text>
+                      <Text style={globalStyles.timeBlockText}>{endTime}</Text>
                     </View>
-                    <TouchableOpacity
-                      style={styles.removeIconContainer}
-                      onPress={() => handleRemoveSession(timeSlot.events[0]?.id)}
-                    >
-                      <View style={styles.removeIcon}>
-                        <CloseIcon size={14} color={colors.white} />
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-
-                  {/* Events List */}
-                  <View style={styles.eventsContainer}>
-                    {timeSlot.events.map((event, eventIndex) => (
-                      <TouchableOpacity
-                        key={event.id}
-                        style={[
-                          styles.eventItem,
-                          eventIndex !== timeSlot.events.length - 1 &&
-                            styles.eventItemBorder,
-                        ]}
-                        onPress={() => handleEventPress(event, timeSlot.timeRange)}
-                        disabled={!event.isClickable}
-                        activeOpacity={event.isClickable ? 0.7 : 1}
-                      >
-                        <View style={styles.eventContent}>
-                          {event.hall && (
-                            <Text style={styles.eventHall}>
-                              {event.hall} -{' '}
-                            </Text>
-                          )}
-                          <Text
-                            style={[
-                              styles.eventTitle,
-                              !event.hall && styles.eventTitleNoHall,
-                            ]}
-                          >
-                            {event.title}
-                          </Text>
-                          {event.description && (
-                            <Text style={styles.eventDescription}>
-                              {event.description}
-                            </Text>
-                          )}
-                        </View>
-                        {event.isClickable && (
-                          <View style={styles.eventArrow}>
-                            <CardRightArrowIcon size={16} color={colors.darkGray} />
-                          </View>
-                        )}
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  ) : (
+                    <Text style={globalStyles.timeBlockText}>{timeSlot.timeRange}</Text>
+                  )}
                 </View>
-              ))}
-            </View>
-          ))
-        )}
+
+                {/* Events List */}
+                <View style={globalStyles.eventsContainer}>
+                  {timeSlot.events.map((event, eventIndex) => (
+                    <TouchableOpacity
+                      key={event.id}
+                      style={[
+                        globalStyles.eventItem,
+                        eventIndex !== timeSlot.events.length - 1 &&
+                        globalStyles.eventItemBorder,
+                      ]}
+                      onPress={() => handleEventPress(event, timeSlot.timeRange)}
+                      disabled={!event.isClickable}
+                      activeOpacity={event.isClickable ? 0.7 : 1}
+                    >
+                      <View style={globalStyles.eventContent}>
+                        {event.hall && (
+                          <Text style={globalStyles.eventHall}>
+                            {event.hall} -{' '} {event.eventType}{' '}
+                          </Text>
+                        )}
+                       
+                        <Text
+                          style={[
+                            globalStyles.eventTitle,
+                            !event.hall && globalStyles.eventTitleNoHall,
+                          ]}
+                        >
+                          {event.title}
+                        </Text>
+                      </View>
+                      {event.isClickable && (
+                        <View style={globalStyles.eventArrow}>
+                         <CardRightArrowIcon size={16} color={colors.darkGray} />
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )})}
+          </View>
+        ))}
       </ScrollView>
 
       {/* Yellow Ribbon Decorative Element */}
@@ -325,56 +355,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  dateTabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  dateTab: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  dateTabActive: {
-    backgroundColor: colors.primaryLight,
-  },
-  dateTabMonth: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabMonthActive: {
-    color: colors.darkGray,
-  },
-  dateTabDay: {
-    fontSize: screenWidth * 0.045,
-    fontFamily: Fonts.Bold,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabDayActive: {
-    color: colors.primary,
-    fontSize: screenWidth * 0.045,
-  },
-  dateTabDayName: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-  },
-  dateTabDayNameActive: {
-    color: colors.darkGray,
-  },
+ 
   scrollView: {
     flex: 1,
   },
@@ -399,38 +380,34 @@ const styles = StyleSheet.create({
     color: colors.black,
     marginBottom: spacing.md,
   },
-  timeSlotContainer: {
+  cardsContainer: {
     flexDirection: 'row',
-    marginBottom: spacing.lg,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: spacing.md,
   },
-  timeBlockContainer: {
+  sessionCard: {
+    width: (screenWidth - spacing.md * 3) / 2,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
     position: 'relative',
-    width: screenWidth * 0.25,
-    marginRight: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
   },
-  timeBlock: {
-    width: '100%',
-    backgroundColor: colors.primaryLight,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timeBlockText: {
-    fontSize: screenWidth * 0.028,
-    fontFamily: Fonts.Medium,
-    color: colors.black,
-    textAlign: 'center',
-    lineHeight: screenWidth * 0.04,
-  },
-  removeIconContainer: {
+  deleteButton: {
     position: 'absolute',
-    top: -8,
-    right: -8,
-    zIndex: 1,
+    top: spacing.xs,
+    right: spacing.xs,
+    zIndex: 10,
   },
-  removeIcon: {
+  deleteIcon: {
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -443,53 +420,49 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  eventsContainer: {
+  cardContent: {
     flex: 1,
-    backgroundColor: colors.white,
+  },
+  timeBadge: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
-    overflow: 'hidden',
+    alignSelf: 'flex-start',
+    marginBottom: spacing.sm,
   },
-  eventItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.white,
+  timeBadgeText: {
+    fontSize: screenWidth * 0.026,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
   },
-  eventItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-  },
-  eventContent: {
+  cardDetails: {
     flex: 1,
+    marginBottom: spacing.sm,
   },
-  eventHall: {
-    fontSize: screenWidth * 0.033,
+  cardHall: {
+    fontSize: screenWidth * 0.028,
     fontFamily: Fonts.Regular,
     color: colors.darkGray,
     marginBottom: spacing.xs,
   },
-  eventTitle: {
-    fontSize: screenWidth * 0.038,
+  cardTitle: {
+    fontSize: screenWidth * 0.034,
     fontFamily: Fonts.Bold,
     color: colors.primary,
     marginBottom: spacing.xs,
-  },
-  eventTitleNoHall: {
-    fontSize: screenWidth * 0.038,
-    fontFamily: Fonts.Bold,
-    color: colors.primary,
-  },
-  eventDescription: {
-    fontSize: screenWidth * 0.032,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginTop: spacing.xs,
     lineHeight: screenWidth * 0.045,
   },
-  eventArrow: {
-    marginLeft: spacing.sm,
+  cardDescription: {
+    fontSize: screenWidth * 0.029,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    lineHeight: screenWidth * 0.04,
+    marginTop: spacing.xs,
+  },
+  cardArrow: {
+    alignSelf: 'flex-end',
+    marginTop: spacing.xs,
   },
   ribbonContainer: {
     position: 'absolute',

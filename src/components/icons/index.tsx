@@ -51,7 +51,11 @@ import HomeHeaderIconSvg from '../../assets/images/home-header-icon.svg';
 import SuccessIconSvg from '../../assets/images/success-icon.svg';
 import DownloadIconSvg from '../../assets/images/download-icon.svg';
 
-import EmailModalIconSvg from '../../assets/images/email-modal-icon.svg'; 
+import EmailModalIconSvg from '../../assets/images/email-modal-icon.svg';
+import CalendarIconYellowSvg from '../../assets/images/calendar-icon-yellow.svg';
+import TimeWIconSvg from '../../assets/images/time-w-icon.svg';
+import WorkshopIconSvg from '../../assets/images/workshop-w-icon.svg';
+import MapWIconSvg from '../../assets/images/map-w-icon.svg';
 
 interface IconProps {
   size?: number;
@@ -248,3 +252,20 @@ export const DownloadIcon = ({ size = 24, color, style }: IconProps) => (
 export const EmailModalIcon = ({ size = 24, color, style }: IconProps) => (
   <EmailModalIconSvg width={size} height={size} color={color} style={style} />
 );
+
+export const CalendarIconYellow = ({ size = 24, color, style }: IconProps) => (
+  <CalendarIconYellowSvg width={size} height={size} color={color} style={style} />
+);
+
+export const TimeWIcon = ({ size = 24, color, style }: IconProps) => (
+  <TimeWIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const WorkshopIcon = ({ size = 24, color, style }: IconProps) => (
+  <WorkshopIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MapWIcon = ({ size = 24, color, style }: IconProps) => (
+  <MapWIconSvg width={size} height={size} color={color} style={style} />
+);
+
