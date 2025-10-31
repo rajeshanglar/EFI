@@ -10,9 +10,14 @@ import {
   ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
-import { 
-  ArrowRightIcon, 
+import globalStyles, {
+  colors,
+  spacing,
+  borderRadius,
+  Fonts,
+} from '../../styles/globalStyles';
+import {
+  ArrowRightIcon,
   InformationIcon,
   HomeHeaderIcon,
   BackArrowIcon,
@@ -23,53 +28,60 @@ import { Header } from '../../components/Header';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface ConferenceRegistrationPageProps {
-  onBack: () => void;
+  onBack: (tier?: 'Early Bird' | 'Regular' | 'On Spot') => void;
   onNavigateToHome: () => void;
   onNavigateToForm?: (tier: 'Early Bird' | 'Regular' | 'On Spot') => void;
 }
 
-const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({ 
-  onBack, 
+const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
+  onBack,
   onNavigateToHome,
-  onNavigateToForm 
+  onNavigateToForm,
 }) => {
   const [membershipType, setMembershipType] = useState<'efi' | 'nonEfi'>('efi');
-  const [registrationTier, setRegistrationTier] = useState<'earlyBird' | 'regular' | 'onSpot'>('earlyBird');
+  const [registrationTier, setRegistrationTier] = useState<
+    'earlyBird' | 'regular' | 'onSpot'
+  >('earlyBird');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<'mar06' | 'mar07' | 'mar08'>('mar06');
+  const [selectedDate, setSelectedDate] = useState<'mar06' | 'mar07' | 'mar08'>(
+    'mar06',
+  );
 
   // Pricing data for each tier
   const pricingData = {
     earlyBird: {
       'National - Standard': '₹ 11,000',
-      'National - PG\'s/Fellows': '₹ 6,000',
+      "National - PG's/Fellows": '₹ 6,000',
       'International - Standard': '190 USD',
-      'International - PG\'s/Fellows': '100 USD',
+      "International - PG's/Fellows": '100 USD',
     },
     regular: {
       'National - Standard': '₹ 13,000',
-      'National - PG\'s/Fellows': '₹ 8,000',
+      "National - PG's/Fellows": '₹ 8,000',
       'International - Standard': '230 USD',
-      'International - PG\'s/Fellows': '140 USD',
+      "International - PG's/Fellows": '140 USD',
     },
     onSpot: {
       'National - Standard': '₹ 15,000',
-      'National - PG\'s/Fellows': '₹ 10,000',
+      "National - PG's/Fellows": '₹ 10,000',
       'International - Standard': '280 USD',
-      'International - PG\'s/Fellows': '180 USD',
+      "International - PG's/Fellows": '180 USD',
     },
   };
 
   const registrationOptions = [
     { category: 'National - Standard' as const },
-    { category: 'National - PG\'s/Fellows' as const },
+    { category: "National - PG's/Fellows" as const },
     { category: 'International - Standard' as const },
-    { category: 'International - PG\'s/Fellows' as const },
+    { category: "International - PG's/Fellows" as const },
   ];
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         {/* <View style={globalStyles.header}>
           <View style={globalStyles.headerBackBtTittle}>
@@ -82,147 +94,250 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
             <HomeHeaderIcon size={25}  />
           </TouchableOpacity>
         </View> */}
-              {/* Header */}
-      <Header 
-        title="Conference Registration"
-        onBack={onBack}
-        onNavigateToHome={onNavigateToHome}
-      />
+        {/* Header */}
+        <Header
+          title="Conference Registration"
+          onBack={onBack}
+          onNavigateToHome={onNavigateToHome}
+        />
 
         {/* Conference Title */}
         <ImageBackground
-        source={require('../../assets/images/wave-img.png')}
-        style={globalStyles.imgBgContainerWave}
-        imageStyle={globalStyles.imgBgWave}
-      >
-        <View style={styles.titleSection}>
-          <Text style={styles.mainTitle}>3rd Edition of Endometriosis Congress</Text>
-          <Text style={styles.dateLocation}>6, 7 & 8 MARCH 2026, Park Hyatt, Hyderabad</Text>
-        </View>
+          source={require('../../assets/images/wave-img.png')}
+          style={globalStyles.imgBgContainerWave}
+          imageStyle={globalStyles.imgBgWave}
+        >
+          <View style={styles.titleSection}>
+            <Text style={styles.mainTitle}>
+              3rd Edition of Endometriosis Congress
+            </Text>
+            <Text style={styles.dateLocation}>
+              6, 7 & 8 MARCH 2026, Park Hyatt, Hyderabad
+            </Text>
+          </View>
 
+          {/* Membership Selection */}
+          <View style={styles.membershipSection}>
+            <TouchableOpacity
+              style={styles.radioOption}
+              onPress={() => setMembershipType('efi')}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  membershipType === 'efi' && styles.radioSelected,
+                ]}
+              >
+                {membershipType === 'efi' && <View style={styles.radioInner} />}
+              </View>
+              <Text style={styles.radioText}>EFI Members</Text>
+            </TouchableOpacity>
 
-            {/* Membership Selection */}
-            <View style={styles.membershipSection}>
-          <TouchableOpacity
-            style={styles.radioOption}
-            onPress={() => setMembershipType('efi')}
-          >
-            <View style={[styles.radio, membershipType === 'efi' && styles.radioSelected]}>
-              {membershipType === 'efi' && <View style={styles.radioInner} />}
-            </View>
-            <Text style={styles.radioText}>EFI Members</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.radioOption}
-            onPress={() => setMembershipType('nonEfi')}
-          >
-            <View style={[styles.radio, membershipType === 'nonEfi' && styles.radioSelected]}>
-              {membershipType === 'nonEfi' && <View style={styles.radioInner} />}
-            </View>
-            <Text style={styles.radioText}>Non EFI Members</Text>
-          </TouchableOpacity>
-        </View>
-
+            <TouchableOpacity
+              style={styles.radioOption}
+              onPress={() => setMembershipType('nonEfi')}
+            >
+              <View
+                style={[
+                  styles.radio,
+                  membershipType === 'nonEfi' && styles.radioSelected,
+                ]}
+              >
+                {membershipType === 'nonEfi' && (
+                  <View style={styles.radioInner} />
+                )}
+              </View>
+              <Text style={styles.radioText}>Non EFI Members</Text>
+            </TouchableOpacity>
+          </View>
         </ImageBackground>
 
-      {/* Date Selection Tabs */}
-      <ImageBackground
-        source={require('../../assets/images/wave-img.png')}
-        style={globalStyles.imgBgContainerWave}
-        imageStyle={globalStyles.imgBgWave}
-      >
-        <View style={styles.dateTabsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar06' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar06')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar06' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar06' && styles.dateTabDayActive]}>
-              06
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar06' && styles.dateTabDayNameActive]}>
-              Mon
-            </Text>
-          </TouchableOpacity>
+        {/* Date Selection Tabs */}
+        <ImageBackground
+          source={require('../../assets/images/wave-img.png')}
+          style={globalStyles.imgBgContainerWave}
+          imageStyle={globalStyles.imgBgWave}
+        >
+          <View style={styles.dateTabsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.dateTab,
+                selectedDate === 'mar06' && styles.dateTabActive,
+              ]}
+              onPress={() => setSelectedDate('mar06')}
+            >
+              <Text
+                style={[
+                  styles.dateTabMonth,
+                  selectedDate === 'mar06' && styles.dateTabMonthActive,
+                ]}
+              >
+                MAR
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDay,
+                  selectedDate === 'mar06' && styles.dateTabDayActive,
+                ]}
+              >
+                06
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDayName,
+                  selectedDate === 'mar06' && styles.dateTabDayNameActive,
+                ]}
+              >
+                Mon
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar07' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar07')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar07' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar07' && styles.dateTabDayActive]}>
-              07
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar07' && styles.dateTabDayNameActive]}>
-              TUE
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.dateTab,
+                selectedDate === 'mar07' && styles.dateTabActive,
+              ]}
+              onPress={() => setSelectedDate('mar07')}
+            >
+              <Text
+                style={[
+                  styles.dateTabMonth,
+                  selectedDate === 'mar07' && styles.dateTabMonthActive,
+                ]}
+              >
+                MAR
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDay,
+                  selectedDate === 'mar07' && styles.dateTabDayActive,
+                ]}
+              >
+                07
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDayName,
+                  selectedDate === 'mar07' && styles.dateTabDayNameActive,
+                ]}
+              >
+                TUE
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.dateTab,
-              selectedDate === 'mar08' && styles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar08')}
-          >
-            <Text style={[styles.dateTabMonth, selectedDate === 'mar08' && styles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[styles.dateTabDay, selectedDate === 'mar08' && styles.dateTabDayActive]}>
-              08
-            </Text>
-            <Text style={[styles.dateTabDayName, selectedDate === 'mar08' && styles.dateTabDayNameActive]}>
-              WED
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+            <TouchableOpacity
+              style={[
+                styles.dateTab,
+                selectedDate === 'mar08' && styles.dateTabActive,
+              ]}
+              onPress={() => setSelectedDate('mar08')}
+            >
+              <Text
+                style={[
+                  styles.dateTabMonth,
+                  selectedDate === 'mar08' && styles.dateTabMonthActive,
+                ]}
+              >
+                MAR
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDay,
+                  selectedDate === 'mar08' && styles.dateTabDayActive,
+                ]}
+              >
+                08
+              </Text>
+              <Text
+                style={[
+                  styles.dateTabDayName,
+                  selectedDate === 'mar08' && styles.dateTabDayNameActive,
+                ]}
+              >
+                WED
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
 
         {/* Registration Tier Tabs */}
         <View style={globalStyles.tierTabs}>
           <TouchableOpacity
-            style={[globalStyles.tierTab, registrationTier === 'earlyBird' && globalStyles.tierTabActive]}
+            style={[
+              globalStyles.tierTab,
+              registrationTier === 'earlyBird' && globalStyles.tierTabActive,
+            ]}
             onPress={() => setRegistrationTier('earlyBird')}
           >
-            <Text style={[globalStyles.tierTabText, registrationTier === 'earlyBird' && globalStyles.tierTabTextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabText,
+                registrationTier === 'earlyBird' &&
+                  globalStyles.tierTabTextActive,
+              ]}
+            >
               Early Bird
             </Text>
-            <Text style={[globalStyles.tierTabSubtext, registrationTier === 'earlyBird' && globalStyles.tierTabSubtextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabSubtext,
+                registrationTier === 'earlyBird' &&
+                  globalStyles.tierTabSubtextActive,
+              ]}
+            >
               Upto 15 Oct 2025
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[globalStyles.tierTab, registrationTier === 'regular' && globalStyles.tierTabActive]}
+            style={[
+              globalStyles.tierTab,
+              registrationTier === 'regular' && globalStyles.tierTabActive,
+            ]}
             onPress={() => setRegistrationTier('regular')}
           >
-            <Text style={[globalStyles.tierTabText, registrationTier === 'regular' && globalStyles.tierTabTextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabText,
+                registrationTier === 'regular' &&
+                  globalStyles.tierTabTextActive,
+              ]}
+            >
               Regular
             </Text>
-            <Text style={[globalStyles.tierTabSubtext, registrationTier === 'regular' && globalStyles.tierTabSubtextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabSubtext,
+                registrationTier === 'regular' &&
+                  globalStyles.tierTabSubtextActive,
+              ]}
+            >
               Upto 15 Feb 2026
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[globalStyles.tierTab, registrationTier === 'onSpot' && globalStyles.tierTabActive]}
+            style={[
+              globalStyles.tierTab,
+              registrationTier === 'onSpot' && globalStyles.tierTabActive,
+            ]}
             onPress={() => setRegistrationTier('onSpot')}
           >
-            <Text style={[globalStyles.tierTabText, registrationTier === 'onSpot' && globalStyles.tierTabTextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabText,
+                registrationTier === 'onSpot' && globalStyles.tierTabTextActive,
+              ]}
+            >
               On Spot
             </Text>
-            <Text style={[globalStyles.tierTabSubtext, registrationTier === 'onSpot' && globalStyles.tierTabSubtextActive]}>
+            <Text
+              style={[
+                globalStyles.tierTabSubtext,
+                registrationTier === 'onSpot' &&
+                  globalStyles.tierTabSubtextActive,
+              ]}
+            >
               After 15 Feb 2026
             </Text>
           </TouchableOpacity>
@@ -230,52 +345,56 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
         {/* Registration Options Card */}
         <View style={styles.cardContainer}>
-        
-            {registrationOptions.map((option, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={[styles.card, styles.cardBottom]}
-                onPress={() => {
-                  const tierMap: { [key: string]: 'Early Bird' | 'Regular' | 'On Spot' } = {
-                    earlyBird: 'Early Bird',
-                    regular: 'Regular',
-                    onSpot: 'On Spot',
-                  };
-                  onNavigateToForm?.(tierMap[registrationTier]);
-                }}
-              >
-                 <View style={[styles.optionCard]}>
-                  <Text style={styles.optionText}>{option.category}</Text>
-                  <View style={styles.priceArrowContainer}>
-                    <Text style={styles.priceText}>{pricingData[registrationTier][option.category]}</Text>
-                    <CardRightArrowIcon size={16} color={colors.darkGray} />
-                   </View>
-                  </View>
-                </TouchableOpacity>
-              ))}
-        
+          {registrationOptions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.card, styles.cardBottom]}
+              onPress={() => {
+                const tierMap: {
+                  [key: string]: 'Early Bird' | 'Regular' | 'On Spot';
+                } = {
+                  earlyBird: 'Early Bird',
+                  regular: 'Regular',
+                  onSpot: 'On Spot',
+                };
+                onNavigateToForm?.(tierMap[registrationTier]);
+              }}
+            >
+              <View style={[styles.optionCard]}>
+                <Text style={styles.optionText}>{option.category}</Text>
+                <View style={styles.priceArrowContainer}>
+                  <Text style={styles.priceText}>
+                    {pricingData[registrationTier][option.category]}
+                  </Text>
+                  <CardRightArrowIcon size={16} color={colors.darkGray} />
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
         </View>
-
-
       </ScrollView>
 
-              {/* Footer */}
-              <View style={globalStyles.footerPrimaryMain}>
-          <View style={globalStyles.footerPrimaryLinkContainer}>
-            <Text style={globalStyles.footerPrimaryText}>Already an EFI Member?</Text>
-            <TouchableOpacity>
-              <Text style={globalStyles.footerPrimaryLinkText}>Click Here to Continue</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Footer */}
+      <View style={globalStyles.footerPrimaryMain}>
+        <View style={globalStyles.footerPrimaryLinkContainer}>
+          <Text style={globalStyles.footerPrimaryText}>
+            Already an EFI Member?
+          </Text>
+          <TouchableOpacity>
+            <Text style={globalStyles.footerPrimaryLinkText}>
+              Click Here to Continue
+            </Text>
+          </TouchableOpacity>
         </View>
+      </View>
 
       {/* Floating Info Button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.infoButton}
         onPress={() => setIsModalVisible(true)}
       >
         <View style={styles.infoButtonInner}>
-          <InformationIcon size={50}  />
+          <InformationIcon size={50} />
         </View>
       </TouchableOpacity>
 
@@ -290,7 +409,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>INFORMATION</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsModalVisible(false)}
               >
@@ -302,26 +421,60 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
               {/* Important Section */}
               <View style={styles.modalSection}>
                 <Text style={styles.modalSectionTitle}>Important</Text>
-                <Text style={styles.modalListItem}>• Registration fee is exclusive of GST @ 18%.</Text>
-                <Text style={styles.modalListItem}>• Membership number is mandatory.</Text>
-                <Text style={styles.modalListItem}>• Please mention your mobile number and email ID for better communication.</Text>
+                <Text style={styles.modalListItem}>
+                  • Registration fee is exclusive of GST @ 18%.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • Membership number is mandatory.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • Please mention your mobile number and email ID for better
+                  communication.
+                </Text>
               </View>
 
               {/* Registration Guidelines Section */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Registration Guidelines</Text>
-                <Text style={styles.modalListItem}>• Online charges will be applicable at 3% of the total amount.</Text>
-                <Text style={styles.modalListItem}>• Registration fees include admission to the scientific halls, trade exhibition, public awareness programme, inaugural function, lunch, banquet, delegate kit, and participation certificate.</Text>
-                <Text style={styles.modalListItem}>• No delegate kit for spot registrations.</Text>
-                <Text style={styles.modalListItem}>• The participation certificate will be available to download once the feedback form is submitted.</Text>
+                <Text style={styles.modalSectionTitle}>
+                  Registration Guidelines
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • Online charges will be applicable at 3% of the total amount.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • Registration fees include admission to the scientific halls,
+                  trade exhibition, public awareness programme, inaugural
+                  function, lunch, banquet, delegate kit, and participation
+                  certificate.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • No delegate kit for spot registrations.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • The participation certificate will be available to download
+                  once the feedback form is submitted.
+                </Text>
               </View>
 
               {/* Cancellation Policy Section */}
               <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Cancellation & Refund Policy</Text>
-                <Text style={styles.modalListItem}>• Requests for cancellation refunds must be made in writing via email or post to the conference secretariat.</Text>
-                <Text style={styles.modalListItem}>• No refund of registration fee will be provided for cancellation requests received after <Text style={styles.boldText}>15.11.2025</Text>.</Text>
-                <Text style={styles.modalListItem}>• <Text style={styles.boldText}>30%</Text> of the registration fee will be deducted as processing charges, and the remaining amount will be refunded.</Text>
+                <Text style={styles.modalSectionTitle}>
+                  Cancellation & Refund Policy
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • Requests for cancellation refunds must be made in writing
+                  via email or post to the conference secretariat.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • No refund of registration fee will be provided for
+                  cancellation requests received after{' '}
+                  <Text style={styles.boldText}>15.11.2025</Text>.
+                </Text>
+                <Text style={styles.modalListItem}>
+                  • <Text style={styles.boldText}>30%</Text> of the registration
+                  fee will be deducted as processing charges, and the remaining
+                  amount will be refunded.
+                </Text>
               </View>
             </ScrollView>
           </View>
@@ -340,11 +493,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-
   titleSection: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.sm,
-    paddingTop:0,  
+    paddingTop: 0,
   },
   mainTitle: {
     color: colors.primaryLight,
@@ -361,8 +513,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
- 
-
   },
   radioOption: {
     flexDirection: 'row',
@@ -395,32 +545,29 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Medium,
   },
- 
+
   cardContainer: {
     padding: spacing.md,
   },
   card: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.sm,
-   
-    shadowColor:'#746ABE',
+
+    shadowColor: '#746ABE',
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 2,
-    elevation:4,
+    elevation: 4,
   },
 
-  cardBottom:{
+  cardBottom: {
     marginBottom: spacing.md,
   },
   optionCard: {
     padding: spacing.md,
-    backgroundColor:'transparent',
+    backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
- 
-   
   },
   optionText: {
     flex: 1,
@@ -438,7 +585,7 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.038,
     fontFamily: Fonts.Medium,
   },
- 
+
   dateTabsContainer: {
     flexDirection: 'row',
     paddingHorizontal: spacing.md,
@@ -495,9 +642,7 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 10,
   },
-  infoButtonInner: {
-
-  },
+  infoButtonInner: {},
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -516,7 +661,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: spacing.md,
-    paddingBottom:0,
+    paddingBottom: 0,
   },
   modalTitle: {
     fontSize: screenWidth * 0.045,

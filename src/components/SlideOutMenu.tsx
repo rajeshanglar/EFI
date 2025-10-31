@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,11 @@ import {
   Animated,
   ImageBackground,
 } from 'react-native';
-import { globalStyles, colors, spacing, borderRadius,Fonts} from '../styles/globalStyles';
+import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
 import {
   HomeIcon,
   AboutUsIcon,
   BoardIcon,
-  InformationIcon,
   TrainingIcon,
   OutreachIcon,
   SurgeryIcon,
@@ -28,19 +27,13 @@ import {
   FacebookIcon,
   TwitterIcon,
   LinkedinIcon,
-  YoutubeIcon, 
-  MenuIcon,
+  YoutubeIcon,
   AbstractIcon,
-  CloseIcon,
-  TopArrowIcon,
-  BottomArrowIcon,
-
   WhiteUserIcon,
   WhiteLoginIcon,
   WhiteCloseIcon,
 } from '../components/icons';
-
-
+import { ConferenceAccess } from './conference-access-items';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -58,7 +51,6 @@ interface SlideOutMenuProps {
   onLoginPress?: () => void;
 }
 
-// Conference Access items
 const conferenceAccessItems = [
   { id: 'privacy', title: 'Privacy Settings', icon: AbstractIcon },
   { id: 'conference', title: 'My\nConference', icon: AbstractIcon },
@@ -68,7 +60,6 @@ const conferenceAccessItems = [
   { id: 'abstracts', title: 'My\nAbstracts', icon: AbstractIcon },
 ];
 
-// Main menu items
 const menuItems: MenuItem[] = [
   { id: 'home', title: 'Home', icon: HomeIcon },
   { id: 'about', title: 'About us', icon: AboutUsIcon },
@@ -93,24 +84,22 @@ const socialIcons = [
   { id: 'youtube', icon: YoutubeIcon },
 ];
 
-const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuItemPress, onLogout, onLoginPress }) => {
-  const translateX = React.useRef(new Animated.Value(-screenWidth)).current;
-  const [isConferenceExpanded, setIsConferenceExpanded] = useState(false);
+const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
+  isVisible,
+  onClose,
+  onMenuItemPress,
+  onLogout,
+  onLoginPress,
+}) => {
+  const translateX = useRef(new Animated.Value(screenWidth)).current; // start off-screen right
 
-  React.useEffect(() => {
-    if (isVisible) {
-      Animated.timing(translateX, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(translateX, {
-        toValue: -screenWidth,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: isVisible ? 0 : screenWidth, // slide in/out from right
+      duration: 300,
+      easing: undefined,
+      useNativeDriver: true,
+    }).start();
   }, [isVisible]);
 
   const animatedStyle = {
@@ -119,10 +108,13 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuI
 
   const handleMenuItemPress = (itemId: string) => {
     onMenuItemPress(itemId);
-    // Removed onClose() - menu will only close when close button is clicked
   };
 
-  const renderMenuItem = (item: MenuItem, index: number) => {
+  if (!isVisible && translateX === screenWidth) {
+    return null;
+  }
+
+  const renderMenuItem = (item: MenuItem) => {
     const IconComponent = item.icon;
     return (
       <TouchableOpacity
@@ -132,7 +124,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuI
       >
         <View style={styles.menuIconContainer}>
           <View style={styles.menuIconStyle}>
-            <IconComponent size={26} color={colors.primary} style={styles.menuIconStyle} />
+            <IconComponent size={26} color={colors.primary} />
           </View>
         </View>
         <Text style={styles.menuItemText}>{item.title}</Text>
@@ -140,7 +132,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuI
     );
   };
 
-  const renderConferenceItem = (item: any, index: number) => {
+  const renderConferenceItem = (item: any) => {
     const IconComponent = item.icon;
     return (
       <TouchableOpacity
@@ -150,7 +142,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuI
       >
         <View style={styles.conferenceIconStyle}>
           <View style={styles.conferenceIconContainer}>
-            <IconComponent size={20} color={colors.primaryLight}  />
+            <IconComponent size={20} color={colors.primaryLight} />
           </View>
         </View>
         <Text style={styles.conferenceItemText}>{item.title}</Text>
@@ -158,100 +150,60 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({ isVisible, onClose, onMenuI
     );
   };
 
-  if (!isVisible) {
-    return null;
-  }
-
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.sidebar}>
         <View style={styles.leftSectionContainer}>
-            <View style={styles.leftSection}>
-              <View style={styles.leftIcon}>
-                <WhiteUserIcon size={20} color={colors.white} />
-              </View>
-              <Text style={styles.leftIconText}>PROFILE</Text>
+          <View style={styles.leftSection}>
+            <View style={styles.leftIcon}>
+              <WhiteUserIcon size={20} color={colors.white} />
             </View>
+            <Text style={styles.leftIconText}>PROFILE</Text>
+          </View>
 
-            <TouchableOpacity 
-              style={styles.leftSection}    
-              onPress={() => {
-                if (onLoginPress) {
-                  onLoginPress();
-                  onClose();
-                } else {
-                  onMenuItemPress('login');
-                  onClose();
-                }
-              }}
-            >
-              <View style={styles.leftIcon}>
-                <WhiteLoginIcon size={20} color={colors.white} />
-              </View>
-              <Text style={styles.leftIconText}>LOGIN</Text>
-            </TouchableOpacity>
-
-            {/* <TouchableOpacity 
-              style={styles.leftSection}
-              onPress={() => {
-                if (onLogout) {
-                  onLogout();
-                }
-                onClose();
-              }}
-            >
-              <View style={styles.leftIcon}>
-                <WhiteLoginIcon size={20} color={colors.white} />
-              </View>
-              <Text style={styles.leftIconText}>LOGOUT</Text>
-            </TouchableOpacity> */}
+          <TouchableOpacity
+            style={styles.leftSection}
+            onPress={() => {
+              onLoginPress?.();
+              onClose();
+            }}
+          >
+            <View style={styles.leftIcon}>
+              <WhiteLoginIcon size={20} color={colors.white} />
+            </View>
+            <Text style={styles.leftIconText}>LOGIN</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.socialSection}>
-          {socialIcons.map((social) => {
-            const SocialIcon = social.icon;
-            return (
-              <TouchableOpacity key={social.id} style={styles.socialIcon}>
-                <SocialIcon size={20} color={colors.white} />
-              </TouchableOpacity>
-            );
-          })}
+          {socialIcons.map(({ id, icon: Icon }) => (
+            <TouchableOpacity key={id} style={styles.socialIcon}>
+              <Icon size={20} color={colors.white} />
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
       <View style={styles.mainContent}>
-
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <WhiteCloseIcon size={12} color="white" />
-          </TouchableOpacity>
+        </TouchableOpacity>
 
-          <ImageBackground
-      source={require('../assets/images/ribbon-color-img.png')  }
-      style={styles.bgColor}
-      imageStyle={styles.bgImage}
-    >
-          <ScrollView style={styles.menuContainer} showsVerticalScrollIndicator={false}>
-            {/* Conference Access Section */}
-            <View style={styles.conferenceAccessSection}>
-              <TouchableOpacity 
-                style={styles.conferenceHeader}
-                onPress={() => setIsConferenceExpanded(!isConferenceExpanded)}
-              >
-                <Text style={styles.conferenceTitle}>Conference Access</Text>
-                <View style={styles.arrowIcon}>{isConferenceExpanded ?  <TopArrowIcon size={12} color="white" /> :  <BottomArrowIcon size={12} color="white" />}</View>
-              </TouchableOpacity>
-              
-              {isConferenceExpanded && (
-                <View style={styles.conferenceGrid}>
-                  {conferenceAccessItems.map((item, index) => renderConferenceItem(item, index))}
-                </View>
-              )}
-            </View>
-
-            {/* Main Menu Items */}
-            <View style={styles.menuGrid}>
-              {menuItems.map((item, index) => renderMenuItem(item, index))}
-            </View>
+        <ImageBackground
+          source={require('../assets/images/ribbon-color-img.png')}
+          style={styles.bgColor}
+          imageStyle={styles.bgImage}
+        >
+          <ScrollView
+            style={styles.menuContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            <ConferenceAccess
+              styles={styles}
+              conferenceAccessItems={conferenceAccessItems}
+              renderConferenceItem={renderConferenceItem}
+            />
+            <View style={styles.menuGrid}>{menuItems.map(renderMenuItem)}</View>
           </ScrollView>
         </ImageBackground>
       </View>
@@ -263,61 +215,18 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,
-    left: 0,
-    right: 0,
     bottom: 0,
-    flexDirection: 'row',
+    right: 0, // ✅ positioned on the right
+    width: '100%',
+    flexDirection: 'row', // ✅ sidebar stays on the right edge
     zIndex: 1000,
-  },
-
-  bgColor:{
-    flex: 1,
-   
-  },
-  bgImage:{
-    marginTop:'25%',
-    width: Dimensions.get('window').width * 1.2,
-    height: Dimensions.get('window').height * 0.48,
-    resizeMode: 'cover',
-    opacity:0.15,
   },
   sidebar: {
     width: 60,
-    backgroundColor:'#184DAA',
+    backgroundColor: '#184DAA',
     paddingVertical: spacing.lg,
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  leftSectionContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.sm,
-  },
-  leftSection: {
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-  },
-  leftIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 100,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  leftIconText: {
-    color: colors.white,
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-
-  socialSection: {
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  socialIcon: {
-    padding: spacing.sm,
   },
   mainContent: {
     flex: 1,
@@ -329,54 +238,71 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     top: 12,
-    right: 8,
-    alignSelf: 'flex-end',
-    width:26,
-    height:26,
+    right: 8, // ✅ moved to left since menu slides from right
+    width: 26,
+    height: 26,
     borderRadius: 20,
-    backgroundColor:'#6C7FA2',
+    backgroundColor: '#6C7FA2',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.lg,
   },
-
-  menuContainer: {
-    flex: 1,
-    position: 'relative',
-    zIndex: 2,
+  bgColor: { flex: 1 },
+  bgImage: {
+    marginTop: '25%',
+    width: Dimensions.get('window').width * 1.2,
+    height: Dimensions.get('window').height * 0.48,
+    resizeMode: 'cover',
+    opacity: 0.15,
   },
-  // Conference Access Section
-  conferenceAccessSection: {
-    marginTop: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  conferenceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  leftSectionContainer: { alignItems: 'center', gap: spacing.sm },
+  leftSection: { alignItems: 'center', marginBottom: spacing.lg },
+  leftIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 100,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.accent,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.sm,  
-    marginBottom:0,
+    marginBottom: spacing.xs,
   },
-  conferenceTitle: {
-    color: colors.primary,
-    fontSize:Dimensions.get('window').width * 0.04,
-    fontFamily: Fonts.Medium,
-  },
-
-  conferenceGrid: {
+  leftIconText: { color: colors.white, fontSize: 10, fontWeight: 'bold' },
+  socialSection: { alignItems: 'center', gap: spacing.md },
+  socialIcon: { padding: spacing.sm },
+  menuContainer: { flex: 1 },
+  menuGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    backgroundColor: colors.primaryLight,
-    padding: spacing.sm,
-    borderBottomLeftRadius: borderRadius.sm,
-    borderBottomRightRadius: borderRadius.sm, 
-    marginTop:-7,  
+    gap: Dimensions.get('window').width * 0.03,
+    paddingTop: 20,
+    paddingBottom: 90,
   },
-
+  menuItem: {
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    width: Dimensions.get('window').width * 0.22,
+  },
+  menuIconContainer: {
+    backgroundColor: 'rgba(249,222,71,0.2)',
+    width: 60,
+    height: 60,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuIconStyle: {
+    width: 50,
+    height: 50,
+    borderRadius: 100,
+    backgroundColor: colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuItemText: {
+    color: colors.white,
+    fontSize: Dimensions.get('window').width * 0.03,
+    textAlign: 'center',
+    fontFamily: Fonts.Medium,
+  },
   conferenceItem: {
     alignItems: 'center',
     marginBottom: spacing.md,
@@ -384,14 +310,14 @@ const styles = StyleSheet.create({
   },
 
   conferenceIconStyle: {
-backgroundColor: 'rgba(93, 92, 91, 0.36)',
+    backgroundColor: 'rgba(93, 92, 91, 0.36)',
 
-  width: 60,
-    height:60,
-   borderRadius: 100,
+    width: 60,
+    height: 60,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom:Dimensions.get('window').width * 0.012, 
+    marginBottom: Dimensions.get('window').width * 0.012,
   },
 
   conferenceIconContainer: {
@@ -401,7 +327,7 @@ backgroundColor: 'rgba(93, 92, 91, 0.36)',
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-  
+
     shadowColor: colors.black,
     shadowOffset: {
       width: 0,
@@ -410,69 +336,13 @@ backgroundColor: 'rgba(93, 92, 91, 0.36)',
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-
   },
-
-
 
   conferenceItemText: {
     color: colors.primary,
     fontSize: Dimensions.get('window').width * 0.028,
     textAlign: 'center',
     fontFamily: Fonts.Medium,
-  },
-  // Main Menu Items
-  menuGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingHorizontal:Dimensions.get('window').width * 0.01,
-    paddingTop: 20,
-    paddingBottom:90,
-    borderBottomEndRadius:25,
-    borderBottomStartRadius:25,
-  },
-  menuItem: {
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    width: Dimensions.get('window').width * 0.22,
-  },
-  menuIconContainer: {
-    backgroundColor: 'rgba(249, 222, 71, 0.2)',
-    width: 60,
-    height:60,
-    borderRadius: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-
-  menuIconStyle:{
-    width: 50,
-    height:50,
-    borderRadius: 100,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  menuItemText: {
-    color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.03,
-    textAlign: 'center',
-    fontFamily: Fonts.Medium,
-  },
-
-  arrowIcon: {
-    width: 12,
-    height: 12,
   },
 });
 

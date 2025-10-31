@@ -25,7 +25,7 @@ export const Fonts = {
 
 // Typography with Poppins fonts
 export const typography = {
-   caption: {
+  caption: {
     fontSize: 14,
     fontWeight: '400' as const,
     fontFamily: 'Poppins-Regular',
@@ -75,7 +75,6 @@ export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    
   },
   safeArea: {
     flex: 1,
@@ -146,7 +145,7 @@ export const globalStyles = StyleSheet.create({
     position: 'absolute',
     top: -5,
     right: -5,
-    backgroundColor:'#FF762F',
+    backgroundColor: '#FF762F',
     borderRadius: 10,
     width: 21,
     height: 21,
@@ -155,11 +154,11 @@ export const globalStyles = StyleSheet.create({
   },
   notificationText: {
     color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.030,
+    fontSize: Dimensions.get('window').width * 0.03,
     fontWeight: 700,
   },
 
-  spaceBottom:{
+  spaceBottom: {
     paddingBottom: 100,
   },
   scrollViewContent: {
@@ -168,7 +167,7 @@ export const globalStyles = StyleSheet.create({
 
   //inner page header BackButton
   headerContainer: {
-    paddingHorizontal:0,
+    paddingHorizontal: 0,
   },
   header: {
     flexDirection: 'row',
@@ -179,19 +178,18 @@ export const globalStyles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
 
-  headerBackBtTittle:{
+  headerBackBtTittle: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
-  headerIcon:{
+  headerIcon: {
     width: 40,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerTitle:{
+  headerTitle: {
     color: colors.white,
     fontSize: Dimensions.get('window').width * 0.04,
     fontFamily: Fonts.SemiBold,
@@ -210,7 +208,6 @@ export const globalStyles = StyleSheet.create({
     textAlign: 'left',
   },
 
-
   //Tab Section Styles
   tierTabs: {
     flexDirection: 'row',
@@ -219,8 +216,8 @@ export const globalStyles = StyleSheet.create({
     paddingTop: spacing.sm,
   },
   tierTab: {
-  marginRight:screenWidth*0.06,
-    paddingVertical:0,
+    marginRight: screenWidth * 0.06,
+    paddingVertical: 0,
     alignItems: 'flex-start',
     borderBottomWidth: 5,
     borderBottomColor: 'transparent',
@@ -250,195 +247,188 @@ export const globalStyles = StyleSheet.create({
   },
 
   //footer text with link
-  footerPrimaryMain:{
+  footerPrimaryMain: {
     position: 'absolute',
     bottom: Dimensions.get('window').height * 0,
     left: 0,
     right: 0,
-
   },
 
-footerPrimaryLinkContainer: {
-  width: '100%',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  textAlign:'center',
-  paddingTop:spacing.md,
-  paddingBottom:spacing.md, 
+  footerPrimaryLinkContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    paddingTop: spacing.md,
+    paddingBottom: spacing.md,
     backgroundColor: colors.primary,
+  },
+  footerPrimaryText: {
+    color: colors.white,
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Regular,
+    marginRight: spacing.sm,
+  },
+  footerPrimaryLinkText: {
+    color: colors.primaryLight,
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.SemiBold,
+    textDecorationLine: 'underline',
+  },
 
-},
-footerPrimaryText: {
-  color: colors.white,
-  fontSize: screenWidth * 0.035,
-  fontFamily: Fonts.Regular,
-  marginRight:spacing.sm,
-},
-footerPrimaryLinkText: {
-  color: colors.primaryLight,
-  fontSize: screenWidth * 0.035,
-  fontFamily: Fonts.SemiBold,
-  textDecorationLine: 'underline',
-},
+  footerBtContainer: {
+    position: 'absolute',
+    bottom: Dimensions.get('window').height * 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.lightGray,
+    paddingTop: Dimensions.get('window').height * 0.012,
+    paddingBottom: Dimensions.get('window').height * 0.012,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 12,
+  },
 
-
-
-footerBtContainer: {
-  position: 'absolute',
-  bottom: Dimensions.get('window').height * 0,
-  left: 0,
-  right: 0,
-  backgroundColor: colors.lightGray,
-  paddingTop:Dimensions.get('window').height * 0.012,  
-  paddingBottom:Dimensions.get('window').height * 0.012,
-  shadowColor: colors.black,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.6,
-  shadowRadius: 8,
-  elevation: 12,
-},
-
-footerSubmitBt: {
-  paddingVertical:0, 
-},
-footerBtGradient: {
- paddingVertical: spacing.sm,
- marginHorizontal:spacing.md,
-  alignItems: 'center',
-  justifyContent: 'center',
-  borderRadius:100,
-},
-footerBtIcon: {
- marginRight: spacing.sm,
-},
-footerBtText: {
-  color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.043,  
-    fontFamily: Fonts.Bold,   
+  footerSubmitBt: {
+    paddingVertical: 0,
+  },
+  footerBtGradient: {
+    paddingVertical: spacing.sm,
+    marginHorizontal: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+  },
+  footerBtIcon: {
+    marginRight: spacing.sm,
+  },
+  footerBtText: {
+    color: colors.white,
+    fontSize: Dimensions.get('window').width * 0.043,
+    fontFamily: Fonts.Bold,
     lineHeight: Dimensions.get('window').height * 0.04,
-},
+  },
 
+  //form container Start
+  formContainer: {
+    padding: spacing.md,
+    paddingBottom: 120,
+  },
+  fieldContainer: {
+    marginBottom: spacing.md,
+  },
+  fieldLabel: {
+    fontSize: screenWidth * 0.037,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    marginBottom: spacing.xs,
+  },
+  fieldSubLabel: {
+    fontSize: screenWidth * 0.028,
+    fontFamily: Fonts.Regular,
+    color: colors.gray,
+  },
+  fieldInput: {
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    color: colors.black,
+    backgroundColor: colors.white,
+  },
+  fieldInputError: {
+    borderColor: colors.red,
+  },
+  fieldErrorText: {
+    color: colors.red,
+    fontSize: screenWidth * 0.03,
+    fontFamily: Fonts.Regular,
+    marginTop: spacing.xs,
+  },
+  fieldAmountContainer: {
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.lightGray,
+  },
+  fieldAmountText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Bold,
+    color: colors.primary,
+  },
+  formCaptchaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  formCaptchaCodeContainer: {
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderStyle: 'dashed',
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+    backgroundColor: colors.lightYellow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 100,
+  },
+  formCaptchaCode: {
+    fontSize: screenWidth * 0.05,
+    fontFamily: Fonts.Bold,
+    color: colors.primary,
+    letterSpacing: 2,
+  },
+  formCaptchaInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    color: colors.black,
+    backgroundColor: colors.white,
+  },
+  formRefreshButton: {
+    width: 40,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.lightYellow,
+    borderRadius: borderRadius.sm,
+  },
 
+  formRefreshIcon: {
+    width: 20,
+    height: 20,
+  },
 
-//form container Start
-formContainer: {
-  padding: spacing.md,
-  paddingBottom: 120,
-},
-fieldContainer: {
-  marginBottom: spacing.md,
-},
-fieldLabel: {
-  fontSize: screenWidth * 0.037,
-  fontFamily: Fonts.Medium,
-  color: colors.black,
-  marginBottom: spacing.xs,
-},
-fieldSubLabel: {
-  fontSize: screenWidth * 0.028,
-  fontFamily: Fonts.Regular,
-  color: colors.gray,
-},
-fieldInput: {
-  borderWidth: 1,
-  borderColor: colors.gray,
-  borderRadius: borderRadius.sm,
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.sm,
-  fontSize: screenWidth * 0.038,
-  fontFamily: Fonts.Regular,
-  color: colors.black,
-  backgroundColor: colors.white,
-},
-fieldInputError: {
-  borderColor: colors.red,
-},
-fieldErrorText: {
-  color: colors.red,
-  fontSize: screenWidth * 0.03,
-  fontFamily: Fonts.Regular,
-  marginTop: spacing.xs,
-},
-fieldAmountContainer: {
-  borderWidth: 1,
-  borderColor: colors.gray,
-  borderRadius: borderRadius.sm,
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.sm,
-  backgroundColor: colors.lightGray,
-},
-fieldAmountText: {
-  fontSize: screenWidth * 0.038,
-  fontFamily: Fonts.Bold,
-  color: colors.primary,
-},
-formCaptchaContainer: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing.sm,
-},
-formCaptchaCodeContainer: {
-  borderWidth: 1,
-  borderColor: colors.gray,
-  borderStyle: 'dashed',
-  borderRadius: borderRadius.sm,
-  padding: spacing.sm,
-  backgroundColor: colors.lightYellow,
-  justifyContent: 'center',
-  alignItems: 'center',
-  minWidth: 100,
-},
-formCaptchaCode: {
-  fontSize: screenWidth * 0.05,
-  fontFamily: Fonts.Bold,
-  color: colors.primary,
-  letterSpacing: 2,
-},
-formCaptchaInput: {
-  flex: 1,
-  borderWidth: 1,
-  borderColor: colors.gray,
-  borderRadius: borderRadius.sm,
-  paddingHorizontal: spacing.md,
-  paddingVertical: spacing.sm,
-  fontSize: screenWidth * 0.038,
-  fontFamily: Fonts.Regular,
-  color: colors.black,
-  backgroundColor: colors.white,
-},
-formRefreshButton: {
-  width: 40,
-  height: 48,
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: colors.lightYellow,
-  borderRadius: borderRadius.sm,
-},
+  //form container End
 
-formRefreshIcon: {
-  width: 20,
-  height: 20,
-},
-
-//form container End
-
-// Wave Background
-imgBgContainerWave: {
-  backgroundColor: colors.primary,
-  paddingTop:spacing.sm,
-  paddingBottom: spacing.lg,
-  paddingHorizontal: spacing.md,
-  borderBottomLeftRadius: borderRadius.lg,
-  borderBottomRightRadius: borderRadius.lg,
-  overflow: 'hidden',
-},
-imgBgWave: {
-  opacity: 0.3,
-  resizeMode: 'cover',
-},
-// Wave Background End
-
+  // Wave Background
+  imgBgContainerWave: {
+    backgroundColor: colors.primary,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.md,
+    borderBottomLeftRadius: borderRadius.lg,
+    borderBottomRightRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  imgBgWave: {
+    opacity: 0.3,
+    resizeMode: 'cover',
+  },
+  // Wave Background End
 });
 
 export default globalStyles;
