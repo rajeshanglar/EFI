@@ -59,7 +59,7 @@ interface SlideOutMenuProps {
 
 const conferenceAccessItems = [
   { id: 'privacy', title: 'Privacy Settings', icon: PrivacySettingsIcon },
-  { id: 'conference', title: 'My\nConference', icon: MyConferenceIcon },
+  { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
   { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
   { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
   { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
   },
   menuItem: {
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
     width: Dimensions.get('window').width * 0.22,
   },
   menuIconContainer: {
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   conferenceItem: {
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
     width: Dimensions.get('window').width * 0.22,
   },
 

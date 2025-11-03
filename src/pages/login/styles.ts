@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
 
   homeBackButton: {
     position: 'absolute',
-    bottom: 0,
-    left: -13,
+    bottom: 10,
+    left: 5,
     zIndex: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
   },
 
   mainInputContainer: {
+    marginHorizontal: spacing.md,
     marginBottom: spacing.md,
   },
 
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.sm,
-    marginBottom: 6,
+    marginBottom: 19,
   },
 
   input: {
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
     borderColor: '#9A8A5B',
     borderRadius: 4,
     padding: spacing.sm,
+    marginTop: 19,
     marginBottom: spacing.sm,
   },
   captchaBox: {

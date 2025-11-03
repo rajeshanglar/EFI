@@ -150,113 +150,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
           </View>
         </ImageBackground>
 
-        {/* Date Selection Tabs */}
-        <ImageBackground
-          source={require('../../assets/images/wave-img.png')}
-          style={globalStyles.imgBgContainerWave}
-          imageStyle={globalStyles.imgBgWave}
-        >
-          <View style={styles.dateTabsContainer}>
-            <TouchableOpacity
-              style={[
-                styles.dateTab,
-                selectedDate === 'mar06' && styles.dateTabActive,
-              ]}
-              onPress={() => setSelectedDate('mar06')}
-            >
-              <Text
-                style={[
-                  styles.dateTabMonth,
-                  selectedDate === 'mar06' && styles.dateTabMonthActive,
-                ]}
-              >
-                MAR
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDay,
-                  selectedDate === 'mar06' && styles.dateTabDayActive,
-                ]}
-              >
-                06
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDayName,
-                  selectedDate === 'mar06' && styles.dateTabDayNameActive,
-                ]}
-              >
-                Mon
-              </Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.dateTab,
-                selectedDate === 'mar07' && styles.dateTabActive,
-              ]}
-              onPress={() => setSelectedDate('mar07')}
-            >
-              <Text
-                style={[
-                  styles.dateTabMonth,
-                  selectedDate === 'mar07' && styles.dateTabMonthActive,
-                ]}
-              >
-                MAR
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDay,
-                  selectedDate === 'mar07' && styles.dateTabDayActive,
-                ]}
-              >
-                07
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDayName,
-                  selectedDate === 'mar07' && styles.dateTabDayNameActive,
-                ]}
-              >
-                TUE
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.dateTab,
-                selectedDate === 'mar08' && styles.dateTabActive,
-              ]}
-              onPress={() => setSelectedDate('mar08')}
-            >
-              <Text
-                style={[
-                  styles.dateTabMonth,
-                  selectedDate === 'mar08' && styles.dateTabMonthActive,
-                ]}
-              >
-                MAR
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDay,
-                  selectedDate === 'mar08' && styles.dateTabDayActive,
-                ]}
-              >
-                08
-              </Text>
-              <Text
-                style={[
-                  styles.dateTabDayName,
-                  selectedDate === 'mar08' && styles.dateTabDayNameActive,
-                ]}
-              >
-                WED
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
 
         {/* Registration Tier Tabs */}
         <View style={globalStyles.tierTabs}>
@@ -388,10 +282,10 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
       {/* Floating Info Button */}
       <TouchableOpacity
-        style={styles.infoButton}
+        style={globalStyles.floatingInfoButton}
         onPress={() => setIsModalVisible(true)}
       >
-        <View style={styles.infoButtonInner}>
+        <View style={globalStyles.floatingInfoButtonInner}>
           <InformationIcon size={50} />
         </View>
       </TouchableOpacity>
@@ -403,73 +297,73 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>INFORMATION</Text>
+        <View style={globalStyles.modalInfoOverlay}>
+          <View style={globalStyles.modalInfoContainer}>
+            <View style={globalStyles.modalInfoHeader}>
+              <Text style={globalStyles.modalInfoTitle}>INFORMATION</Text>
               <TouchableOpacity
-                style={styles.modalCloseButton}
+                style={globalStyles.modalInfoCloseButton}
                 onPress={() => setIsModalVisible(false)}
               >
-                <Text style={styles.modalCloseText}>✕</Text>
+                <Text style={globalStyles.modalInfoCloseText}>✕</Text>
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.modalContent}>
+            <ScrollView style={globalStyles.modalInfoContent}>
               {/* Important Section */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Important</Text>
-                <Text style={styles.modalListItem}>
+              <View style={globalStyles.modalInfoSection}>
+                <Text style={globalStyles.modalInfoSectionTitle}>Important</Text>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Registration fee is exclusive of GST @ 18%.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Membership number is mandatory.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Please mention your mobile number and email ID for better
                   communication.
                 </Text>
               </View>
 
               {/* Registration Guidelines Section */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>
+              <View style={globalStyles.modalInfoSection}>
+                <Text style={globalStyles.modalInfoSectionTitle}>
                   Registration Guidelines
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Online charges will be applicable at 3% of the total amount.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Registration fees include admission to the scientific halls,
                   trade exhibition, public awareness programme, inaugural
                   function, lunch, banquet, delegate kit, and participation
                   certificate.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • No delegate kit for spot registrations.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • The participation certificate will be available to download
                   once the feedback form is submitted.
                 </Text>
               </View>
 
               {/* Cancellation Policy Section */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>
+              <View style={globalStyles.modalInfoSection}>
+                <Text style={globalStyles.modalInfoSectionTitle}>
                   Cancellation & Refund Policy
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • Requests for cancellation refunds must be made in writing
                   via email or post to the conference secretariat.
                 </Text>
-                <Text style={styles.modalListItem}>
+                <Text style={globalStyles.modalInfoListItem}>
                   • No refund of registration fee will be provided for
                   cancellation requests received after{' '}
-                  <Text style={styles.boldText}>15.11.2025</Text>.
+                  <Text style={globalStyles.modalInfoBoldText}>15.11.2025</Text>.
                 </Text>
-                <Text style={styles.modalListItem}>
-                  • <Text style={styles.boldText}>30%</Text> of the registration
+                <Text style={globalStyles.modalInfoListItem}>
+                  • <Text style={globalStyles.modalInfoBoldText}>30%</Text> of the registration
                   fee will be deducted as processing charges, and the remaining
                   amount will be refunded.
                 </Text>
@@ -584,123 +478,8 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Medium,
   },
 
-  dateTabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
-  },
-  dateTab: {
-    flex: 1,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  dateTabActive: {
-    backgroundColor: colors.primaryLight,
-  },
-  dateTabMonth: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabMonthActive: {
-    color: colors.darkGray,
-  },
-  dateTabDay: {
-    fontSize: screenWidth * 0.045,
-    fontFamily: Fonts.Bold,
-    color: colors.darkGray,
-    marginBottom: spacing.xs,
-  },
-  dateTabDayActive: {
-    color: colors.primary,
-    fontSize: screenWidth * 0.045,
-  },
-  dateTabDayName: {
-    fontSize: screenWidth * 0.025,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
-  },
-  dateTabDayNameActive: {
-    color: colors.darkGray,
-  },
-  infoButton: {
-    position: 'absolute',
-    bottom: 100,
-    right: 20,
-    zIndex: 10,
-  },
-  infoButtonInner: {},
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '94%',
-    maxHeight: '95%',
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing.md,
-    paddingBottom: 0,
-  },
-  modalTitle: {
-    fontSize: screenWidth * 0.045,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-  },
-  modalCloseButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCloseText: {
-    fontSize: 20,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-  },
-  modalContent: {
-    padding: spacing.lg,
-  },
-  modalSection: {
-    marginBottom: spacing.lg,
-  },
-  modalSectionTitle: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Bold,
-    color: colors.blue,
-    marginBottom: spacing.sm,
-  },
-  modalListItem: {
-    fontSize: screenWidth * 0.037,
-    fontFamily: Fonts.Regular,
-    color: colors.black,
-    lineHeight: 22,
-    marginBottom: spacing.sm,
-  },
-  boldText: {
-    fontFamily: Fonts.Bold,
-  },
+
+ 
 });
 
 export default ConferenceRegistrationPage;

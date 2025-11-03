@@ -175,6 +175,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
         parsedDate: getFormattedDate(currentSchedule.date),
         isFromMyConference: true,
       };
+      console.log('eventData', eventData);
       onEventPress(eventData as any, true);
     }
   };
@@ -340,12 +341,6 @@ const MyConference: React.FC<MyConferenceProps> = ({
         ))}
       </ScrollView>
 
-      {/* Yellow Ribbon Decorative Element */}
-      <View style={styles.ribbonContainer} pointerEvents="none">
-        <View style={styles.ribbonIcon}>
-          <YellowRibbonIcon size={screenWidth * 0.3} color={colors.primaryLight} />
-        </View>
-      </View>
     </View>
   );
 };

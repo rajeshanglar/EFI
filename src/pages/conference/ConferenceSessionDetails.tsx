@@ -36,7 +36,7 @@ interface SessionData {
   location: string;
   workshopNumber?: string;
   title: string;
-  subtitle?: string;
+  subtitle: string;
   theme: string;
   overview: string;
   imageUrl?: string;
@@ -145,9 +145,8 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         <View style={globalStyles.contentContainer}>
           {/* Title */}
           <Text style={globalStyles.sessionTitle}>{session.title}</Text>
-          {session.subtitle && (
-            <Text style={globalStyles.sessionSubtitle}>{session.subtitle}</Text>
-          )}
+          <Text style={globalStyles.sessionSubtitle}>{session.subtitle}</Text>
+        
 
           {/* Workshop Theme */}
           <View style={globalStyles.themeContainer}>

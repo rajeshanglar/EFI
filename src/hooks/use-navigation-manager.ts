@@ -6,12 +6,19 @@ export type PageType =
   | 'home'
   | 'conference'
   | 'conferenceForm'
-  | 'payment'
-  | 'qrCode'
+  | 'conferencePayment'
+  | 'conferenceQrCode'
   | 'conferenceList'
   | 'sessionDetails'
   | 'myConference'
-  | 'myConferenceSession';
+  | 'myConferenceSession'
+  | 'trainingPrograms'
+  | 'liveQA'
+  | 'sessionNotes'
+  | 'handouts'
+  | 'membershipForm'
+  | 'membershipPaymentDetails'
+  | 'membershipExclusiveAccess';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -25,7 +32,7 @@ export function useNavigationManager() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) setCurrentPage('conferenceList');
+    if (!isAuthenticated) setCurrentPage('membershipExclusiveAccess');
   }, [isAuthenticated]);
 
   const navigate = {
@@ -33,42 +40,64 @@ export function useNavigationManager() {
     home: () => setCurrentPage('home'),
     login: () => setCurrentPage('login'),
     conference: () => setCurrentPage('conference'),
-    form: (tier?: 'Early Bird' | 'Regular' | 'On Spot') => {
+    conferenceForm: (tier?: 'Early Bird' | 'Regular' | 'On Spot') => {
       setSelectedTier(tier || 'Early Bird');
       setCurrentPage('conferenceForm');
     },
-    payment: () => setCurrentPage('payment'),
-    qrCode: () => setCurrentPage('qrCode'),
+    conferencePayment: () => setCurrentPage('conferencePayment'),
+    conferenceQrCode: () => setCurrentPage('conferenceQrCode'),
     conferenceList: () => setCurrentPage('conferenceList'),
     sessionDetails: (eventData: any) => {
+      const workshopFromTitle = eventData.title.match(/Workshop\s*\d+/)?.[0];
+      const workshopFromType =
+        typeof eventData.eventType === 'string' &&
+        eventData.eventType.includes('Workshop')
+          ? eventData.eventType
+          : undefined;
+
       const sessionData = {
         id: eventData.id,
         date: eventData.parsedDate || eventData.date,
         time: eventData.timeRange,
         location: eventData.hall || 'Main Hall',
-        workshopNumber: eventData.title.match(/Workshop \d+/)?.[0],
+        workshopNumber: workshopFromType || workshopFromTitle,
         title: eventData.title.includes(':')
           ? eventData.title.split(':')[1].trim()
           : eventData.title,
-        subtitle: eventData.title.includes('Simulation')
-          ? 'Simulation to Strategy'
-          : undefined,
-        theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
-        overview: 'Hands-on robotic-assisted surgery workshop by top experts.',
+        subtitle: eventData.eventType || 'Simulation to Strategy',
+        theme: 'The Robotic Edge: Precision, Depth & Dexterity',
+        overview:
+          'Hands-on robotic-assisted surgery workshop by top experts.',
       };
       setSelectedSession(sessionData);
       setCurrentPage('sessionDetails');
     },
     myConference: () => setCurrentPage('myConference'),
+    trainingPrograms: () => setCurrentPage('trainingPrograms'),
+    membershipForm: () => setCurrentPage('membershipForm'),
+    membershipPaymentDetails: () => setCurrentPage('membershipPaymentDetails'),
+    membershipExclusiveAccess: () => setCurrentPage('membershipExclusiveAccess'),
     myConferenceSession: (eventData: any) => {
       const sessionData = {
         ...eventData,
-        theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
+        id: eventData.id,
+        date: eventData.parsedDate || eventData.date,
+        time: eventData.timeRange,
+        location: eventData.hall || 'Main Hall',
+        workshopNumber: eventData.eventType,
+        subtitle: eventData.eventType || 'Simulation to Strategy',
+        theme: 'The Robotic Edge: Precision, Depth & Dexterity',
+        overview:
+          'Hands-on robotic-assisted surgery workshop by top experts.',
       };
       setSelectedSession(sessionData);
       setCurrentPage('myConferenceSession');
     },
+    liveQA: () => setCurrentPage('liveQA'),
+    sessionNotes: () => setCurrentPage('sessionNotes'),
+    handouts: () => setCurrentPage('handouts'),
   };
+
 
   const myConference = {
     add: (id: string) =>

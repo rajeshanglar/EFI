@@ -314,6 +314,7 @@ export const globalStyles = StyleSheet.create({
 
   //form container Start
   formContainer: {
+    flexGrow: 1,
     padding: spacing.md,
     paddingBottom: 120,
   },
@@ -330,6 +331,9 @@ export const globalStyles = StyleSheet.create({
     fontSize: screenWidth * 0.028,
     fontFamily: Fonts.Regular,
     color: colors.gray,
+  },
+  dateInput: {
+
   },
   fieldInput: {
     borderWidth: 1,
@@ -365,25 +369,27 @@ export const globalStyles = StyleSheet.create({
     color: colors.primary,
   },
   formCaptchaContainer: {
+    backgroundColor: '#FFFBE7',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#9A8A5B',
+    borderRadius: 4,
+    padding: spacing.sm,  
+    marginBottom: spacing.sm,
+
   },
   formCaptchaCodeContainer: {
-    borderWidth: 1,
-    borderColor: colors.gray,
-    borderStyle: 'dashed',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.sm,
     borderRadius: borderRadius.sm,
-    padding: spacing.sm,
-    backgroundColor: colors.lightYellow,
-    justifyContent: 'center',
-    alignItems: 'center',
-    minWidth: 100,
+    marginRight: spacing.sm,
   },
   formCaptchaCode: {
     fontSize: screenWidth * 0.05,
     fontFamily: Fonts.Bold,
-    color: colors.primary,
+    color: '#84670D',
     letterSpacing: 2,
   },
   formCaptchaInput: {
@@ -587,7 +593,7 @@ eventArrow: {
   //Session Details Styles
 metadataCard: {
   marginHorizontal: spacing.md,
-  marginTop: spacing.md, 
+  marginTop:0, 
 },
 metadataRow: {
   flexDirection: 'row',
@@ -644,9 +650,9 @@ actionsSectionTitle: {
 },
 actionButton: {
   backgroundColor: colors.accent,
-  borderRadius: borderRadius.md,
+  borderRadius: borderRadius.sm,
   padding: spacing.md,
-  marginBottom: spacing.md,
+  marginBottom:Dimensions.get('window').height * 0.02,
   shadowColor: colors.black,
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.1,
@@ -783,6 +789,94 @@ removeButtonText: {
   color: colors.black,
 },
 //session details styles END
+
+ // Information Modal Styles
+ modalInfoOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+},
+modalInfoContainer: {
+  width: '94%',
+  maxHeight: '95%',
+  backgroundColor: colors.white,
+  borderRadius: borderRadius.lg,
+  overflow: 'hidden',
+},
+modalInfoHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: spacing.md,
+  paddingBottom: 0,
+},
+modalInfoTitle: {
+  fontSize: screenWidth * 0.045,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+},
+
+modalInfoSubtitle:{
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.SemiBold,
+  color: colors.black,
+  marginBottom: spacing.sm,
+},
+modalInfoCloseButton: {
+  width: 32,
+  height: 32,
+  borderRadius: 16,
+  backgroundColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalInfoCloseText: {
+  fontSize: 20,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+},
+modalInfoContent: {
+  padding: spacing.lg,
+},
+modalInfoSection: {
+  marginBottom: spacing.lg,
+},
+modalInfoSectionTitle: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.blue,
+  marginBottom: spacing.sm,
+},
+modalInfoListItem: {
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  lineHeight: 22,
+  marginBottom: spacing.sm,
+},
+
+modalInfoRegularText:{
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  lineHeight: 22,
+  marginBottom: spacing.md,
+},  
+
+modalInfoBoldText: {
+  fontFamily: Fonts.Bold,
+},
+
+floatingInfoButton: {
+  position: 'absolute',
+  bottom: 100,
+  right: 20,
+  zIndex: 10,
+},
+floatingInfoButtonInner: {},
+
+// Information Modal Styles End
 });
 
 export default globalStyles;

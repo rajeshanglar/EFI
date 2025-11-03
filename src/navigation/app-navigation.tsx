@@ -5,19 +5,42 @@ import { ActivityIndicator, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../styles/globalStyles';
 
+import ConferenceRegistrationPage  from '../pages/conference/ConferenceRegistrationPage';
+import ConferenceRegistrationForm  from '../pages/conference/ConferenceRegistrationForm';
+import ConferencePaymentDetails from '../pages/conference/ConferencePaymentDetails';
+import ConferenceQRCode from '../pages/conference/ConferenceQRCode';
+import ConferenceList from '../pages/conference/ConferenceList';
+import ConferenceSessionDetails from '../pages/conference/ConferenceSessionDetails';
+import MyConference from '../pages/conference/MyConference';
+import MyConferenceSession from '../pages/conference/MyConferenceSession';
+import LiveQA from '../pages/conference/LiveQA';
+import MySessionNotes from '../pages/conference/MySessionNotes';
+import Handouts from '../pages/conference/Handouts';
+import TrainingPrograms from '../pages/training-programs/EFITrainingPrograms';
+import MembershipRegistrationForm from '../pages/membership/MembershipRegistrationForm';
+import MembershipPaymentDetails from '../pages/membership/MembershipPaymentDetails';
+import MembershipExclusiveAccess from '../pages/membership/membershipExclusiveAccess/MembershipExclusiveAccess';
+
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
 );
 const HomePage = React.lazy(() => import('../pages/home/home'));
 const {
-  ConferenceRegistrationPage,
-  ConferenceRegistrationForm,
-  ConferencePaymentDetails,
-  ConferenceQRCode,
-  ConferenceList,
-  ConferenceSessionDetails,
-  MyConference,
-  MyConferenceSession,
+  // ConferenceRegistrationPage,
+  // ConferenceRegistrationForm,
+  // ConferencePaymentDetails,
+  // ConferenceQRCode,
+  // ConferenceList,
+  // ConferenceSessionDetails,
+  // MyConference,
+  // MyConferenceSession,
+  // LiveQA,
+  // MySessionNotes,
+  // Handouts,
+  // TrainingPrograms,
+  // MembershipRegistrationForm,
+  // MembershipPaymentDetails,
+  // MembershipExclusiveAccess,
 } = {
   ConferenceRegistrationPage: React.lazy(
     () => import('../pages/conference/ConferenceRegistrationPage'),
@@ -40,6 +63,23 @@ const {
   MyConference: React.lazy(() => import('../pages/conference/MyConference')),
   MyConferenceSession: React.lazy(
     () => import('../pages/conference/MyConferenceSession'),
+  ),
+  LiveQA: React.lazy(() => import('../pages/conference/LiveQA')),
+  MySessionNotes: React.lazy(
+    () => import('../pages/conference/MySessionNotes'),
+  ),
+  Handouts: React.lazy(() => import('../pages/conference/Handouts')),
+  TrainingPrograms: React.lazy(
+    () => import('../pages/training-programs/EFITrainingPrograms'),
+  ),
+  MembershipRegistrationForm: React.lazy(
+    () => import('../pages/membership/MembershipRegistrationForm'),
+  ),
+  MembershipPaymentDetails: React.lazy(
+    () => import('../pages/membership/MembershipPaymentDetails'),
+  ),
+  MembershipExclusiveAccess: React.lazy(
+    () => import('../pages/membership/membershipExclusiveAccess/MembershipExclusiveAccess'),
   ),
 };
 
@@ -72,13 +112,16 @@ function AppNavigation() {
         onNavigateToConference={navigate.conference}
         onLogout={handleLogout}
         onNavigateToLogin={navigate.login}
+        onNavigateToMyConference={navigate.myConference}
+        onNavigateToTrainingPrograms={navigate.trainingPrograms}
+        onNavigateToMembership={navigate.membershipForm}
       />
     ),
     conference: (
       <ConferenceRegistrationPage
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
-        onNavigateToForm={navigate.form}
+        onNavigateToForm={navigate.conferenceForm}
       />
     ),
     conferenceForm: (
@@ -86,19 +129,19 @@ function AppNavigation() {
         registrationTier={selectedTier}
         onBack={navigate.conference}
         onNavigateToHome={navigate.home}
-        onNavigateToPayment={navigate.payment}
+        onNavigateToConferencePayment={navigate.conferencePayment}
       />
     ),
-    payment: (
+    conferencePayment: (
       <ConferencePaymentDetails
-        onBack={navigate.form}
+        onBack={navigate.home}
         onNavigateToHome={navigate.home}
-        onNavigateToQRCode={navigate.qrCode}
+        onNavigateToQRCode={navigate.conferenceQrCode}
       />
     ),
-    qrCode: (
+    conferenceQrCode: (
       <ConferenceQRCode
-        onBack={navigate.payment}
+        onBack={navigate.conferencePayment}
         onNavigateToHome={navigate.home}
         onNavigateToLogin={navigate.login}
       />
@@ -136,10 +179,74 @@ function AppNavigation() {
         onBack={navigate.myConference}
         onNavigateToHome={navigate.home}
         sessionData={selectedSession}
-        onRemoveFromConference={() => myConference.remove(selectedSession.id)}
-        onLiveQA={() => console.log('Live Q&A')}
-        onSessionNotes={() => console.log('Session Notes')}
-        onHandouts={() => console.log('Handouts')}
+        onRemoveFromConference={() =>
+          selectedSession ? myConference.remove(selectedSession.id) : undefined
+        }
+        onLiveQA={navigate.liveQA}
+        onSessionNotes={navigate.sessionNotes}
+        onHandouts={navigate.handouts}
+      />
+    ),
+    liveQA: (
+      <LiveQA
+        onBack={() =>
+          selectedSession
+            ? navigate.myConferenceSession(selectedSession)
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+        sessionData={selectedSession}
+      />
+    ),
+    sessionNotes: (
+      <MySessionNotes
+        onBack={() =>
+          selectedSession
+            ? navigate.myConferenceSession(selectedSession)
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+        sessionData={selectedSession}
+      />
+    ),
+    handouts: (
+      <Handouts
+        onBack={() =>
+          selectedSession
+            ? navigate.myConferenceSession(selectedSession)
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+        sessionData={selectedSession}
+      />
+    ),
+
+    trainingPrograms: (
+      <TrainingPrograms
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    membershipForm: (
+      <MembershipRegistrationForm    
+       onBack={navigate.home}
+        onNavigateToHome={navigate.home}     
+        onNavigateToMembershipPayment={navigate.membershipPaymentDetails}
+        />
+    ),
+
+    membershipPaymentDetails: (
+      <MembershipPaymentDetails
+        onBack={navigate.membershipForm}
+        onNavigateToHome={navigate.home}
+        onNavigateToLogin={navigate.login}
+      />
+    ),
+    membershipExclusiveAccess: (
+      <MembershipExclusiveAccess
+      
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
       />
     ),
   };

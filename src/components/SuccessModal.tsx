@@ -13,6 +13,7 @@ interface SuccessModalProps {
   onDownload?: () => void;
   downloadText?: string;
   icon?: React.ReactNode;
+  instructionText?: string;
 }
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
@@ -22,6 +23,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
   onDownload,
   downloadText = 'Download Payment Receipt',
   icon,
+  instructionText,
 }) => {
   return (
     <Modal
@@ -30,8 +32,15 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={onClose}
+      >
+        <View
+          style={styles.container}
+          onStartShouldSetResponder={() => true}
+        >
           {/* Success Icon */}
           <View style={styles.iconContainer}>
            
@@ -41,6 +50,13 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
 
           {/* Message */}
           <Text style={styles.message}>{message}</Text>
+
+          {/* Instruction Box */}
+          {instructionText && (
+            <View style={styles.instructionBox}>
+              <Text style={styles.instructionText}>{instructionText}</Text>
+            </View>
+          )}
 
           {/* Okay Button */}
           <GradientButton
@@ -57,7 +73,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
@@ -88,6 +104,20 @@ const styles = StyleSheet.create({
     color: colors.black,
     textAlign: 'center',
     marginBottom: spacing.md,
+  },
+  instructionBox: {
+    backgroundColor: colors.primaryLight,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    width: '100%',
+  },
+  instructionText: {
+    fontSize: screenWidth * 0.038,
+    lineHeight: screenWidth * 0.06,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    textAlign: 'center',
   },
   buttonContainer: {
     marginBottom: spacing.xl,

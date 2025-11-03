@@ -41,12 +41,18 @@ interface HomePageProps {
   onNavigateToConference?: () => void;
   onLogout?: () => void;
   onNavigateToLogin?: () => void;
+  onNavigateToMyConference?: () => void;
+  onNavigateToTrainingPrograms?: () => void;
+  onNavigateToMembership?: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
   onNavigateToConference,
   onLogout,
   onNavigateToLogin,
+  onNavigateToMyConference,
+  onNavigateToTrainingPrograms,
+  onNavigateToMembership,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -54,7 +60,8 @@ const HomePage: React.FC<HomePageProps> = ({
     {
       title: 'Membership Registration',
       icon: MembershipIcon,
-      onPress: () => console.log('Membership'),
+      // onPress: () => console.log('Membership'),
+      onPress: () => onNavigateToMembership?.() || console.log('Membership'),
     },
     {
       title: 'Training\nSession',
@@ -84,8 +91,24 @@ const HomePage: React.FC<HomePageProps> = ({
   ];
 
   const handleMenuItemPress = (itemId: string) => {
-    console.log('Menu item pressed:', itemId);
-    // Handle navigation here
+    switch (itemId) {
+      case 'myConference':
+        onNavigateToMyConference?.();
+        setIsMenuVisible(false);
+        break;
+      case 'training':
+        onNavigateToTrainingPrograms?.();
+        setIsMenuVisible(false);
+        break;
+      case 'conference':
+        onNavigateToConference?.();
+        setIsMenuVisible(false);
+        break;
+      default:
+        console.log('Menu item pressed:', itemId);
+        setIsMenuVisible(false);
+        break;
+    }
   };
 
   return (

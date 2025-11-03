@@ -10,7 +10,8 @@ import {
   Image,
 } from 'react-native';
 import { Header } from '../../components/Header';
-import { SuccessIcon, CardRightArrowIcon, InformationIcon, DownloadIcon, CalendarIconYellow, MapWIcon, TimeWIcon, WorkshopIcon } from '../../components/icons';
+import { SuccessIcon, CardRightArrowIcon, InformationIcon, DownloadIcon,
+  LiveIcon, NotesIcon, HandoutsIcon, CalendarIconYellow, MapWIcon, TimeWIcon, WorkshopIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -156,9 +157,9 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
               activeOpacity={0.8}
             >
               <View style={globalStyles.actionButtonContent}>
-                <View style={globalStyles.actionIconContainer}>
-                  <InformationIcon size={24} color={colors.black} />
-                </View>
+               
+                  <LiveIcon size={24} color={colors.black} />
+                
                 <Text style={globalStyles.actionButtonText}>Live Q&A</Text>
                 <CardRightArrowIcon size={20} color={colors.black} />
               </View>
@@ -170,10 +171,8 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
               onPress={onSessionNotes}
               activeOpacity={0.8}
             >
-              <View style={globalStyles.actionButtonContent}>
-                <View style={globalStyles.actionIconContainer}>
-                  <DownloadIcon size={24} color={colors.black} />
-                </View>
+              <View style={globalStyles.actionButtonContent}>               
+                  <NotesIcon size={24} color={colors.black} />             
                 <Text style={globalStyles.actionButtonText}>My Session Notes</Text>
                 <CardRightArrowIcon size={20} color={colors.black} />
               </View>
@@ -185,10 +184,8 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
               onPress={onHandouts}
               activeOpacity={0.8}
             >
-              <View style={globalStyles.actionButtonContent}>
-                <View style={globalStyles.actionIconContainer}>
-                  <DownloadIcon size={24} color={colors.black} />
-                </View>
+              <View style={globalStyles.actionButtonContent}>              
+                  <HandoutsIcon size={24} color={colors.black} />              
                 <Text style={globalStyles.actionButtonText}>Handouts</Text>
                 <CardRightArrowIcon size={20} color={colors.black} />
               </View>
@@ -197,15 +194,7 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
         </View>
       </ScrollView>
 
-      {/* Bottom Action Bar - Remove from My Conference */}
-      <View style={globalStyles.bottomActionBar}>
-        <TouchableOpacity
-          style={globalStyles.removeButton}
-          onPress={onRemoveFromConference}
-        >
-          <Text style={globalStyles.removeButtonText}>Remove from My Conference</Text>
-        </TouchableOpacity>
-      </View>
+
     </View>
   );
 };

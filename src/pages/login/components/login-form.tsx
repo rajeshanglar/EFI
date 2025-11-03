@@ -24,7 +24,8 @@ const LoginForm: React.FC<Props> = React.memo(
     setPassword,
     errors,
   }) => (
-    <View style={styles.loginCardContainer}>
+    <View>
+      
       <Text style={styles.welcomeTitle}>WELCOME TO LOGIN</Text>
 
       {/* Radio Buttons */}

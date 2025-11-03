@@ -64,6 +64,17 @@ import KeynoteSpeakersIconSvg from '../../assets/images/keynote-speakers-icon.sv
 import DelegateListIconSvg from '../../assets/images/delegate-list-icon.svg';
 import MyAbstractsIconSvg from '../../assets/images/my-abstracts-icon.svg';
 
+import LiveIconSvg from '../../assets/images/live-icon.svg';
+import NotesIconSvg from '../../assets/images/session-notes.svg';
+import HandoutsIconSvg from '../../assets/images/handouts-icon.svg';
+import MyQuestionsIconSvg from '../../assets/images/my-questions-icon.svg';
+import RecentQuestionsIconSvg from '../../assets/images/recent-questions-icon.svg';
+
+import HighlightsIconSvg from '../../assets/images/highlights-icon.svg';
+import ExclusiveIconSvg from '../../assets/images/exclusive-icon.svg';
+
+import DoctorIconSvg from '../../assets/images/doctor-icon.svg';
+
 interface IconProps {
   size?: number;
   color?: string;
@@ -298,4 +309,36 @@ export const DelegateListIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const MyAbstractsIcon = ({ size = 24, color, style }: IconProps) => (
   <MyAbstractsIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const LiveIcon = ({ size = 24, color, style }: IconProps) => (
+  <LiveIconSvg width={size} height={size}  style={style} />
+);
+
+export const NotesIcon = ({ size = 24, color, style }: IconProps) => (
+  <NotesIconSvg width={size} height={size}  style={style} />
+);
+
+export const HandoutsIcon = ({ size = 24, color, style }: IconProps) => (
+  <HandoutsIconSvg width={size} height={size}  style={style} />
+);
+
+export const MyQuestionsIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyQuestionsIconSvg width={size} height={size} style={style} />
+);
+
+export const RecentQuestionsIcon = ({ size = 24, color, style }: IconProps) => (
+  <RecentQuestionsIconSvg width={size} height={size} style={style} />
+);
+
+export const HighlightsIcon = ({ size = 24, color, style }: IconProps) => (
+  <HighlightsIconSvg width={size} height={size} style={style} />
+);
+
+export const ExclusiveIcon = ({ size = 24, color, style }: IconProps) => (
+  <ExclusiveIconSvg width={size} height={size} style={style} />
+);
+
+export const DoctorIcon = ({ size = 24, color, style }: IconProps) => (
+  <DoctorIconSvg width={size} height={size} style={style} />
 );
