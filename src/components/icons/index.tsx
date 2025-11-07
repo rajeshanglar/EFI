@@ -97,6 +97,7 @@ import ResearchIconSvg from '../../assets/images/research-icon.svg';
 import MissionIconSvg from '../../assets/images/mission-icon.svg';
 import VisionIconSvg from '../../assets/images/vision-icon.svg';
 import ObjectivesIconSvg from '../../assets/images/objectives-icon.svg';
+import RibbonRunBulletIconSvg from '../../assets/images/ribbonrun-icon-bullet.svg';
 
 interface IconProps {
   size?: number;
@@ -444,4 +445,8 @@ export const VisionIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const ObjectivesIcon = ({ size = 24, color, style }: IconProps) => (
   <ObjectivesIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const RibbonRunBulletIcon = ({ size = 24, color, style }: IconProps) => (
+  <RibbonRunBulletIconSvg width={size} height={size} color={color} style={style} />
 );

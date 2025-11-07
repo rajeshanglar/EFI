@@ -28,6 +28,7 @@ import ConferenceDetails from '../pages/conference/ConferenceDetails';
 import ConferenceVenue from '../pages/conference/ConferenceVenue';
 import EFIOutreachPrograms from '../pages/outreach-programs/EFIOutreachPrograms';
 import AboutUs from '../pages/about-us/AboutUs';
+import YellowRibbonRun from '../pages/yellow-ribbon-run/YellowRibbonRun';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -128,6 +129,7 @@ function AppNavigation() {
         onNavigateToMyCards={navigate.myCards}
         onNavigateToConferenceDetails={navigate.conferenceDetails}
         onNavigateToOutreachPrograms={navigate.outreachPrograms}
+        onNavigateToYellowRibbonRun={navigate.yellowRibbonRun}
       />
     ),
     conference: (
@@ -302,6 +304,12 @@ function AppNavigation() {
     ),
     outreachPrograms: (
       <EFIOutreachPrograms
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    yellowRibbonRun: (
+      <YellowRibbonRun
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
       />

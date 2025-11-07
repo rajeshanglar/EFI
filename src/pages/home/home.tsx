@@ -49,6 +49,7 @@ interface HomePageProps {
   onNavigateToMyCards?: () => void;
   onNavigateToConferenceDetails?: () => void;
   onNavigateToOutreachPrograms?: () => void;
+  onNavigateToYellowRibbonRun?: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -63,6 +64,7 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToMyCards,
   onNavigateToConferenceDetails,
   onNavigateToOutreachPrograms,
+  onNavigateToYellowRibbonRun,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -124,6 +126,10 @@ const HomePage: React.FC<HomePageProps> = ({
         break;
       case 'outreach':
         onNavigateToOutreachPrograms?.();
+        setIsMenuVisible(false);
+        break;
+      case 'run':
+        onNavigateToYellowRibbonRun?.();
         setIsMenuVisible(false);
         break;
       default:

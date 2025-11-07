@@ -26,6 +26,7 @@ export type PageType =
   | 'conferenceDetails'
   | 'conferenceVenue'
   | 'outreachPrograms'
+  | 'yellowRibbonRun'
   | 'aboutUs';
 
 export function useNavigationManager() {
@@ -40,7 +41,7 @@ export function useNavigationManager() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) setCurrentPage('board');
+    if (!isAuthenticated) setCurrentPage('yellowRibbonRun');
   }, [isAuthenticated]);
 
   const navigate = {
@@ -111,6 +112,7 @@ export function useNavigationManager() {
     conferenceDetails: () => setCurrentPage('conferenceDetails'),
     conferenceVenue: () => setCurrentPage('conferenceVenue'),
     outreachPrograms: () => setCurrentPage('outreachPrograms'),
+    yellowRibbonRun: () => setCurrentPage('yellowRibbonRun'),
     aboutUs: () => setCurrentPage('aboutUs'),
   };
 
