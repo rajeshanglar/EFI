@@ -40,55 +40,55 @@ const ConferenceQRCode: React.FC<ConferenceQRCodeProps> = ({
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
-        <View style={styles.profileCard}>
-        <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.logoContainer}>
-            <Image source={require('../../assets/images/logo-w.png')} style={styles.logo} />
+        <View style={globalStyles.qrCard}>
+        <View style={globalStyles.qrHeader}>
+        <View style={globalStyles.qrHeaderContent}>
+          <View style={globalStyles.qrLogoContainer}>
+            <Image source={require('../../assets/images/logo-w.png')} style={globalStyles.qrLogo} />
           </View>
-          <View style={styles.divider} />
-          <View style={styles.conferenceInfo}>
-            <Text style={styles.conferenceTitle}>3rd Edition of Endometriosis Congress</Text>
-            <Text style={styles.conferenceDetails}>6, 7 & 8 MARCH 2026, Park Hyatt, Hyderabad</Text>
+          <View style={globalStyles.qrDivider} />
+          <View style={globalStyles.qrConferenceInfo}>
+            <Text style={globalStyles.qrConferenceTitle}>3rd Edition of Endometriosis Congress</Text>
+            <Text style={globalStyles.qrConferenceDetails}>6, 7 & 8 MARCH 2026, Park Hyatt, Hyderabad</Text>
           </View>
         </View>
       </View>
           {/* Reference Number */}
-          <Text style={styles.referenceNumber}>EFON2243</Text>
+          <Text style={globalStyles.qrReferenceNumber}>EFON2243</Text>
 
           {/* Profile Image */}
-          <View style={styles.imageContainer}>
+          <View style={globalStyles.qrImageContainer}>
             <Image
               source={require('../../assets/images/qrcode-img.png')}
-              style={styles.profileImage}
+              style={globalStyles.qrProfileImage}
               resizeMode="cover"
             />
           </View>
 
           {/* Name */}
-          <Text style={styles.speakerName}>Hitesh Bharadwaj</Text>
+          <Text style={globalStyles.qrSpeakerName}>Hitesh Bharadwaj</Text>
 
           {/* Affiliation */}
-          <Text style={styles.affiliation}>Max Super Speciality Hospital</Text>
+          <Text style={globalStyles.qrAffiliation}>Max Super Speciality Hospital</Text>
 
           {/* Download Button */}
-          <TouchableOpacity style={styles.downloadButton} onPress={handleDownload}>
+          <TouchableOpacity style={globalStyles.qrDownloadButton} onPress={handleDownload}>
             <DownloadIcon size={16} color={colors.primary} />
-            <Text style={styles.downloadText}>Download</Text>
+            <Text style={globalStyles.qrDownloadText}>Download</Text>
           </TouchableOpacity>
         </View>
 
         {/* Login Prompt */}
-        <View style={styles.loginPrompt}>
-          <Text style={styles.promptText}>
+        <View style={globalStyles.qrLoginPrompt}>
+          <Text style={globalStyles.qrPromptText}>
             Please check your registered email for your username and password to proceed with login.
           </Text>
         </View>
 
               {/* Proceed To Login Button */}
-      <View style={styles.proceedToLoginButton}>
-        <View style={styles.proceedLoginArrow} pointerEvents="none">
-           <BackArrowIcon size={20} style={styles.proceedLoginArrowIcon} />
+      <View style={globalStyles.qrProceedToLoginButton}>
+        <View style={globalStyles.qrProceedLoginArrow} pointerEvents="none">
+           <BackArrowIcon size={20} style={styles.qrProceedLoginArrowIcon} />
         </View>
      
         <GradientButton
@@ -116,49 +116,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  header: {
-    width: '100%',
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.md,
+  scrollView: {
+    flex: 1,
   },
-  headerContent: {
-    alignItems: 'center',
-  },
-  logoContainer: {
-    marginBottom: spacing.md,
-  },
-  logo: {
-    width: screenWidth * 0.6,
-    height: screenWidth * 0.2,
-    resizeMode: 'contain',
-  },
-  divider: {
+ 
+  qrDivider: {
     width: '100%',
     height: 1,
     backgroundColor: colors.white,
     marginBottom: spacing.sm,
   },
-  conferenceInfo: {
+  qrConferenceInfo: {
     alignItems: 'center',
   },
-  conferenceTitle: {
+  qrConferenceTitle: {
     fontSize: screenWidth * 0.039,
     fontFamily: Fonts.Bold,
     color: colors.primaryLight,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
-  conferenceDetails: {
+  qrConferenceDetails: {
     fontSize: screenWidth * 0.033,
     fontFamily: Fonts.Regular,
     color: colors.white,
     textAlign: 'center',
   },
-  scrollView: {
-    flex: 1,
-  },
-  profileCard: {
+
+  qrCard: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
     margin: spacing.lg,
@@ -171,14 +156,14 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  referenceNumber: {
+  qrReferenceNumber: {
     fontSize: screenWidth * 0.044,
     fontFamily: Fonts.Medium,
     color: colors.black,
     marginTop: spacing.xl,
     marginBottom: spacing.md,
   },
-  imageContainer: {
+  qrImageContainer: {
     width: 170,
     height: 170, 
     justifyContent: 'center',
@@ -186,25 +171,25 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     
   },
-  profileImage: {
+  qrProfileImage: {
     width: '100%',
     height: '100%',
   },
-  speakerName: {
+  qrSpeakerName: {
     fontSize: screenWidth * 0.046,
     fontFamily: Fonts.Bold,
     color: colors.blue,
  
     textAlign: 'center',
   },
-  affiliation: {
+  qrAffiliation: {
     fontSize: screenWidth * 0.036,
     fontFamily: Fonts.Medium,
     color: colors.black,
     marginBottom: spacing.md,
     textAlign: 'center',
   },
-  downloadButton: {
+  qrDownloadButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: spacing.sm,
@@ -214,30 +199,30 @@ const styles = StyleSheet.create({
     borderRadius:100,
     gap: spacing.xs,
   },
-  downloadText: {
+  qrDownloadText: {
     fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Medium,
     color: colors.blue,
   },
-  loginPrompt: {
+  qrLoginPrompt: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
   },
-  promptText: {
+  qrPromptText: {
     fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Regular,
     color: colors.darkGray,
     textAlign: 'center',
     lineHeight: 24,
   },
-  proceedToLoginButton: {
+  qrProceedToLoginButton: {
     marginHorizontal: spacing.md,
     marginBottom: spacing.lg,
     position: 'relative',
     
   },
 
-  proceedLoginArrow: {
+    qrProceedLoginArrow: {
     position: 'absolute',
     right: '10%',
     top: '50%',
@@ -247,7 +232,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     zIndex: 1,  
   },    
-  proceedLoginArrowIcon: {
+  qrProceedLoginArrowIcon: {
     transform: [{ rotate: '180deg' }],
   },
 

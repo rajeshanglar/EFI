@@ -56,6 +56,8 @@ import CalendarIconYellowSvg from '../../assets/images/calendar-icon-yellow.svg'
 import TimeWIconSvg from '../../assets/images/time-w-icon.svg';
 import WorkshopIconSvg from '../../assets/images/workshop-w-icon.svg';
 import MapWIconSvg from '../../assets/images/map-w-icon.svg';
+import MapIconSvg from '../../assets/images/map-icon.svg';
+import KmIconSvg from '../../assets/images/km-icon.svg';
 
 import PrivacySettingsIconSvg from '../../assets/images/privacy-settings-icon.svg';
 import MyConferenceIconSvg from '../../assets/images/my-conference-icon.svg';
@@ -74,6 +76,27 @@ import HighlightsIconSvg from '../../assets/images/highlights-icon.svg';
 import ExclusiveIconSvg from '../../assets/images/exclusive-icon.svg';
 
 import DoctorIconSvg from '../../assets/images/doctor-icon.svg';
+
+import ProfileIconSvg from '../../assets/images/profile-icon.svg';
+import ProfileEditIconSvg from '../../assets/images/profile-edit-icon.svg';
+import MyPaymentsIconSvg from '../../assets/images/my-payments-icon.svg';
+import MyTrainingSessionIconSvg from '../../assets/images/my-training-session-icon.svg';
+import MyCertificatesIconSvg from '../../assets/images/certificates-icon.svg';
+import EditProfileIconSvg from '../../assets/images/edit-profile-icon.svg';
+import PhoneIconSvg from '../../assets/images/phone-icon.svg';
+import DownloadWhiteIconSvg from '../../assets/images/download-white-icon.svg';
+import VenueFloatingIconSvg from '../../assets/images/venue-floting-icon.svg';
+
+import GetDirectionsIconSvg from '../../assets/images/get-directions-icon.svg';
+import PhoneWIconSvg from '../../assets/images/phone-w-icon.svg'; 
+import WebsiteWIconSvg from '../../assets/images/website-w-icon.svg';
+
+import SurgicalIconSvg from '../../assets/images/surgical-icon.svg';
+import AwarenessIconSvg from '../../assets/images/awareness-icon.svg';
+import ResearchIconSvg from '../../assets/images/research-icon.svg';
+import MissionIconSvg from '../../assets/images/mission-icon.svg';
+import VisionIconSvg from '../../assets/images/vision-icon.svg';
+import ObjectivesIconSvg from '../../assets/images/objectives-icon.svg';
 
 interface IconProps {
   size?: number;
@@ -341,4 +364,84 @@ export const ExclusiveIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const DoctorIcon = ({ size = 24, color, style }: IconProps) => (
   <DoctorIconSvg width={size} height={size} style={style} />
+);
+
+export const ProfileIcon = ({ size = 24, color, style }: IconProps) => (
+  <ProfileIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const ProfileEditIcon = ({ size = 24, color, style }: IconProps) => (
+  <ProfileEditIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MyPaymentsIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyPaymentsIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MyTrainingSessionIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyTrainingSessionIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MyCertificatesIcon = ({ size = 24, color, style }: IconProps) => (
+  <MyCertificatesIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const EditProfileIcon = ({ size = 24, color, style }: IconProps) => (
+  <EditProfileIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const PhoneIcon = ({ size = 24, color, style }: IconProps) => (
+  <PhoneIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const DownloadWhiteIcon = ({ size = 24, color, style }: IconProps) => (
+  <DownloadWhiteIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const VenueFloatingIcon = ({ size = 24, color, style }: IconProps) => (
+  <VenueFloatingIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const GetDirectionsIcon = ({ size = 24, color, style }: IconProps) => (
+  <GetDirectionsIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const PhoneWIcon = ({ size = 24, color, style }: IconProps) => (
+  <PhoneWIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const WebsiteWIcon = ({ size = 24, color, style }: IconProps) => (
+  <WebsiteWIconSvg width={size} height={size} color={color} style={style} />
+);  
+
+export const KmIcon = ({ size = 24, color, style }: IconProps) => (
+  <KmIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MapIcon = ({ size = 24, color, style }: IconProps) => (
+  <MapIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const SurgicalIcon = ({ size = 24, color, style }: IconProps) => (
+  <SurgicalIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const AwarenessIcon = ({ size = 24, color, style }: IconProps) => (
+  <AwarenessIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const ResearchIcon = ({ size = 24, color, style }: IconProps) => (
+  <ResearchIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const MissionIcon = ({ size = 24, color, style }: IconProps) => (
+  <MissionIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const VisionIcon = ({ size = 24, color, style }: IconProps) => (
+  <VisionIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const ObjectivesIcon = ({ size = 24, color, style }: IconProps) => (
+  <ObjectivesIconSvg width={size} height={size} color={color} style={style} />
 );

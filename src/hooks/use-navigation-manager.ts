@@ -18,7 +18,15 @@ export type PageType =
   | 'handouts'
   | 'membershipForm'
   | 'membershipPaymentDetails'
-  | 'membershipExclusiveAccess';
+  | 'membershipExclusiveAccess'
+  | 'board'
+  | 'profile'
+  | 'myPayments'
+  | 'myCards'
+  | 'conferenceDetails'
+  | 'conferenceVenue'
+  | 'outreachPrograms'
+  | 'aboutUs';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -32,7 +40,7 @@ export function useNavigationManager() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) setCurrentPage('membershipExclusiveAccess');
+    if (!isAuthenticated) setCurrentPage('board');
   }, [isAuthenticated]);
 
   const navigate = {
@@ -96,6 +104,14 @@ export function useNavigationManager() {
     liveQA: () => setCurrentPage('liveQA'),
     sessionNotes: () => setCurrentPage('sessionNotes'),
     handouts: () => setCurrentPage('handouts'),
+    board: () => setCurrentPage('board'),
+    profile: () => setCurrentPage('profile'),
+    myPayments: () => setCurrentPage('myPayments'),
+    myCards: () => setCurrentPage('myCards'),
+    conferenceDetails: () => setCurrentPage('conferenceDetails'),
+    conferenceVenue: () => setCurrentPage('conferenceVenue'),
+    outreachPrograms: () => setCurrentPage('outreachPrograms'),
+    aboutUs: () => setCurrentPage('aboutUs'),
   };
 
 

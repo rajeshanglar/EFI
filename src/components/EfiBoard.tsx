@@ -1,9 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, ScrollView, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { colors, spacing, borderRadius } from '../styles/globalStyles';
 import { ArrowRightIcon } from './icons';
 
-export const EfiBoard: React.FC = () => {
+interface EfiBoardProps {
+  onViewAll?: () => void;
+}
+
+export const EfiBoard: React.FC<EfiBoardProps> = ({ onViewAll }) => {
   const boardMembers = [
     { 
       name: 'Dr. Vimee Bindra ', 
@@ -33,7 +37,7 @@ export const EfiBoard: React.FC = () => {
       <View style={styles.boardSection}>
         <View style={styles.boardHeader}>
           <Text style={styles.boardTitle}>EFI Board</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onViewAll}>
             <View style={styles.viewAllContainer}>
             <Text style={styles.viewAllText}>View All</Text>
             <ArrowRightIcon size={16} color={colors.primaryLight} style={styles.viewAllIcon} />

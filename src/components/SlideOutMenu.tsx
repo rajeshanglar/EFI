@@ -38,6 +38,7 @@ import {
   KeynoteSpeakersIcon,
   DelegateListIcon,
   MyAbstractsIcon,
+  ProfileIcon,
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
 
@@ -55,6 +56,7 @@ interface SlideOutMenuProps {
   onMenuItemPress: (itemId: string) => void;
   onLogout?: () => void;
   onLoginPress?: () => void;
+  onProfilePress?: () => void;
 }
 
 const conferenceAccessItems = [
@@ -68,6 +70,7 @@ const conferenceAccessItems = [
 
 const menuItems: MenuItem[] = [
   { id: 'home', title: 'Home', icon: HomeIcon },
+  { id: 'profile', title: 'Profile', icon: ProfileIcon },
   { id: 'about', title: 'About us', icon: AboutUsIcon },
   { id: 'board', title: 'Board', icon: BoardIcon },
   { id: 'information', title: 'Information', icon: AboutUsIcon },
@@ -96,6 +99,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   onMenuItemPress,
   onLogout,
   onLoginPress,
+  onProfilePress,
 }) => {
   const translateX = useRef(new Animated.Value(screenWidth)).current; // start off-screen right
 
@@ -115,10 +119,6 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   const handleMenuItemPress = (itemId: string) => {
     onMenuItemPress(itemId);
   };
-
-  if (!isVisible && translateX === screenWidth) {
-    return null;
-  }
 
   const renderMenuItem = (item: MenuItem) => {
     const IconComponent = item.icon;
@@ -159,13 +159,20 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.sidebar}>
+
         <View style={styles.leftSectionContainer}>
-          <View style={styles.leftSection}>
+
+          <TouchableOpacity 
+           style={styles.leftSection}
+           onPress={() => {
+             onProfilePress?.();
+             onClose();
+           }}>
             <View style={styles.leftIcon}>
               <WhiteUserIcon size={20} color={colors.white} />
             </View>
             <Text style={styles.leftIconText}>PROFILE</Text>
-          </View>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.leftSection}

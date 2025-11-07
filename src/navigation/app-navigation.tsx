@@ -20,6 +20,14 @@ import TrainingPrograms from '../pages/training-programs/EFITrainingPrograms';
 import MembershipRegistrationForm from '../pages/membership/MembershipRegistrationForm';
 import MembershipPaymentDetails from '../pages/membership/MembershipPaymentDetails';
 import MembershipExclusiveAccess from '../pages/membership/membershipExclusiveAccess/MembershipExclusiveAccess';
+import Board from '../pages/board/Board';
+import Profile from '../pages/profile/Profile';
+import MyPayments from '../pages/payments/MyPayments';
+import MyCards from '../pages/cards/MyCards';
+import ConferenceDetails from '../pages/conference/ConferenceDetails';
+import ConferenceVenue from '../pages/conference/ConferenceVenue';
+import EFIOutreachPrograms from '../pages/outreach-programs/EFIOutreachPrograms';
+import AboutUs from '../pages/about-us/AboutUs';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -115,6 +123,11 @@ function AppNavigation() {
         onNavigateToMyConference={navigate.myConference}
         onNavigateToTrainingPrograms={navigate.trainingPrograms}
         onNavigateToMembership={navigate.membershipForm}
+        onNavigateToBoard={navigate.board}
+        onNavigateToProfile={navigate.profile}
+        onNavigateToMyCards={navigate.myCards}
+        onNavigateToConferenceDetails={navigate.conferenceDetails}
+        onNavigateToOutreachPrograms={navigate.outreachPrograms}
       />
     ),
     conference: (
@@ -245,6 +258,56 @@ function AppNavigation() {
     membershipExclusiveAccess: (
       <MembershipExclusiveAccess
       
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    board: (
+      <Board
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    profile: (
+      <Profile
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}    
+        onNavigateToMyPayments={navigate.myPayments}
+      />
+    ),
+    myPayments: (
+      <MyPayments
+        onBack={navigate.profile}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    myCards: (
+      <MyCards
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    conferenceDetails: (
+      <ConferenceDetails
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+        onNavigateToVenue={navigate.conferenceVenue}
+      />
+    ),
+    conferenceVenue: (
+      <ConferenceVenue
+        onBack={navigate.conferenceDetails}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    outreachPrograms: (
+      <EFIOutreachPrograms
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    aboutUs: (
+      <AboutUs
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
       />

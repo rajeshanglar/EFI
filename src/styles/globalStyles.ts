@@ -175,7 +175,10 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
+    paddingBottom: spacing.md,
     backgroundColor: colors.primary,
+    borderBottomLeftRadius: borderRadius.xl,
+    borderBottomRightRadius: borderRadius.xl,
   },
 
   headerBackBtTittle: {
@@ -184,8 +187,8 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerIcon: {
-    width: 40,
-    height: 40,
+    width:22,
+    height: 22,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -193,6 +196,7 @@ export const globalStyles = StyleSheet.create({
     color: colors.white,
     fontSize: Dimensions.get('window').width * 0.04,
     fontFamily: Fonts.SemiBold,
+    marginLeft: spacing.sm,
   },
 
   headerBottomContainer: {
@@ -217,7 +221,7 @@ export const globalStyles = StyleSheet.create({
   },
   tierTab: {
     marginRight: screenWidth * 0.06,
-    paddingVertical: 0,
+    paddingVertical:5,
     alignItems: 'flex-start',
     borderBottomWidth: 5,
     borderBottomColor: 'transparent',
@@ -877,6 +881,419 @@ floatingInfoButton: {
 floatingInfoButtonInner: {},
 
 // Information Modal Styles End
-});
 
+// Board Member Card Styles
+boardGrid: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  gap: spacing.md,
+},
+boardCard: {
+  backgroundColor: colors.white,
+  borderRadius: borderRadius.lg,
+  padding: spacing.md,
+paddingBottom: 40,
+  marginBottom: spacing.xxl,
+  alignItems: 'center',
+  shadowColor: colors.black,
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+boardImageContainer: {
+  marginBottom: spacing.sm,
+  marginTop: -spacing.xxl,
+},
+boardMemberImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 40,
+  borderWidth: 2,
+  borderColor: colors.primaryLight,
+},
+boardMemberPlaceholderImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 40,
+  backgroundColor: colors.lightGray,
+  borderWidth: 2,
+  borderColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center', 
+},
+boardMemberName: {
+  fontSize: Dimensions.get('window').width * 0.032,
+  fontFamily: Fonts.Bold,
+  color: colors.black,
+  textAlign: 'center',
+
+},
+boardMemberRole: {
+  fontSize: Dimensions.get('window').width * 0.028,
+  fontFamily: Fonts.Medium,
+  color: colors.black,
+  textAlign: 'center',
+
+},
+boardArrowContainer: {
+  position: 'absolute',
+  bottom:12,
+  right: spacing.sm,
+  width: 24,
+  height: 24,
+  borderRadius: 12,
+  backgroundColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+boardMembercountryContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: spacing.xs,
+},
+boardMemberflag: {
+  fontSize: 16,
+  marginRight: spacing.xs,
+},
+boardMembercountry: {
+  fontSize: Dimensions.get('window').width * 0.03,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+},
+// Board Member Card Styles
+
+
+// QR Code Styles
+qrHeader: {
+  width: '100%',
+  backgroundColor: colors.primary,
+  paddingVertical: spacing.lg,
+  paddingHorizontal: spacing.md,
+},
+qrHeaderContent: {
+  alignItems: 'center',
+},
+qrLogoContainer: {
+  marginBottom: spacing.md,
+},
+qrLogo: {
+  width: screenWidth * 0.6,
+  height: screenWidth * 0.2,
+  resizeMode: 'contain',
+},
+qrDivider: {
+  width: '100%',
+  height: 1,
+  backgroundColor: colors.white,
+  marginBottom: spacing.sm,
+},
+qrConferenceInfo: {
+  alignItems: 'center',
+},
+qrConferenceTitle: {
+  fontSize: screenWidth * 0.039,
+  fontFamily: Fonts.Bold,
+  color: colors.primaryLight,
+  textAlign: 'center',
+  marginBottom:0,
+},
+qrConferenceDetails: {
+  fontSize: screenWidth * 0.033,
+  fontFamily: Fonts.Regular,
+  color: colors.white,
+  textAlign: 'center',
+},
+
+qrCard: {
+  backgroundColor: colors.white,
+  borderRadius: borderRadius.lg,
+  margin: spacing.lg,
+  paddingBottom: spacing.xl,
+
+  alignItems: 'center',
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 3,
+},
+qrReferenceNumber: {
+  fontSize: screenWidth * 0.044,
+  fontFamily: Fonts.Medium,
+  color: colors.black,
+  marginTop: spacing.md,
+  marginBottom: spacing.md,
+},
+qrImageContainer: {
+  width: 170,
+  height: 170, 
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom: spacing.md,
+  
+},
+qrProfileImage: {
+  width: '100%',
+  height: '100%',
+},
+qrSpeakerName: {
+  fontSize: screenWidth * 0.046,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+  textAlign: 'center',
+},
+qrAffiliation: {
+  fontSize: screenWidth * 0.036,
+  fontFamily: Fonts.Medium,
+  color: colors.black,
+  marginBottom: spacing.md,
+  textAlign: 'center',
+},
+qrDownloadButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: spacing.sm,
+  paddingHorizontal: spacing.lg,
+  borderWidth: 1,
+  borderColor: colors.blue,
+  borderRadius:100,
+  gap: spacing.xs,
+},
+qrDownloadText: {
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Medium,
+  color: colors.blue,
+},
+qrLoginPrompt: {
+  paddingHorizontal: spacing.lg,
+  paddingBottom: spacing.lg,
+},
+qrPromptText: {
+  fontSize: screenWidth * 0.037,
+  fontFamily: Fonts.Regular,
+  color: colors.darkGray,
+  textAlign: 'center',
+  lineHeight: 24,
+},
+qrProceedToLoginButton: {
+  marginHorizontal: spacing.md,
+  marginBottom: spacing.lg,
+  position: 'relative',
+  
+},
+
+  qrProceedLoginArrow: {
+  position: 'absolute',
+  right: '10%',
+  top: '50%',
+  transform: [{ translateY: '-50%' }],
+  borderRadius: 100,
+  padding: spacing.sm,
+  backgroundColor: colors.primary,
+  zIndex: 1,  
+},    
+qrProceedLoginArrowIcon: {
+  transform: [{ rotate: '180deg' }],
+},
+
+// QR Code Styles End
+
+
+// Bottom Background Ribbon Styles
+bgBottomRibbon: { 
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  height: Dimensions.get('window').height * 0.48,
+  width: '100%',
+  zIndex: 0,
+},
+bgBottomRibbonImage: {   
+  width: Dimensions.get('window').width * 1.2,
+  height: '100%', 
+  opacity: 0.15,
+  resizeMode: 'cover',
+},
+
+//Content Tags
+bold:{
+  fontFamily: Fonts.Bold,
+},
+mb20:{
+  marginBottom: spacing.md,
+},
+mbSm:{
+  marginBottom: spacing.sm,
+},
+whiteColor:{
+  color: colors.white,
+},
+cardHeadingPara:{
+  backgroundColor: colors.white,
+  shadowColor: colors.gray,
+  borderRadius: borderRadius.md,
+  // padding: spacing.md,
+  // shadowOffset: {
+  //   width: 0,
+  //   height: 2,
+  // },
+  // shadowOpacity: 0.09,
+  // shadowRadius: 4,
+  // elevation: 3,
+},
+headingH1: {
+  fontSize: screenWidth * 0.045,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+  marginBottom:0,
+  lineHeight: screenWidth * 0.07,
+},
+h2:{ 
+  fontSize: screenWidth * 0.043,
+  fontFamily: Fonts.SemiBold,
+  color: colors.primary,
+  lineHeight: screenWidth * 0.065,
+  marginBottom: spacing.sm,
+},
+taglineH5: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Medium,
+  color: colors.primary,
+  marginBottom: spacing.md,
+},
+
+yellowTaglineH5:{
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Medium,
+  color: colors.primaryLight,
+  marginBottom: spacing.md,
+
+},
+
+paragraphP: {
+  fontSize: screenWidth * 0.039,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+  lineHeight: screenWidth * 0.062,
+  textAlign: 'left',
+},
+
+sectionContent: {
+  marginBottom: spacing.xl,
+},
+imageContainerContFull: {
+  width: '100%',
+  marginBottom: spacing.md,
+},
+imageContFull: {
+ width: '100%',   
+  borderRadius: borderRadius.md,
+},
+textContainer: {
+  marginBottom: spacing.md,
+},
+
+//Blue BG
+sectionCardBlue: {
+  backgroundColor: colors.primary,
+  borderRadius: borderRadius.md,
+  padding: spacing.md,
+  gap: spacing.md,
+},
+
+//Blue BG End
+
+// FEE CARD STYLES
+
+sectionCardLightYellow: {
+  backgroundColor: '#FFF1CC',
+  borderRadius: borderRadius.md,
+  padding: spacing.md,
+  gap: spacing.sm,
+  marginHorizontal: spacing.lg,
+  marginBottom: spacing.lg,
+},
+
+
+feeCard: {
+  backgroundColor: '#FFFBE3',
+  paddingHorizontal: spacing.md,
+  paddingVertical: spacing.md,
+  borderRadius: borderRadius.sm,
+},
+feeRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingVertical: spacing.xs,
+},
+feeLabel: {
+  fontSize: screenWidth * 0.043,
+  fontFamily: Fonts.Medium,
+  color: colors.black,
+},
+feeAmount: {
+  fontSize: screenWidth * 0.043,
+  fontFamily: Fonts.SemiBold,
+  color: colors.black,
+},
+feeNote: {
+  borderTopWidth: 1,
+  borderTopColor: '#E4E1CD',
+  paddingTop: spacing.md,
+  fontSize: screenWidth * 0.036,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+},
+feeNoteYellow:{
+  backgroundColor:colors.primaryLight,
+  padding: spacing.md,
+  fontSize: screenWidth * 0.036,
+  fontFamily: Fonts.Medium,
+  color: colors.darkGray,
+},
+// FEE CARD STYLES END
+
+
+bulletDot: {
+  width: 20,
+  height: 20,
+  borderRadius: 100,
+  backgroundColor: colors.accent,
+  marginTop: spacing.xs,
+},
+bulletText: {
+  flex: 1,
+  fontSize: screenWidth * 0.036,
+  fontFamily: Fonts.Regular,
+  color: colors.darkGray,
+  lineHeight: screenWidth * 0.055,
+},
+bulletRowLight: {
+  flexDirection: 'row',
+  gap: spacing.sm,
+  alignItems: 'flex-start',
+  justifyContent: 'flex-start',
+},
+bulletDotAccent: {
+  width: 18,
+  height: 18,
+  borderRadius: 100,
+  backgroundColor: colors.accent,
+  marginTop: 8,
+},
+bulletTextLight: {
+  flex: 1,
+  fontSize: screenWidth * 0.036,
+  fontFamily: Fonts.Regular,
+  color: colors.white,
+  lineHeight: screenWidth * 0.055,
+},
+});
 export default globalStyles;

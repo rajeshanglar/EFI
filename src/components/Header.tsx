@@ -20,14 +20,14 @@ export const Header: React.FC<HeaderProps> = ({
         <View style={globalStyles.headerBackBtTittle}>
           {onBack && (
             <TouchableOpacity onPress={onBack} style={globalStyles.headerIcon}>
-              <BackArrowIcon size={25} />
+              <BackArrowIcon size={20} />
             </TouchableOpacity>
           )}
           <Text style={globalStyles.headerTitle}>{title}</Text>
         </View>
         {onNavigateToHome && (
           <TouchableOpacity onPress={onNavigateToHome} style={globalStyles.headerIcon}>
-            <HomeHeaderIcon size={25} />
+            <HomeHeaderIcon size={20} />
           </TouchableOpacity>
         )}
       </View>

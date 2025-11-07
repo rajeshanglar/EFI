@@ -44,6 +44,11 @@ interface HomePageProps {
   onNavigateToMyConference?: () => void;
   onNavigateToTrainingPrograms?: () => void;
   onNavigateToMembership?: () => void;
+  onNavigateToBoard?: () => void;
+  onNavigateToProfile?: () => void;
+  onNavigateToMyCards?: () => void;
+  onNavigateToConferenceDetails?: () => void;
+  onNavigateToOutreachPrograms?: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -53,6 +58,11 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToMyConference,
   onNavigateToTrainingPrograms,
   onNavigateToMembership,
+  onNavigateToBoard,
+  onNavigateToProfile,
+  onNavigateToMyCards,
+  onNavigateToConferenceDetails,
+  onNavigateToOutreachPrograms,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -104,6 +114,18 @@ const HomePage: React.FC<HomePageProps> = ({
         onNavigateToConference?.();
         setIsMenuVisible(false);
         break;
+      case 'board':
+        onNavigateToBoard?.();
+        setIsMenuVisible(false);
+        break;
+      case 'profile':
+        onNavigateToProfile?.();
+        setIsMenuVisible(false);
+        break;
+      case 'outreach':
+        onNavigateToOutreachPrograms?.();
+        setIsMenuVisible(false);
+        break;
       default:
         console.log('Menu item pressed:', itemId);
         setIsMenuVisible(false);
@@ -129,7 +151,7 @@ const HomePage: React.FC<HomePageProps> = ({
             initialLanguage="en"
           />
           <TouchableOpacity onPress={() => setIsMenuVisible(true)}>
-            <MenuIcon size={32} color={colors.white} />
+            <MenuIcon size={25} color={colors.white} />
           </TouchableOpacity>
         </View>
       </View>
@@ -161,14 +183,19 @@ const HomePage: React.FC<HomePageProps> = ({
               </View>
             </ImageBackground>
           </View>
-          <Card style={styles.congressCard}>
+
+          <TouchableOpacity 
+            style={styles.congressCard} 
+            onPress={() => onNavigateToConferenceDetails?.() || console.log('Conference Details')}
+          >
             <Image
               source={require('../../assets/images/conference-banner.jpg')}
               style={styles.conferenceImage}
             />
-          </Card>
+          </TouchableOpacity>
+          
           <View style={styles.horizontalMargin}>
-            <EfiBoard />
+            <EfiBoard onViewAll={onNavigateToBoard} />
             <TouchableOpacity style={styles.submitAbstractCard}>
               <View style={styles.abstractContent}>
                 <AbstractIcon size={40} color={colors.white} />
@@ -209,7 +236,7 @@ const HomePage: React.FC<HomePageProps> = ({
       <View style={globalStyles.footerBtContainer}>
         <GradientButton
           title="MY CARDS"
-          onPress={() => console.log('Submit')}
+          onPress={() => onNavigateToMyCards?.() || console.log('My Cards')}
           icon={
             <WhiteMyCardsIcon
               size={26}
@@ -225,6 +252,7 @@ const HomePage: React.FC<HomePageProps> = ({
         onMenuItemPress={handleMenuItemPress}
         onLogout={onLogout}
         onLoginPress={onNavigateToLogin}
+        onProfilePress={onNavigateToProfile}
       />
     </View>
   );
