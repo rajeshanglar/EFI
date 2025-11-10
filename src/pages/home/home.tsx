@@ -44,12 +44,18 @@ interface HomePageProps {
   onNavigateToMyConference?: () => void;
   onNavigateToTrainingPrograms?: () => void;
   onNavigateToMembership?: () => void;
+  onNavigateToMembershipInfo?: () => void;
   onNavigateToBoard?: () => void;
   onNavigateToProfile?: () => void;
   onNavigateToMyCards?: () => void;
   onNavigateToConferenceDetails?: () => void;
   onNavigateToOutreachPrograms?: () => void;
   onNavigateToYellowRibbonRun?: () => void;
+  onNavigateToAboutUs?: () => void;
+  onNavigateToEndoCongress?: () => void;
+  onNavigateToFreeSurgeryProgram?: () => void;
+  onNavigateToContactUs?: () => void;
+  onNavigateToInformation?: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -59,12 +65,18 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToMyConference,
   onNavigateToTrainingPrograms,
   onNavigateToMembership,
+  onNavigateToMembershipInfo,
   onNavigateToBoard,
   onNavigateToProfile,
   onNavigateToMyCards,
   onNavigateToConferenceDetails,
   onNavigateToOutreachPrograms,
   onNavigateToYellowRibbonRun,
+  onNavigateToAboutUs,
+  onNavigateToEndoCongress,
+  onNavigateToFreeSurgeryProgram,
+  onNavigateToContactUs,
+  onNavigateToInformation,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -120,6 +132,18 @@ const HomePage: React.FC<HomePageProps> = ({
         onNavigateToBoard?.();
         setIsMenuVisible(false);
         break;
+      case 'information':
+        onNavigateToInformation?.();
+        setIsMenuVisible(false);
+        break;
+      case 'about':
+        onNavigateToAboutUs?.();
+        setIsMenuVisible(false);
+        break;
+      case 'membership':
+        onNavigateToMembershipInfo?.();
+        setIsMenuVisible(false);
+        break;
       case 'profile':
         onNavigateToProfile?.();
         setIsMenuVisible(false);
@@ -130,6 +154,18 @@ const HomePage: React.FC<HomePageProps> = ({
         break;
       case 'run':
         onNavigateToYellowRibbonRun?.();
+        setIsMenuVisible(false);
+        break;
+      case 'congress':
+        onNavigateToEndoCongress?.();
+        setIsMenuVisible(false);
+        break;
+      case 'surgery':
+        onNavigateToFreeSurgeryProgram?.();
+        setIsMenuVisible(false);
+        break;
+      case 'contact':
+        onNavigateToContactUs?.();
         setIsMenuVisible(false);
         break;
       default:

@@ -92,12 +92,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               { marginTop: 0, marginBottom: spacing.md },
             ]}
           >
-            The Yellow Ribbon Run, launched by the Endometriosis Foundation of
-            India (EFI) in 2024, is a pioneering initiative — the first of its
-            kind in India — that uses the power of community participation,
-            fitness, and public engagement to raise awareness about
-            endometriosis, a debilitating chronic illness affecting over 40
-            million women in India and 240+ million globally.{' '}
+           The Yellow Ribbon Run, launched by the Endometriosis Foundation of India (EFI) in 2024, is a pioneering initiative — the first of its kind in India — that uses the power of community participation, fitness, and public engagement to raise awareness about endometriosis, a debilitating chronic illness affecting over 40 million women in India and 240+ million globally.
           </Text>
           <Text
             style={[
@@ -105,24 +100,19 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               { marginTop: 0, marginBottom: spacing.md },
             ]}
           >
-            With two impactful editions held in Hyderabad, the Yellow Ribbon Run
-            has already united over 3,000 participants, making it not just a
-            run, but a symbol of hope, strength, and solidarity for women
-            suffering from an often overlooked and misunderstood disease.
+           With two impactful editions held in Hyderabad, the Yellow Ribbon Run has already united over 3,000 participants, making it not just a run, but a symbol of hope, strength, and solidarity for women suffering from an often overlooked and misunderstood disease.
           </Text>
         </View>
 
         <View style={styles.ctaCard}>
           <View style={styles.ctaContent}>
             <YellowRibbonIcon size={42} color={colors.primary} />
-            <Text style={styles.ctaTitle}>Join Us - Let's Run for Change</Text>
+            <Text style={styles.ctaTitle}>Join Us — Let’s Run for Change</Text>
           </View>
 
           <Text style={styles.ctaDescription}>
-            Your brand can help make invisible pain, visible. With your support,
-            the Yellow Ribbon Run can reach more lives through awareness,
-            funding and health coverage, bringing hope, lasting change, new
-            research leads, stories, data, and trends.
+          Your brand can help make invisible pain, visible.
+          With your support, the Yellow Ribbon Run can reach more cities, touch more lives, and bring real change in how India sees, speaks about, and treats Endometriosis.
           </Text>
 
           <View style={styles.ctaButtonsContainer}>
@@ -151,9 +141,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
         <View style={styles.section}>
           <Text style={styles.sectionHeading}>Our Purpose</Text>
           <Text style={styles.sectionSubHeading}>
-            Endometriosis is often described as an “invisible disease” — hidden
-            pain, delayed diagnosis, misunderstood symptoms, and silent
-            suffering. The Yellow Ribbon Run aims to:
+          Endometriosis is often described as an “invisible disease” — hidden pain, delayed diagnosis, misunderstood symptoms, and silent suffering. The Yellow Ribbon Run aims to:
           </Text>
 
           <View style={styles.listContainer}>
@@ -194,35 +182,37 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               <View style={styles.listIconWrapper}></View>
               <View style={styles.listTextContainer}>
                 <Text style={styles.listItemTitle}>Empower women</Text>
-                <Text style={styles.listItemDescription}>Empower women</Text>
+                <Text style={styles.listItemDescription}>to seek timely diagnosis and care</Text>
               </View>
             </View>
 
             <View style={styles.listItem}>
               <View style={styles.listIconWrapper}></View>
               <View style={styles.listTextContainer}>
-                <Text style={styles.listItemTitle}>Educate</Text>
-                <Text style={styles.listItemDescription}>
-                  Inform families, youth, caregivers, and allied systems about
-                  the condition.
-                </Text>
+                <Text style={styles.listItemTitle}>Educate families, youth, employers, and health systems</Text>
+            
               </View>
             </View>
           </View>
 
           <Text style={[globalStyles.paragraphP, { marginTop: spacing.md }]}>
-            Imagine community participation for a gender-sensitive healthcare
-            future. Because stigma, delayed diagnosis, and low awareness keep
-            women from accessing timely care, the Yellow Ribbon Run mobilises
-            community action to normalise conversations around endometriosis,
-            amplify medical support, and improve policy visibility. Each edition
-            brings us closer to a society grounded in shared lived recognition,
-            empathy, and reform.
+            <Text style={{fontFamily: Fonts.Bold}}>Inspire community participation</Text> for a gender-sensitive
+               healthcare future
+          </Text>
+
+          <Text style={[globalStyles.paragraphP, { marginTop: spacing.md }]}>
+          <Text style={{fontFamily: Fonts.Bold}}>Reduce stigma</Text> by creating safe spaces for women to share their experiences without fear or shame, as many delay seeking help due to misconceptions that endometriosis is only a reproductive issue.
+          </Text>
+
+          <Text style={[globalStyles.paragraphP, { marginTop: spacing.md }]}>
+          We also encourage partners and families to participate in events and conversations to build empathy and understanding, helping to normalize discussions around endometriosis. Every step taken in the Yellow Ribbon Run is a stride toward recognition, empathy, and reform.
           </Text>
         </View>
 
+        
+
         <View style={styles.section}>
-          <Text style={styles.sectionHeading}>Event’s Overview</Text>
+          <Text style={styles.sectionHeading}>Event's Overview</Text>
           <View style={styles.timelineContainer}>
             <View style={styles.timelineCard}>
               <View style={styles.timelineIcon}>
@@ -230,10 +220,11 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               </View>
               <View style={styles.timelineTextContainer}>
                 <Text style={styles.timelineLabel}>Upcoming - 2026</Text>
-                <Text style={styles.timelineTheme}>“Invisible NoMore”</Text>
+                <Text style={styles.timelineTheme}><Text style={{fontFamily: Fonts.Bold}}>Theme: </Text>
+                “Invisible No More”</Text>
                 <Text style={styles.timelineFocus}>
-                  Focus: national visibility, media amplification, policy
-                  impact, and patient advocacy.
+                <Text style={{fontFamily: Fonts.Bold}}>Focus:</Text> National visibility, media amplification, policy focus, and support advocacy
+
                 </Text>
               </View>
             </View>
@@ -244,10 +235,11 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               </View>
               <View style={styles.timelineTextContainer}>
                 <Text style={styles.timelineLabel}>Year 2 - 2025</Text>
-                <Text style={styles.timelineTheme}>“Every Step Counts”</Text>
+                <Text style={styles.timelineTheme}><Text style={{fontFamily: Fonts.Bold}}>Theme: </Text>“Every Step Counts”</Text>
                 <Text style={styles.timelineFocus}>
-                  Focus: Returning participants with more steps towards impact,
-                  empathy, and reform.
+                <Text style={{fontFamily: Fonts.Bold}}>Focus:</Text> Reinforcing that small steps lead to large impact in the endometriosis journey
+
+
                 </Text>
               </View>
             </View>
@@ -259,10 +251,10 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
               <View style={styles.timelineTextContainer}>
                 <Text style={styles.timelineLabel}>Year 1 - 2024</Text>
                 <Text style={styles.timelineTheme}>
-                  “Beyond the Finish Line”
+                <Text style={{fontFamily: Fonts.Bold}}>Theme: </Text>“Beyond the Finish Line”
                 </Text>
                 <Text style={styles.timelineFocus}>
-                  Focus: Strong momentum, breaking myths, building a community.
+                <Text style={{fontFamily: Fonts.Bold}}>Focus:</Text> Starting a conversation, breaking myths, building a community
                 </Text>
               </View>
             </View>
@@ -281,6 +273,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
             Each edition includes:
           </Text>
         </View>
+
         <View style={styles.recSection}>
           <Text style={[styles.resHeading, { fontSize: screenWidth * 0.12 }]}>
             Race
@@ -292,151 +285,187 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
             <View style={styles.raceCard}>
               <Text style={styles.raceDistance}>10K</Text>
               <Text style={styles.raceDescription}>
-                For professional and fitness runners.
+              For professional and fitness runners
               </Text>
             </View>
             <View style={styles.raceCard}>
               <Text style={styles.raceDistance}>5K</Text>
               <Text style={styles.raceDescription}>
-                For active citizens and working professionals.
+              For active citizens and working professionals
               </Text>
             </View>
           </View>
           <View style={[styles.raceCard, { width: '100%' }]}>
             <Text style={styles.raceDistance}>3K</Text>
             <Text style={styles.raceDescription}>
-              For families, students, patients, and caregivers.
+            For families, students, patients, and caregivers
             </Text>
           </View>
         </View>
 
-        <View style={[styles.section]}>
-          <Text style={[styles.sectionHeading, { marginTop: spacing.xl }]}>
-            Partnership & Sponsorship Opportunities
-          </Text>
-          <View style={styles.opportunityGrid}>
-            <View style={styles.opportunityRow}>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>Title Sponsorship</Text>
-                <Text style={styles.opportunityDescription}>
-                  Exclusive branding as “Yellow Ribbon Run presenting partner”.
-                </Text>
-              </View>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  Group Run Participation
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Bring teams and employees to experience the run as an internal
-                  wellbeing activity.
-                </Text>
+        <View style={styles.section}>
+       
+
+          <View style={styles.listContainer}>
+            <View style={styles.listItem}>
+              <View style={styles.listIconWrapper}></View>
+              <View style={styles.listTextContainer}>
+                <Text style={styles.listItemTitle}>On-ground awareness booths
+                </Text>               
               </View>
             </View>
 
-            <View style={styles.opportunityRow}>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  Corporate Team Participation
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Create inclusive employee engagement & extended team
-                  registrations.
-                </Text>
-              </View>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  On-Ground Engagement
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Health & wellness village, product demos, free health checks,
-                  merchandise.
-                </Text>
+            <View style={styles.listItem}>
+              <View style={styles.listIconWrapper}></View>
+              <View style={styles.listTextContainer}>
+                <Text style={styles.listItemTitle}>Live storytelling from Endo Warriors
+                </Text>               
               </View>
             </View>
 
-            <View style={styles.opportunityRow}>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  Cause Merchandise Collaboration
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Co-branded T-shirts, ribbons, souvenirs, and wellness kits.
-                </Text>
-              </View>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  Media, Radio & Wellness Promotion
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Includes branded campaigns, guest talks, influencers, and
-                  content series.
-                </Text>
+            <View style={styles.listItem}>
+              <View style={styles.listIconWrapper}></View>
+              <View style={styles.listTextContainer}>
+                <Text style={styles.listItemTitle}>Educational panels and workshops
+                </Text>               
               </View>
             </View>
 
-            <View style={styles.opportunityRow}>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  City Partner Alliances
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Host local Yellow Ribbon Runs in other cities under one
-                  national mission.
-                </Text>
+            <View style={styles.listItem}>
+              <View style={styles.listIconWrapper}></View>
+              <View style={styles.listTextContainer}>
+                <Text style={styles.listItemTitle}>Celebrity/medical ambassadors speaking up for the cause
+                </Text>               
               </View>
-              <View style={styles.opportunityCard}>
-                <Text style={styles.opportunityTitle}>
-                  Public Sector & Institutional Support
-                </Text>
-                <Text style={styles.opportunityDescription}>
-                  Collaborations to accelerate campaigns, health data sharing &
-                  empowerment education.
-                </Text>
-              </View>
-            </View>
+            </View>         
           </View>
         </View>
 
+
+
+        <View style={[styles.section]}>
+        <Text style={[styles.sectionHeading, { marginBottom:0 }]}>
+        Vision for Growth
+          </Text>
+
+          <Text style={[globalStyles.paragraphP, { marginTop:0 }]}>
+          Our future goal is to scale the Yellow Ribbon Run across India, conducting multi-city editions in key metros and Tier 1 cities, creating a pan-India movement for menstrual and reproductive health advocacy.
+          </Text>
+
+
+          <Text style={[styles.sectionHeading, { marginTop:spacing.lg }]}>
+          Partnership & Sponsorship Opportunities
+          </Text>
+
+            <Text style={globalStyles.paragraphP}>
+            The Yellow Ribbon Run offers a powerful platform for corporates, wellness brands, healthcare institutions, NGOs, and government bodies to engage in meaningful Corporate Social Responsibility (CSR) and cause marketing.
+            </Text>
+
+            <Text style={[styles.sectionHeading, { marginTop: spacing.md }]}>
+            How You Can Collaborate
+          </Text>
+
+          <View style={styles.opportunityGrid}>
+            <View style={styles.opportunityRow}>
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> Title Sponsorship</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Exclusive branding as “Yellow Ribbon Run presenting partner”.
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> Category Sponsors</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Branding and recognition for a specific race (10K, 5K, or 3K)
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text>Corporate Team Participation</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> CSR-driven employee engagement & branded team registrations
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> On-Ground Engagement</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Booths at awareness village, product demos, free health checks, merchandise
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> Cause Merchandise Collaboration</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Co-branded T-shirts, ribbons, giveaways, and medals
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> Media, Radio & Wellness Partnerships</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Brand-led campaigns, guest talks, interviews, and content series
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> City Edition Partners</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text> Help launch Yellow Ribbon Runs in other cities under co-hosting format
+                </Text>
+              </View>
+
+              <View style={styles.opportunityCard}>
+                <Text style={styles.opportunityTitle}><Text style={{fontFamily: Fonts.Bold, fontSize: screenWidth * 0.035}}>Opportunity: </Text> Public Health & Institutional Support</Text>
+                <Text style={styles.opportunityDescription}>
+                <Text style={{fontFamily: Fonts.Bold}}>Inclusions:</Text>Collaborate on awareness campaigns, health data sharing, or government outreach
+                </Text>
+              </View>
+            
+            </View>
+      
+          </View>
+
+          <Text style={[globalStyles.paragraphP, { marginTop: spacing.md }]}>
+            We invite brands, philanthropies, health-tech startups, fitness groups, and wellness platforms to come forward and partner with EFI in this landmark movement.
+            </Text>
+        </View>
+
+
+     
+
+
         <View style={styles.section}>
           <Text style={styles.sectionHeading}>
-            Why Associate with the Yellow Ribbon Run?
+          Why Associate With the Yellow Ribbon Run?
           </Text>
           <View style={styles.listContainer}>
             <View style={styles.reasonItem}>
-              <View style={styles.listIconWrapper}>
-                <YellowRibbonIcon size={20} color={colors.white} />
-              </View>
+              <View style={styles.listIconWrapper}></View>
               <Text style={styles.reasonText}>
-                Align your brand’s ideology with the endometriosis awareness
-                mission.
+              Align with India’s leading voice for endometriosis awareness (EFI)
               </Text>
             </View>
 
             <View style={styles.reasonItem}>
-              <View style={styles.listIconWrapper}>
-                <YellowRibbonIcon size={20} color={colors.white} />
-              </View>
+              <View style={styles.listIconWrapper}></View>
               <Text style={styles.reasonText}>
-                Champion women’s health, menstrual equity, and early diagnosis.
+              Champion women's health, menstrual equity, and early diagnosis
               </Text>
             </View>
 
             <View style={styles.reasonItem}>
-              <View style={styles.listIconWrapper}>
-                <YellowRibbonIcon size={20} color={colors.white} />
-              </View>
+              <View style={styles.listIconWrapper}></View>
               <Text style={styles.reasonText}>
-                Reach a high-engagement audience including youth, women,
-                doctors, and advocates.
+              Reach a high-engagement audience including youth, women, doctors, and educators
               </Text>
             </View>
 
             <View style={styles.reasonItem}>
-              <View style={styles.listIconWrapper}>
-                <YellowRibbonIcon size={20} color={colors.white} />
-              </View>
+              <View style={styles.listIconWrapper}></View>
               <Text style={styles.reasonText}>
-                Be part of a transformative, long-term public health mission.
+              Be part of a transformative, long-term public health mission
               </Text>
             </View>
           </View>
@@ -703,11 +732,10 @@ const styles = StyleSheet.create({
     lineHeight: screenWidth * 0.058,
   },
   opportunityGrid: {
-    marginTop: spacing.lg,
+ 
     gap: spacing.md,
   },
-  opportunityRow: {
-    flexDirection: 'row',
+  opportunityRow: {   
     gap: spacing.md,
   },
   opportunityCard: {

@@ -27,7 +27,12 @@ export type PageType =
   | 'conferenceVenue'
   | 'outreachPrograms'
   | 'yellowRibbonRun'
-  | 'aboutUs';
+  | 'aboutUs'
+  | 'endoCongress'
+  | 'freeSurgeryProgram'
+  | 'membershipInfo'
+  | 'contactUs'
+  | 'information';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -41,7 +46,7 @@ export function useNavigationManager() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) setCurrentPage('yellowRibbonRun');
+    if (!isAuthenticated) setCurrentPage('information');
   }, [isAuthenticated]);
 
   const navigate = {
@@ -114,6 +119,11 @@ export function useNavigationManager() {
     outreachPrograms: () => setCurrentPage('outreachPrograms'),
     yellowRibbonRun: () => setCurrentPage('yellowRibbonRun'),
     aboutUs: () => setCurrentPage('aboutUs'),
+    endoCongress: () => setCurrentPage('endoCongress'),
+    freeSurgeryProgram: () => setCurrentPage('freeSurgeryProgram'),
+    membershipInfo: () => setCurrentPage('membershipInfo'),
+    contactUs: () => setCurrentPage('contactUs'),
+    information: () => setCurrentPage('information'),
   };
 
 

@@ -967,7 +967,17 @@ boardMembercountry: {
 },
 // Board Member Card Styles
 
+cardWhite: {
+  backgroundColor: colors.white,
+  borderRadius: borderRadius.lg,
+  padding: spacing.md,
 
+  shadowColor: colors.black,
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  elevation: 3,
+},
 // QR Code Styles
 qrHeader: {
   width: '100%',
@@ -1133,6 +1143,9 @@ mbSm:{
 },
 whiteColor:{
   color: colors.white,
+},
+primaryLightColor:{
+  color: colors.primaryLight,
 },
 cardHeadingPara:{
   backgroundColor: colors.white,

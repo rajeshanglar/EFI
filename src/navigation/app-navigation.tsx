@@ -20,6 +20,7 @@ import TrainingPrograms from '../pages/training-programs/EFITrainingPrograms';
 import MembershipRegistrationForm from '../pages/membership/MembershipRegistrationForm';
 import MembershipPaymentDetails from '../pages/membership/MembershipPaymentDetails';
 import MembershipExclusiveAccess from '../pages/membership/membershipExclusiveAccess/MembershipExclusiveAccess';
+import MembershipInfo from '../pages/membership-info/MembershipInfo';
 import Board from '../pages/board/Board';
 import Profile from '../pages/profile/Profile';
 import MyPayments from '../pages/payments/MyPayments';
@@ -29,6 +30,10 @@ import ConferenceVenue from '../pages/conference/ConferenceVenue';
 import EFIOutreachPrograms from '../pages/outreach-programs/EFIOutreachPrograms';
 import AboutUs from '../pages/about-us/AboutUs';
 import YellowRibbonRun from '../pages/yellow-ribbon-run/YellowRibbonRun';
+import EndoCongress from '../pages/endo-congress/EndoCongress';
+import FreeSurgeryProgram from '../pages/free-surgery-program/FreeSurgeryProgram';
+import ContactUs from '../pages/contact-us/ContactUs';
+import Information from '../pages/information/Information';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -124,12 +129,18 @@ function AppNavigation() {
         onNavigateToMyConference={navigate.myConference}
         onNavigateToTrainingPrograms={navigate.trainingPrograms}
         onNavigateToMembership={navigate.membershipForm}
+        onNavigateToMembershipInfo={navigate.membershipInfo}
         onNavigateToBoard={navigate.board}
         onNavigateToProfile={navigate.profile}
         onNavigateToMyCards={navigate.myCards}
         onNavigateToConferenceDetails={navigate.conferenceDetails}
         onNavigateToOutreachPrograms={navigate.outreachPrograms}
         onNavigateToYellowRibbonRun={navigate.yellowRibbonRun}
+        onNavigateToAboutUs={navigate.aboutUs}
+        onNavigateToEndoCongress={navigate.endoCongress}
+        onNavigateToFreeSurgeryProgram={navigate.freeSurgeryProgram}
+        onNavigateToContactUs={navigate.contactUs}
+        onNavigateToInformation={navigate.information}
       />
     ),
     conference: (
@@ -310,6 +321,36 @@ function AppNavigation() {
     ),
     yellowRibbonRun: (
       <YellowRibbonRun
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    endoCongress: (
+      <EndoCongress
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    freeSurgeryProgram: (
+      <FreeSurgeryProgram
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    membershipInfo: (
+      <MembershipInfo
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    contactUs: (
+      <ContactUs
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    information: (
+      <Information
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
       />
