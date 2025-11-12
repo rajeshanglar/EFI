@@ -9,7 +9,7 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import {
   CalendarIconYellow,
   MapWIcon,
@@ -92,7 +92,10 @@ const LiveQA: React.FC<LiveQAProps> = ({
 
   return (
     <View style={styles.container}>
-      <Header title="Live Q&A" onBack={onBack} onNavigateToHome={onNavigateToHome} />
+      <Header title="Live Q&A"
+       onBack={onBack}
+        onNavigateToHome={onNavigateToHome}
+         onMenuItemPress={(id: any) => console.log('Menu:', id)} />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <ImageBackground

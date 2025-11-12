@@ -8,7 +8,7 @@ import {
   FlatList,
   ImageBackground,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -125,6 +125,7 @@ const MyCards: React.FC<MyCardsProps> = ({
         title="My Cards"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+          onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
       <View style={styles.contentContainer}>
       <ImageBackground
@@ -172,8 +173,8 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     width: screenWidth - spacing.md * 2 - spacing.lg * 2,
-    marginRight: spacing.lg,
-    paddingTop: spacing.xl,
+    marginRight: spacing.md,
+    paddingTop: spacing.md,
   },
   card: {
     backgroundColor: colors.white,
@@ -191,21 +192,22 @@ const styles = StyleSheet.create({
 
   cardBody: {
     backgroundColor: colors.white,
-    paddingVertical: spacing.xl,
+    paddingVertical: spacing.md,
     paddingHorizontal: spacing.md,
     alignItems: 'center',
   },
 
   qrCodeContainer: {
-    width: 180,
-    height: 180,
+    width: 170,
+    height: 170,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
   },
   qrCode: {
-    width: '100%',
-    height: '100%',
+    width: 170,
+    height:170,
+    resizeMode: 'contain',
   },
   cardName: {
     fontSize: screenWidth * 0.044,
@@ -224,12 +226,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingVertical: spacing.md,
+    marginBottom: spacing.md,
   },
   paginationDot: {
-    width: 20,
-    height: 20,
+    width: 15,
+    height: 15,
     borderRadius:100,
     backgroundColor: colors.white,
     borderWidth: 2,

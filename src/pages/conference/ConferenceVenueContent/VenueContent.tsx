@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, Linking, Alert } from 'react-native';
 import { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
 import { GradientButton } from '../../../components/GradientButton';
 import { MapWIcon, MapIcon, GetDirectionsIcon } from '../../../components/icons';
@@ -7,9 +7,17 @@ import { MapWIcon, MapIcon, GetDirectionsIcon } from '../../../components/icons'
 const { width: screenWidth } = Dimensions.get('window');
 
 export const VenueContent: React.FC = () => {
-  const handleGetDirections = () => {
-    console.log('Get Directions pressed');
-    // Open maps app with venue location
+  const handleGetDirections = async () => {
+    try {
+      const mapUrl = 'https://maps.app.goo.gl/tAHTLB9yjpEgXrcy6';
+      
+      // Google Maps URLs will automatically open in Google Maps app if installed
+      // Otherwise they'll open in the browser
+      await Linking.openURL(mapUrl);
+    } catch (error) {
+      console.error('Error opening maps:', error);
+      Alert.alert('Error', 'Unable to open maps. Please check your internet connection.');
+    }
   };
 
   return (

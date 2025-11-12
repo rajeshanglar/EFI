@@ -9,7 +9,7 @@ import {
   ImageBackground,
   Image,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
   MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
@@ -103,6 +103,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         title={isFromMyConference ? "My Conference Session" : "Session Details"}
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>

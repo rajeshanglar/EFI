@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles,{ colors, spacing, Fonts } from '../../styles/globalStyles';
 
 interface MembershipInfoProps {
@@ -20,6 +20,7 @@ const MembershipInfo: React.FC<MembershipInfoProps> = ({
         title="Membership"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
 <ScrollView
@@ -170,7 +171,7 @@ const MembershipInfo: React.FC<MembershipInfoProps> = ({
 
 
          
-        </View>
+        </View> 
       </ScrollView>
     </View>
   );

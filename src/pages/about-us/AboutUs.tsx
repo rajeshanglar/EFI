@@ -7,7 +7,7 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, { colors, spacing, Fonts } from '../../styles/globalStyles';
 import {
   SurgicalIcon,
@@ -27,13 +27,18 @@ const { width: screenWidth } = Dimensions.get('window');
 
 const AboutUs: React.FC<AboutUsProps> = ({ onBack, onNavigateToHome }) => {
   return (
+
+
+
+
     <View style={styles.container}>
-      <Header
+      
+    <Header
         title="About Us"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -184,6 +189,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onBack, onNavigateToHome }) => {
         
       </ScrollView>
     </View>
+
   );
 };
 

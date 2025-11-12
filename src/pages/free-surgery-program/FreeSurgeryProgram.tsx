@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles,{ colors, spacing, Fonts } from '../../styles/globalStyles';
 
 interface FreeSurgeryProgramProps {
@@ -20,6 +20,7 @@ const FreeSurgeryProgram: React.FC<FreeSurgeryProgramProps> = ({
         title="Free Surgery Program"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <ScrollView
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     borderRadius: spacing.md,
     padding: spacing.lg,
     shadowColor: colors.black,
-    shadowOffset: {
+    shadowOffset: { 
       width: 0,
       height: 2,
     },

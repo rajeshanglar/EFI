@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView,  ImageBackground, Dimensions } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { colors, spacing, borderRadius, Fonts, globalStyles } from '../../styles/globalStyles';
 import { MapIcon, PhoneIcon, EmailIcon, RecentQuestionsIcon } from '../../components/icons';
 
@@ -18,6 +18,7 @@ const ContactUs: React.FC<ContactUsProps> = ({ onBack, onNavigateToHome }) => {
         title="Contact us"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 <View style={styles.containerFullWidth}>
 <ImageBackground

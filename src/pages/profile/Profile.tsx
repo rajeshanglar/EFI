@@ -8,7 +8,7 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import {
   UserIcon,
@@ -52,7 +52,10 @@ const Profile: React.FC<ProfileProps> = ({
         title="Profile"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: string) => console.log('Menu:', id)}
       />
+
+      
 <View style={styles.containerFullWidth}>
       <ImageBackground
           source={require('../../assets/images/ribbon-color-img.png')}

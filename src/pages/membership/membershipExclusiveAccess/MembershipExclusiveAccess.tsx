@@ -6,7 +6,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import { Header } from '../../../components/Header';
+import Header from '../../../components/Header';
 import globalStyles, { colors, spacing } from '../../../styles/globalStyles';
 import { VideosContent } from './VideosContent';
 import { DocumentsContent } from './DocumentsContent';
@@ -46,6 +46,7 @@ const MembershipExclusiveAccess: React.FC<MembershipExclusiveAccessProps> = ({
         title="Membership Exclusive Access"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       {/* Tabs */}

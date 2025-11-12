@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles from '../../styles/globalStyles';
 import { informationStyles as styles } from './styles';
 import AZEndometriosisContent from './components/AZEndometriosisContent';
@@ -44,6 +44,7 @@ const Information: React.FC<InformationProps> = ({
         title="Information"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <View style={globalStyles.tierTabs}>

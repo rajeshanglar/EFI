@@ -8,7 +8,7 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { CardRightArrowIcon, CloseIcon, YellowRibbonIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 
@@ -204,6 +204,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
         title="My Conference"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       {/* Date Selection Tabs */}

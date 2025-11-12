@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { GradientButton } from '../../components/GradientButton';
 import { SuccessModal } from '../../components/SuccessModal';
 
@@ -62,6 +62,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         title="Membership Payment Details"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       {/* User Information Section */}

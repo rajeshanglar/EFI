@@ -7,7 +7,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, {
   colors,
   spacing,
@@ -56,6 +56,7 @@ const EFITrainingPrograms: React.FC<TrainingProgramsProps> = ({
         title="EFI Training Programs"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <View style={globalStyles.tierTabs}>

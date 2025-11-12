@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, {
   colors,
   spacing,
@@ -47,7 +47,10 @@ const EndoCongress: React.FC<EndoCongressProps> = ({
 
   return (
     <View style={styles.container}>
-      <Header title="Endo Congress" onBack={onBack} onNavigateToHome={onNavigateToHome} />
+      <Header title="Endo Congress"
+       onBack={onBack}
+        onNavigateToHome={onNavigateToHome}
+         onMenuItemPress={(id: any) => console.log('Menu:', id)} />
 
       <ScrollView
         style={styles.scrollView}

@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, {
   colors,
   spacing,
@@ -58,6 +58,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
         title="Yellow Ribbon Run"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <ScrollView

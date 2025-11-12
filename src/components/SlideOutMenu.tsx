@@ -8,6 +8,8 @@ import {
   ScrollView,
   Animated,
   ImageBackground,
+  Linking,
+  Alert,
 } from 'react-native';
 import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
 import {
@@ -50,6 +52,12 @@ interface MenuItem {
   icon: React.ComponentType<any>;
 }
 
+interface SocialIconConfig {
+  id: string;
+  icon: React.ComponentType<any>;
+  url: string;
+}
+
 interface SlideOutMenuProps {
   isVisible: boolean;
   onClose: () => void;
@@ -57,6 +65,7 @@ interface SlideOutMenuProps {
   onLogout?: () => void;
   onLoginPress?: () => void;
   onProfilePress?: () => void;
+  socialIcons?: SocialIconConfig[]; // Optional: override default social icons
 }
 
 const conferenceAccessItems = [
@@ -69,8 +78,8 @@ const conferenceAccessItems = [
 ];
 
 const menuItems: MenuItem[] = [
-  { id: 'home', title: 'Home', icon: HomeIcon },
-  { id: 'profile', title: 'Profile', icon: ProfileIcon },
+  // { id: 'home', title: 'Home', icon: HomeIcon },
+  // { id: 'profile', title: 'Profile', icon: ProfileIcon },
   { id: 'about', title: 'About us', icon: AboutUsIcon },
   { id: 'board', title: 'Board', icon: BoardIcon },
   { id: 'information', title: 'Information', icon: AboutUsIcon },
@@ -86,11 +95,29 @@ const menuItems: MenuItem[] = [
   { id: 'contact', title: 'Contact Us', icon: ContactIcon },
 ];
 
-const socialIcons = [
-  { id: 'facebook', icon: FacebookIcon },
-  { id: 'twitter', icon: TwitterIcon },
-  { id: 'linkedin', icon: LinkedinIcon },
-  { id: 'youtube', icon: YoutubeIcon },
+// Default social icons configuration
+// You can override these by passing socialIcons prop to SlideOutMenu
+const defaultSocialIcons: SocialIconConfig[] = [
+  { 
+    id: 'facebook', 
+    icon: FacebookIcon, 
+    url: 'https://www.facebook.com/endofoundindia#' // Replace with your Facebook page URL
+  },
+  { 
+    id: 'instagram', 
+    icon: TwitterIcon, 
+    url: 'https://www.instagram.com/endofoundindia/?igshid=YmMyMTA2M2Y%3D' // Replace with your Twitter handle URL
+  },
+  { 
+    id: 'linkedin', 
+    icon: LinkedinIcon, 
+    url: 'https://www.linkedin.com/uas/login?session_redirect=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fendometriosis-foundation-india%2Fabout%2F' // Replace with your LinkedIn page URL
+  },
+  { 
+    id: 'youtube', 
+    icon: YoutubeIcon, 
+    url: 'https://www.youtube.com/@EndometriosisFoundationofIndia' // Replace with your YouTube channel URL
+  },
 ];
 
 const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
@@ -100,6 +127,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   onLogout,
   onLoginPress,
   onProfilePress,
+  socialIcons = defaultSocialIcons, // Use provided social icons or default
 }) => {
   const translateX = useRef(new Animated.Value(screenWidth)).current; // start off-screen right
 
@@ -118,6 +146,20 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
 
   const handleMenuItemPress = (itemId: string) => {
     onMenuItemPress(itemId);
+  };
+
+  const handleSocialIconPress = async (url: string, platform: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert('Error', `Cannot open ${platform} link. Please check the URL.`);
+      }
+    } catch (error) {
+      console.error(`Error opening ${platform} link:`, error);
+      Alert.alert('Error', `Failed to open ${platform} link.`);
+    }
   };
 
   const renderMenuItem = (item: MenuItem) => {
@@ -156,6 +198,10 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
     );
   };
 
+  const openLink = (url: string) => {
+    Linking.openURL(url).catch(err => console.error("Couldn't load page", err));
+  };
+
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.sidebar}>
@@ -188,13 +234,24 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
           </TouchableOpacity>
         </View>
 
-        <View style={styles.socialSection}>
-          {socialIcons.map(({ id, icon: Icon }) => (
-            <TouchableOpacity key={id} style={styles.socialIcon}>
+        {/* <View style={styles.socialSection}>
+          {socialIcons.map(({ id, icon: Icon, url }) => (
+            <TouchableOpacity 
+              key={id} 
+              style={styles.socialIcon}
+              onPress={() => handleSocialIconPress(url, id)}
+            >
               <Icon size={20} color={colors.white} />
             </TouchableOpacity>
           ))}
-        </View>
+        </View> */}
+        <View style={styles.socialSection}>
+  {defaultSocialIcons.map(({ id, icon: Icon, url }) => (
+    <TouchableOpacity key={id} onPress={() => openLink(url)} style={styles.socialIcon}>
+      <Icon size={22} color="white" />
+    </TouchableOpacity>
+  ))}
+</View>
       </View>
 
       <View style={styles.mainContent}>
@@ -232,7 +289,7 @@ const styles = StyleSheet.create({
     right: 0, // ✅ positioned on the right
     width: '100%',
     flexDirection: 'row', // ✅ sidebar stays on the right edge
-    zIndex: 1000,
+    zIndex: 10000,
   },
   sidebar: {
     width: 60,

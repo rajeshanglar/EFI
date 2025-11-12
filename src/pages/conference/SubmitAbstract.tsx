@@ -15,7 +15,7 @@ import { pick, types } from '@react-native-documents/picker';
 
 import type { KeyboardTypeOptions } from 'react-native';
 
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { GradientButton } from '../../components/GradientButton';
 import { RefreshIcon, WhiteMyCardsIcon } from '../../components/icons';
 import globalStyles, {
@@ -110,7 +110,10 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
 
   return (
     <View style={styles.container}>
-      <Header title="Submit Abstract" onBack={onBack} onNavigateToHome={onNavigateToHome} />
+      <Header title="Submit Abstract"
+       onBack={onBack}
+        onNavigateToHome={onNavigateToHome}
+         onMenuItemPress={(id: any) => console.log('Menu:', id)} />
 
 
       <Formik
@@ -165,6 +168,7 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
             setFieldValue('acceptDeclaration', !values.acceptDeclaration);
 
           return (
+            <>
             <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -174,277 +178,278 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
                keyboardShouldPersistTaps="handled"
               >
                 <View style={styles.bottomContainer}>
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Basic Details</Text>
-                  {renderTextField(
-                    'Title',
-                    'title',
-                    values.title,
-                    handleChange('title'),
-                    () => handleBlur('title'),
-                    errors.title,
-                    touched.title,
-                    { placeholder: 'Enter title', autoCapitalize: 'words' },
-                  )}
-                  {renderTextField(
-                    'Full Name',
-                    'fullName',
-                    values.fullName,
-                    handleChange('fullName'),
-                    () => handleBlur('fullName'),
-                    errors.fullName,
-                    touched.fullName,
-                    { placeholder: 'Enter your full name', autoCapitalize: 'words' },
-                  )}
-                  {renderTextField(
-                    'Email Id',
-                    'email',
-                    values.email,
-                    handleChange('email'),
-                    () => handleBlur('email'),
-                    errors.email,
-                    touched.email,
-                    { placeholder: 'Enter your email', keyboardType: 'email-address', autoCapitalize: 'none' },
-                  )}
-                  {renderTextField(
-                    'Mobile Number',
-                    'mobileNumber',
-                    values.mobileNumber,
-                    handleChange('mobileNumber'),
-                    () => handleBlur('mobileNumber'),
-                    errors.mobileNumber,
-                    touched.mobileNumber,
-                    { placeholder: 'Enter your mobile number', keyboardType: 'phone-pad', autoCapitalize: 'none' },
-                  )}
-                  {renderTextField(
-                    'Registration Number',
-                    'registrationNumber',
-                    values.registrationNumber,
-                    handleChange('registrationNumber'),
-                    () => handleBlur('registrationNumber'),
-                    errors.registrationNumber,
-                    touched.registrationNumber,
-                    { placeholder: 'Enter your registration number', autoCapitalize: 'characters' },
-                  )}
-                  {renderTextField(
-                    'Institute / Hospital / Organization',
-                    'institute',
-                    values.institute,
-                    handleChange('institute'),
-                    () => handleBlur('institute'),
-                    errors.institute,
-                    touched.institute,
-                    { placeholder: 'Enter institute / hospital / organization', autoCapitalize: 'words' },
-                  )}
-                </View>
+                  <View style={[styles.section, { marginTop:20 }]}>
+                    <Text style={styles.sectionTitle}>Basic Details</Text>
+                    {renderTextField(
+                      'Title',
+                      'title',
+                      values.title,
+                      handleChange('title'),
+                      () => handleBlur('title'),
+                      errors.title,
+                      touched.title,
+                      { placeholder: 'Enter title', autoCapitalize: 'words' },
+                    )}
+                    {renderTextField(
+                      'Full Name',
+                      'fullName',
+                      values.fullName,
+                      handleChange('fullName'),
+                      () => handleBlur('fullName'),
+                      errors.fullName,
+                      touched.fullName,
+                      { placeholder: 'Enter your full name', autoCapitalize: 'words' },
+                    )}
+                    {renderTextField(
+                      'Email Id',
+                      'email',
+                      values.email,
+                      handleChange('email'),
+                      () => handleBlur('email'),
+                      errors.email,
+                      touched.email,
+                      { placeholder: 'Enter your email', keyboardType: 'email-address', autoCapitalize: 'none' },
+                    )}
+                    {renderTextField(
+                      'Mobile Number',
+                      'mobileNumber',
+                      values.mobileNumber,
+                      handleChange('mobileNumber'),
+                      () => handleBlur('mobileNumber'),
+                      errors.mobileNumber,
+                      touched.mobileNumber,
+                      { placeholder: 'Enter your mobile number', keyboardType: 'phone-pad', autoCapitalize: 'none' },
+                    )}
+                    {renderTextField(
+                      'Registration Number',
+                      'registrationNumber',
+                      values.registrationNumber,
+                      handleChange('registrationNumber'),
+                      () => handleBlur('registrationNumber'),
+                      errors.registrationNumber,
+                      touched.registrationNumber,
+                      { placeholder: 'Enter your registration number', autoCapitalize: 'characters' },
+                    )}
+                    {renderTextField(
+                      'Institute / Hospital / Organization',
+                      'institute',
+                      values.institute,
+                      handleChange('institute'),
+                      () => handleBlur('institute'),
+                      errors.institute,
+                      touched.institute,
+                      { placeholder: 'Enter institute / hospital / organization', autoCapitalize: 'words' },
+                    )}
+                  </View>
 
-                <View style={styles.secondSection}>
-                  <Text style={styles.sectionTitle}>Author Details</Text>
-                  <FieldArray name="authors">
-                    {({ push, remove }) => {
-                      const authorErrors =
-                        errors.authors as FormikErrors<SubmitAbstractAuthor>[] | undefined;
-                      const authorTouched =
-                        touched.authors as FormikTouched<SubmitAbstractAuthor>[] | undefined;
+                  <View style={styles.secondSection}>
+                    <Text style={styles.sectionTitle}>Author Details</Text>
+                    <FieldArray name="authors">
+                      {({ push, remove }) => {
+                        const authorErrors =
+                          errors.authors as FormikErrors<SubmitAbstractAuthor>[] | undefined;
+                        const authorTouched =
+                          touched.authors as FormikTouched<SubmitAbstractAuthor>[] | undefined;
 
-                      return (
-                      <>
-                        {values.authors.map((author, index) => {
-                          const namePath = `authors[${index}].name` as const;
-                          const affiliationPath = `authors[${index}].affiliation` as const;
-                          const currentAuthorError = authorErrors?.[index];
-                          const currentAuthorTouched = authorTouched?.[index];
+                        return (
+                        <>
+                          {values.authors.map((author, index) => {
+                            const namePath = `authors[${index}].name` as const;
+                            const affiliationPath = `authors[${index}].affiliation` as const;
+                            const currentAuthorError = authorErrors?.[index];
+                            const currentAuthorTouched = authorTouched?.[index];
 
-                          return (
-                            <View key={`author-${index}`} style={styles.authorCard}>
-                              <View style={styles.authorHeader}>
-                                <Text style={styles.authorTitle}>{`Author ${index + 1}`}</Text>
-                                {index > 0 ? (
-                                  <TouchableOpacity
-                                    onPress={() => remove(index)}
-                                    style={styles.removeAuthorButton}
-                                  >
-                                    <Text style={styles.removeAuthorText}>Remove</Text>
-                                  </TouchableOpacity>
-                                ) : null}
+                            return (
+                              <View key={`author-${index}`} style={styles.authorCard}>
+                                <View style={styles.authorHeader}>
+                                  <Text style={styles.authorTitle}>{`Author ${index + 1}`}</Text>
+                                  {index > 0 ? (
+                                    <TouchableOpacity
+                                      onPress={() => remove(index)}
+                                      style={styles.removeAuthorButton}
+                                    >
+                                      <Text style={styles.removeAuthorText}>Remove</Text>
+                                    </TouchableOpacity>
+                                  ) : null}
+                                </View>
+                                {renderTextField(
+                                  'Author Name',
+                                  namePath,
+                                  author.name,
+                                  handleChange(namePath),
+                                  () => handleBlur(namePath),
+                                  currentAuthorError?.name,
+                                  currentAuthorTouched?.name,
+                                  { placeholder: 'Enter author name', autoCapitalize: 'words' },
+                                )}
+                                {renderTextField(
+                                  'Affiliation / Institute',
+                                  affiliationPath,
+                                  author.affiliation,
+                                  handleChange(affiliationPath),
+                                  () => handleBlur(affiliationPath),
+                                  currentAuthorError?.affiliation,
+                                  currentAuthorTouched?.affiliation,
+                                  { placeholder: 'Enter affiliation / institute', autoCapitalize: 'words' },
+                                )}
                               </View>
-                              {renderTextField(
-                                'Author Name',
-                                namePath,
-                                author.name,
-                                handleChange(namePath),
-                                () => handleBlur(namePath),
-                                currentAuthorError?.name,
-                                currentAuthorTouched?.name,
-                                { placeholder: 'Enter author name', autoCapitalize: 'words' },
-                              )}
-                              {renderTextField(
-                                'Affiliation / Institute',
-                                affiliationPath,
-                                author.affiliation,
-                                handleChange(affiliationPath),
-                                () => handleBlur(affiliationPath),
-                                currentAuthorError?.affiliation,
-                                currentAuthorTouched?.affiliation,
-                                { placeholder: 'Enter affiliation / institute', autoCapitalize: 'words' },
-                              )}
-                            </View>
-                          );
-                        })}
-                        <TouchableOpacity
-                          onPress={() => push({ name: '', affiliation: '' })}
-                          style={styles.addAuthorButton}
-                        >
-                          <Text style={styles.addAuthorText}>+ Add</Text>
-                        </TouchableOpacity>
-                        {typeof errors.authors === 'string' && (
-                          <Text style={globalStyles.fieldErrorText}>{errors.authors}</Text>
-                        )}
-                      </>);
-                    }}
-                  </FieldArray>
-                </View>
-
-                <View style={styles.secondSection}>
-                  <Text style={styles.sectionTitle}>Abstract Details</Text>
-                  {renderTextField(
-                    'Abstract Type',
-                    'abstractType',
-                    values.abstractType,
-                    handleChange('abstractType'),
-                    () => handleBlur('abstractType'),
-                    errors.abstractType,
-                    touched.abstractType,
-                    { placeholder: 'Enter abstract type', autoCapitalize: 'words' },
-                  )}
-                  {renderTextField(
-                    'Abstract Topics',
-                    'abstractTopics',
-                    values.abstractTopics,
-                    handleChange('abstractTopics'),
-                    () => handleBlur('abstractTopics'),
-                    errors.abstractTopics,
-                    touched.abstractTopics,
-                    { placeholder: 'Enter abstract topics', autoCapitalize: 'sentences' },
-                  )}
-                  {renderTextField(
-                    'Title',
-                    'abstractTitle',
-                    values.abstractTitle,
-                    handleChange('abstractTitle'),
-                    () => handleBlur('abstractTitle'),
-                    errors.abstractTitle,
-                    touched.abstractTitle,
-                    { placeholder: 'Enter abstract title', autoCapitalize: 'sentences' },
-                  )}
-                  {renderTextField(
-                    'Description',
-                    'abstractDescription',
-                    values.abstractDescription,
-                    handleChange('abstractDescription'),
-                    () => handleBlur('abstractDescription'),
-                    errors.abstractDescription,
-                    touched.abstractDescription,
-                    {
-                      placeholder: 'Enter abstract description',
-                      multiline: true,
-                      numberOfLines: 4,
-                      autoCapitalize: 'sentences',
-                    },
-                  )}
-
-                  <View style={globalStyles.fieldContainer}>
-                    <Text style={globalStyles.fieldLabel}>
-                      Upload Abstract (only .doc, .docx, or .pdf files)
-                      <Text style={styles.requiredAsterisk}> *</Text>
-                    </Text>
-                    <TouchableOpacity
-                      style={[
-                        styles.filePickerButton,
-                        errors.abstractFileName && touched.abstractFileName
-                          ? styles.filePickerButtonError
-                          : null,
-                      ]}
-                      onPress={handleSelectDocument}
-                    >
-                      <Text style={styles.filePickerButtonText}>Choose File</Text>
-                    </TouchableOpacity>
-                    {values.abstractFileName ? (
-                      <Text style={styles.fileNameText}>{values.abstractFileName}</Text>
-                    ) : null}
-                    {documentError ? (
-                      <Text style={globalStyles.fieldErrorText}>{documentError}</Text>
-                    ) : null}
-                    {touched.abstractFileName && errors.abstractFileName ? (
-                      <Text style={globalStyles.fieldErrorText}>{errors.abstractFileName}</Text>
-                    ) : null}
+                            );
+                          })}
+                          <TouchableOpacity
+                            onPress={() => push({ name: '', affiliation: '' })}
+                            style={styles.addAuthorButton}
+                          >
+                            <Text style={styles.addAuthorText}>+ Add</Text>
+                          </TouchableOpacity>
+                          {typeof errors.authors === 'string' && (
+                            <Text style={globalStyles.fieldErrorText}>{errors.authors}</Text>
+                          )}
+                        </>);
+                      }}
+                    </FieldArray>
                   </View>
-                </View>
 
-                <View style={styles.section}>
-                  <TouchableOpacity style={styles.checkboxRow} onPress={toggleDeclaration}>
-                    <View
-                      style={[
-                        styles.checkbox,
-                        values.acceptDeclaration && styles.checkboxChecked,
-                      ]}
-                    >
-                      {values.acceptDeclaration ? <Text style={styles.checkboxMark}>✓</Text> : null}
-                    </View>
-                    <Text style={styles.checkboxText}>
-                      By submitting this form, I confirm that the first author will be registered for
-                      the Congress by 31st December 2025 for the abstract to be accepted.
-                    </Text>
-                  </TouchableOpacity>
-                  {touched.acceptDeclaration && errors.acceptDeclaration ? (
-                    <Text style={globalStyles.fieldErrorText}>{errors.acceptDeclaration}</Text>
-                  ) : null}
-                </View>
+                  <View style={styles.secondSection}>
+                    <Text style={styles.sectionTitle}>Abstract Details</Text>
+                    {renderTextField(
+                      'Abstract Type',
+                      'abstractType',
+                      values.abstractType,
+                      handleChange('abstractType'),
+                      () => handleBlur('abstractType'),
+                      errors.abstractType,
+                      touched.abstractType,
+                      { placeholder: 'Enter abstract type', autoCapitalize: 'words' },
+                    )}
+                    {renderTextField(
+                      'Abstract Topics',
+                      'abstractTopics',
+                      values.abstractTopics,
+                      handleChange('abstractTopics'),
+                      () => handleBlur('abstractTopics'),
+                      errors.abstractTopics,
+                      touched.abstractTopics,
+                      { placeholder: 'Enter abstract topics', autoCapitalize: 'sentences' },
+                    )}
+                    {renderTextField(
+                      'Title',
+                      'abstractTitle',
+                      values.abstractTitle,
+                      handleChange('abstractTitle'),
+                      () => handleBlur('abstractTitle'),
+                      errors.abstractTitle,
+                      touched.abstractTitle,
+                      { placeholder: 'Enter abstract title', autoCapitalize: 'sentences' },
+                    )}
+                    {renderTextField(
+                      'Description',
+                      'abstractDescription',
+                      values.abstractDescription,
+                      handleChange('abstractDescription'),
+                      () => handleBlur('abstractDescription'),
+                      errors.abstractDescription,
+                      touched.abstractDescription,
+                      {
+                        placeholder: 'Enter abstract description',
+                        multiline: true,
+                        numberOfLines: 4,
+                        autoCapitalize: 'sentences',
+                      },
+                    )}
 
-                <View style={styles.secondSection}>
-                
-                  <View style={globalStyles.fieldContainer}>
-                    <View style={globalStyles.formCaptchaContainer}>
-                      <View style={styles.captchaCodeWrapper}>
-                        <Text style={globalStyles.formCaptchaCode}>{captchaCode}</Text>
-                      </View>
-                      <TextInput
-                        style={globalStyles.formCaptchaInput}
-                        placeholder="Enter CAPTCHA"
-                        placeholderTextColor={colors.gray}
-                        value={values.captcha}
-                        onChangeText={handleChange('captcha')}
-                        onBlur={() => handleBlur('captcha')}
-                        autoCapitalize="characters"
-                        maxLength={6}
-                      />
+                    <View style={globalStyles.fieldContainer}>
+                      <Text style={globalStyles.fieldLabel}>
+                        Upload Abstract (only .doc, .docx, or .pdf files)
+                        <Text style={styles.requiredAsterisk}> *</Text>
+                      </Text>
                       <TouchableOpacity
-                        style={globalStyles.formRefreshButton}
-                        onPress={refreshCaptcha}
+                        style={[
+                          styles.filePickerButton,
+                          errors.abstractFileName && touched.abstractFileName
+                            ? styles.filePickerButtonError
+                            : null,
+                        ]}
+                        onPress={handleSelectDocument}
                       >
-                        <RefreshIcon size={20} color={colors.primary} />
+                        <Text style={styles.filePickerButtonText}>Choose File</Text>
                       </TouchableOpacity>
+                      {values.abstractFileName ? (
+                        <Text style={styles.fileNameText}>{values.abstractFileName}</Text>
+                      ) : null}
+                      {documentError ? (
+                        <Text style={globalStyles.fieldErrorText}>{documentError}</Text>
+                      ) : null}
+                      {touched.abstractFileName && errors.abstractFileName ? (
+                        <Text style={globalStyles.fieldErrorText}>{errors.abstractFileName}</Text>
+                      ) : null}
                     </View>
-                    {touched.captcha && errors.captcha ? (
-                      <Text style={globalStyles.fieldErrorText}>{errors.captcha}</Text>
+                  </View>
+
+                  <View style={styles.section}>
+                    <TouchableOpacity style={styles.checkboxRow} onPress={toggleDeclaration}>
+                      <View
+                        style={[
+                          styles.checkbox,
+                          values.acceptDeclaration && styles.checkboxChecked,
+                        ]}
+                      >
+                        {values.acceptDeclaration ? <Text style={styles.checkboxMark}>✓</Text> : null}
+                      </View>
+                      <Text style={styles.checkboxText}>
+                        By submitting this form, I confirm that the first author will be registered for
+                        the Congress by 31st December 2025 for the abstract to be accepted.
+                      </Text>
+                    </TouchableOpacity>
+                    {touched.acceptDeclaration && errors.acceptDeclaration ? (
+                      <Text style={globalStyles.fieldErrorText}>{errors.acceptDeclaration}</Text>
                     ) : null}
                   </View>
-                </View>
+
+                  <View style={styles.secondSection}>
+                  
+                    <View style={globalStyles.fieldContainer}>
+                      <View style={globalStyles.formCaptchaContainer}>
+                        <View style={styles.captchaCodeWrapper}>
+                          <Text style={globalStyles.formCaptchaCode}>{captchaCode}</Text>
+                        </View>
+                        <TextInput
+                          style={globalStyles.formCaptchaInput}
+                          placeholder="Enter CAPTCHA"
+                          placeholderTextColor={colors.gray}
+                          value={values.captcha}
+                          onChangeText={handleChange('captcha')}
+                          onBlur={() => handleBlur('captcha')}
+                          autoCapitalize="characters"
+                          maxLength={6}
+                        />
+                        <TouchableOpacity
+                          style={globalStyles.formRefreshButton}
+                          onPress={refreshCaptcha}
+                        >
+                          <RefreshIcon size={20} color={colors.primary} />
+                        </TouchableOpacity>
+                      </View>
+                      {touched.captcha && errors.captcha ? (
+                        <Text style={globalStyles.fieldErrorText}>{errors.captcha}</Text>
+                      ) : null}
+                    </View>
+                  </View>
                 </View>
           
               </ScrollView>
 
-              <View style={styles.footerBtContainer}>
+
+             
+            </KeyboardAvoidingView>
+
+            <View style={styles.footerBtContainer}>
         <GradientButton
           title="SUBMIT"
           onPress={() => handleSubmit()}
           disabled={!isValid}         
         />
       </View>
-             
-            </KeyboardAvoidingView>
-
-            
+            </>
           );
           
         }}
@@ -461,7 +466,7 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     flex: 1,
-    paddingBottom:30,
+    paddingBottom:100,
   },
   flex: {
     flex: 1,
@@ -469,7 +474,7 @@ const styles = StyleSheet.create({
 
   footerBtContainer: {
     position: 'absolute',
-    bottom: Dimensions.get('window').height * -0.1,
+    bottom: Dimensions.get('window').height * 0,
     left: 0,
     right: 0,
     backgroundColor: colors.lightGray,

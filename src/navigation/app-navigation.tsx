@@ -1,5 +1,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigationManager } from '../hooks/use-navigation-manager';
+import { NavigationProvider } from '../contexts/NavigationContext';
+import { MenuProvider } from '../contexts/MenuContext';
 import React, { JSX, Suspense } from 'react';
 import { ActivityIndicator, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -373,19 +375,23 @@ function AppNavigation() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
-      <Suspense
-        fallback={
-          <ActivityIndicator
-            size="large"
-            color={colors.primaryLight}
-            style={{ flex: 1 }}
-          />
-        }
-      >
-        {pages[currentPage] || <HomePage />}
-      </Suspense>
-    </SafeAreaView>
+    <NavigationProvider navigate={navigate} currentPage={currentPage}>
+      <MenuProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.primary }}>
+          <Suspense
+            fallback={
+              <ActivityIndicator
+                size="large"
+                color={colors.primaryLight}
+                style={{ flex: 1 }}
+              />
+            }
+          >
+            {pages[currentPage] || <HomePage />}
+          </Suspense>
+        </SafeAreaView>
+      </MenuProvider>
+    </NavigationProvider>
   );
 }
 

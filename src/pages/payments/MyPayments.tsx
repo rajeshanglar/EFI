@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { DownloadWhiteIcon } from '../../components/icons';
 
@@ -66,6 +66,7 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
         title="My Payments"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <ScrollView

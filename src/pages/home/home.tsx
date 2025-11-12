@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -18,9 +18,10 @@ import {
 } from '../../styles/globalStyles';
 import { ActionButton, Card } from '.';
 import { NotificationBadge } from '../../components/NotificationBadge';
-import SlideOutMenu from '../../components/SlideOutMenu';
+import { SharedMenu } from '../../components/SharedMenu';
 import LanguageSelector from '../../components/LanguageSelector';
-
+import Header from '../../components/Header';
+import { useMenu } from '../../contexts/MenuContext';
 import {
   AbstractIcon,
   ArrowRightIcon,
@@ -36,6 +37,7 @@ import {
 } from '../../components/icons';
 import EfiBoard from '../../components/EfiBoard';
 import GradientButton from '../../components/GradientButton';
+
 
 interface HomePageProps {
   onNavigateToConference?: () => void;
@@ -80,7 +82,7 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToInformation,
   onNavigateToSubmitAbstract,
 }) => {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const { openMenu } = useMenu();
 
   const actionButtons = [
     {
@@ -116,68 +118,9 @@ const HomePage: React.FC<HomePageProps> = ({
     },
   ];
 
-  const handleMenuItemPress = (itemId: string) => {
-    switch (itemId) {
-      case 'myConference':
-        onNavigateToMyConference?.();
-        setIsMenuVisible(false);
-        break;
-      case 'training':
-        onNavigateToTrainingPrograms?.();
-        setIsMenuVisible(false);
-        break;
-      case 'conference':
-        onNavigateToConference?.();
-        setIsMenuVisible(false);
-        break;
-      case 'board':
-        onNavigateToBoard?.();
-        setIsMenuVisible(false);
-        break;
-      case 'information':
-        onNavigateToInformation?.();
-        setIsMenuVisible(false);
-        break;
-      case 'about':
-        onNavigateToAboutUs?.();
-        setIsMenuVisible(false);
-        break;
-      case 'membership':
-        onNavigateToMembershipInfo?.();
-        setIsMenuVisible(false);
-        break;
-      case 'profile':
-        onNavigateToProfile?.();
-        setIsMenuVisible(false);
-        break;
-      case 'outreach':
-        onNavigateToOutreachPrograms?.();
-        setIsMenuVisible(false);
-        break;
-      case 'run':
-        onNavigateToYellowRibbonRun?.();
-        setIsMenuVisible(false);
-        break;
-      case 'congress':
-        onNavigateToEndoCongress?.();
-        setIsMenuVisible(false);
-        break;
-      case 'surgery':
-        onNavigateToFreeSurgeryProgram?.();
-        setIsMenuVisible(false);
-        break;
-      case 'contact':
-        onNavigateToContactUs?.();
-        setIsMenuVisible(false);
-        break;
-      default:
-        console.log('Menu item pressed:', itemId);
-        setIsMenuVisible(false);
-        break;
-    }
-  };
 
   return (
+    
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -194,7 +137,7 @@ const HomePage: React.FC<HomePageProps> = ({
             }
             initialLanguage="en"
           />
-          <TouchableOpacity onPress={() => setIsMenuVisible(true)}>
+          <TouchableOpacity onPress={openMenu}>
             <MenuIcon size={25} color={colors.white} />
           </TouchableOpacity>
         </View>
@@ -296,10 +239,7 @@ const HomePage: React.FC<HomePageProps> = ({
           }
         />
       </View>
-      <SlideOutMenu
-        isVisible={isMenuVisible}
-        onClose={() => setIsMenuVisible(false)}
-        onMenuItemPress={handleMenuItemPress}
+      <SharedMenu
         onLogout={onLogout}
         onLoginPress={onNavigateToLogin}
         onProfilePress={onNavigateToProfile}

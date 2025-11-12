@@ -9,7 +9,7 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import {
   CalendarIconYellow,
   MapWIcon,
@@ -85,7 +85,10 @@ const Handouts: React.FC<HandoutsProps> = ({
 
   return (
     <View style={styles.container}>
-      <Header title="Handouts" onBack={onBack} onNavigateToHome={onNavigateToHome} />
+      <Header title="Handouts"
+       onBack={onBack}
+        onNavigateToHome={onNavigateToHome}
+         onMenuItemPress={(id: any) => console.log('Menu:', id)} />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <ImageBackground

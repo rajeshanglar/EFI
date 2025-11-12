@@ -21,7 +21,7 @@ import {
   InformationIcon,
   CardRightArrowIcon,
 } from '../../components/icons';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -76,6 +76,12 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
   return (
     <View style={styles.container}>
+              <Header
+          title="Conference Registration"
+          onBack={onBack}
+          onNavigateToHome={onNavigateToHome}
+          onMenuItemPress={(id: any) => console.log('Menu:', id)}
+        />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -93,11 +99,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
           </TouchableOpacity>
         </View> */}
         {/* Header */}
-        <Header
-          title="Conference Registration"
-          onBack={onBack}
-          onNavigateToHome={onNavigateToHome}
-        />
+
 
         {/* Conference Title */}
         <ImageBackground

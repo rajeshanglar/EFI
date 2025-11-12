@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Formik } from 'formik';
 import globalStyles, { colors } from '../../styles/globalStyles';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import { Dropdown } from '../../components/Dropdown';
 import { GradientButton } from '../../components/GradientButton';
 import { RefreshIcon } from '../../components/icons';
@@ -69,6 +69,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
         title="Conference Registration Form"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <View style={globalStyles.headerBottomContainer}>

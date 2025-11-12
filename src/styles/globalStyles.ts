@@ -169,6 +169,11 @@ export const globalStyles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 0,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -8,7 +8,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import globalStyles, { colors, spacing } from '../../styles/globalStyles';
 import { EndoAimContent } from './EndoAimContent';
 import { EndoHopeContent } from './EndoHopeContent';
@@ -47,6 +47,7 @@ const EFIOutreachPrograms: React.FC<EFIOutreachProgramsProps> = ({
         title="EFI Outreach Programs"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       {/* Tabs */}

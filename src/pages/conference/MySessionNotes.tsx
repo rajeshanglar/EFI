@@ -9,7 +9,7 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-import { Header } from '../../components/Header';
+import Header from '../../components/Header';
 import {
   CalendarIconYellow,
   MapWIcon,
@@ -86,6 +86,7 @@ const MySessionNotes: React.FC<MySessionNotesProps> = ({
         title="My Session Notes"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
       />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
