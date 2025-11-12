@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { Header } from '../../components/Header';
 import globalStyles from '../../styles/globalStyles';
 import { informationStyles as styles } from './styles';
@@ -7,12 +7,14 @@ import AZEndometriosisContent from './components/AZEndometriosisContent';
 import FaqsContent from './components/FaqsContent';
 import PublishedPapersContent from './components/PublishedPapersContent';
 
+
 type InformationTab = 'glossary' | 'faqs' | 'papers';
 
 interface InformationProps {
   onBack: () => void;
   onNavigateToHome: () => void;
 }
+
 
 const tabs: { key: InformationTab; label: string }[] = [
   { key: 'glossary', label: 'A–Z of Endometriosis' },

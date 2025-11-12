@@ -56,6 +56,7 @@ interface HomePageProps {
   onNavigateToFreeSurgeryProgram?: () => void;
   onNavigateToContactUs?: () => void;
   onNavigateToInformation?: () => void;
+  onNavigateToSubmitAbstract?: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -77,6 +78,7 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToFreeSurgeryProgram,
   onNavigateToContactUs,
   onNavigateToInformation,
+  onNavigateToSubmitAbstract,
 }) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
@@ -238,7 +240,13 @@ const HomePage: React.FC<HomePageProps> = ({
           
           <View style={styles.horizontalMargin}>
             <EfiBoard onViewAll={onNavigateToBoard} />
-            <TouchableOpacity style={styles.submitAbstractCard}>
+            <TouchableOpacity
+              style={styles.submitAbstractCard}
+              onPress={() =>
+                onNavigateToSubmitAbstract?.() ||
+                console.log('Submit Abstract')
+              }
+            >
               <View style={styles.abstractContent}>
                 <AbstractIcon size={40} color={colors.white} />
                 <View style={styles.abstractTextContainer}>

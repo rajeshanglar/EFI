@@ -32,7 +32,8 @@ export type PageType =
   | 'freeSurgeryProgram'
   | 'membershipInfo'
   | 'contactUs'
-  | 'information';
+  | 'information'
+  | 'submitAbstract';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -46,7 +47,7 @@ export function useNavigationManager() {
   );
 
   useEffect(() => {
-    if (!isAuthenticated) setCurrentPage('information');
+    if (!isAuthenticated) setCurrentPage('home');
   }, [isAuthenticated]);
 
   const navigate = {
@@ -124,6 +125,7 @@ export function useNavigationManager() {
     membershipInfo: () => setCurrentPage('membershipInfo'),
     contactUs: () => setCurrentPage('contactUs'),
     information: () => setCurrentPage('information'),
+    submitAbstract: () => setCurrentPage('submitAbstract'),
   };
 
 

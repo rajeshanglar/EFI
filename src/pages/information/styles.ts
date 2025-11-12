@@ -1,4 +1,5 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
+const { width: screenWidth } = Dimensions.get('window');
 import {
   colors,
   spacing,
@@ -7,6 +8,9 @@ import {
 } from '../../styles/globalStyles';
 
 export const informationStyles = StyleSheet.create({
+  screenWidth: {
+    width: screenWidth,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.white,
@@ -44,10 +48,33 @@ export const informationStyles = StyleSheet.create({
     fontFamily: Fonts.SemiBold,
     color: colors.primary,
   },
-  glossaryList: {
+  azList: {
     gap: spacing.md,
   },
-  glossaryCard: {
+  bulletDotAccent: {
+    width: 14,
+    height: 14,
+    borderRadius: 100,
+    backgroundColor: colors.accent,
+    marginTop: 8,
+  },
+
+  bulletDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 100,
+    backgroundColor: colors.accent,
+    marginTop: spacing.xs,
+  },
+  bulletText:{
+    fontSize:screenWidth * 0.037,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    lineHeight:screenWidth * 0.058,
+    paddingRight: screenWidth * 0.06,
+  },
+
+  azCard: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     padding: spacing.md,
@@ -62,20 +89,21 @@ export const informationStyles = StyleSheet.create({
   letterBadge: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primaryLight,
+    borderRadius: 20,   
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: spacing.xs,
+    marginLeft:screenWidth * -0.06,
   },
   letterText: {
     fontSize: 20,
+    lineHeight: 40,
     fontFamily: Fonts.Bold,
-    color: colors.primary,
+    color: colors.primaryLight,
   },
-  glossaryEntries: {
+  azEntries: {
     flex: 1,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   entryBlock: {
     gap: spacing.xs,
@@ -85,22 +113,24 @@ export const informationStyles = StyleSheet.create({
     gap: spacing.xs,
   },
   entryTitle: {
-    fontSize: 16,
+    fontSize:screenWidth * 0.04,
     fontFamily: Fonts.SemiBold,
     color: colors.primary,
   },
   entryDescription: {
-    fontSize: 14,
+    fontSize:screenWidth * 0.037,
     fontFamily: Fonts.Regular,
     color: colors.darkGray,
-    lineHeight: 22,
+    lineHeight:screenWidth * 0.058,
+    paddingRight: screenWidth * 0.06,
+
   },
   faqContainer: {
     gap: spacing.md,
   },
   faqCard: {
     backgroundColor: colors.white,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.sm,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     shadowColor: colors.black,
@@ -120,7 +150,7 @@ export const informationStyles = StyleSheet.create({
   },
   faqQuestion: {
     flex: 1,
-    fontSize: 16,
+    fontSize: screenWidth * 0.04,
     fontFamily: Fonts.Medium,
     color: colors.primary,
   },
@@ -128,16 +158,49 @@ export const informationStyles = StyleSheet.create({
     fontFamily: Fonts.Bold,
   },
   faqToggle: {
-    fontSize: 22,
+    fontSize: screenWidth * 0.048,
     fontFamily: Fonts.Bold,
     color: colors.primary,
   },
-  faqAnswer: {
+  faqAnswerContainer: {
     marginTop: spacing.sm,
-    fontSize: 14,
+    paddingBottom: screenWidth * 0.03,
+    paddingRight: screenWidth * 0.01,
+    gap: spacing.sm,
+  },
+  faqAnswer: {
+    fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Regular,
     color: colors.darkGray,
-    lineHeight: 22,
+    lineHeight: screenWidth * 0.058,
+  },
+  faqPointsList: {
+    gap: spacing.md,
+  },
+  faqPointsHeading: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.SemiBold,
+    color: colors.primary,
+    marginBottom:0,
+    marginTop: spacing.md,
+  },
+  faqPointItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    width: '97%',
+  },
+  faqPointBullet: {
+    fontSize: screenWidth * 0.036,
+    lineHeight: 18,
+    color: colors.primary,
+  },
+  faqPointText: {
+    fontSize:screenWidth * 0.039,
+    fontFamily: Fonts.Regular,
+    color: colors.primary,
+    lineHeight:screenWidth * 0.058,
+    paddingLeft: screenWidth * 0.01,
   },
   paperList: {
     gap: spacing.md,

@@ -34,6 +34,7 @@ import EndoCongress from '../pages/endo-congress/EndoCongress';
 import FreeSurgeryProgram from '../pages/free-surgery-program/FreeSurgeryProgram';
 import ContactUs from '../pages/contact-us/ContactUs';
 import Information from '../pages/information/Information';
+import SubmitAbstract from '../pages/conference/SubmitAbstract';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -141,6 +142,7 @@ function AppNavigation() {
         onNavigateToFreeSurgeryProgram={navigate.freeSurgeryProgram}
         onNavigateToContactUs={navigate.contactUs}
         onNavigateToInformation={navigate.information}
+        onNavigateToSubmitAbstract={navigate.submitAbstract}
       />
     ),
     conference: (
@@ -353,6 +355,13 @@ function AppNavigation() {
       <Information
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
+      />
+    ),
+    submitAbstract: (
+      <SubmitAbstract
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+        onSubmitSuccess={() => navigate.home()}
       />
     ),
     aboutUs: (
