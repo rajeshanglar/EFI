@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
+import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
 import { GradientButton } from '../../../components/GradientButton';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -19,34 +19,89 @@ export const ProgramContent: React.FC = () => {
       </Text>
 
       <GradientButton
-        title="Registration Details"
+        title="Register Now"
         onPress={handleRegistrationPress}
         style={styles.registrationButton}
       />
 
+<Text style={styles.paragraph}>Dear colleagues, friends, and champions of women’s health,</Text>
       <Text style={styles.paragraph}>
-        Welcome to the 3rd edition of the Endometriosis India Congress. We are excited to
-        bring together clinicians, researchers, advocates, and patients from across India
-        and around the world for this landmark event. Mark your calendars for March 6-8,
-        2026, and join us in Hyderabad, India, at Park Hyatt for three days of learning,
-        collaboration, and innovation.
+      It gives us immense pleasure to welcome you to the 3rd edition of the Endometriosis India Congress, taking place from March 6–8, 2026 in the vibrant city of Hyderabad, India, at Park Hyatt.
       </Text>
 
       <Text style={styles.paragraph}>
-        Under the theme "Invisible No More," we aim to break the silence around
-        endometriosis and bring this often-overlooked condition to the forefront of
-        women's health. Our congress will focus on clinical practice, research, patient
-        advocacy, innovation, and pathways toward earlier diagnosis, better treatment, and
-        holistic care.
+      Under the powerful theme “Invisible No More,” this year’s congress aims to break the silence around endometriosis, bringing together leading voices in clinical practice, research, and patient advocacy. Together, we will spotlight innovation, challenge old paradigms, and build meaningful pathways toward earlier diagnosis, better treatment, and holistic care.
       </Text>
 
       <Text style={styles.paragraph}>
-        Our multidisciplinary program will feature Live Ultrasound, live robotic and
-        laparoscopic surgeries, pre-congress workshops on imaging (Ultrasound and MRI),
-        infertility, robotics, deep endometriosis, and high-impact lectures from renowned
-        national and international experts.
+      Our scientific program is designed to be multidisciplinary and deeply engaging—featuring Live Ultraosund , live robotic and laparoscopic surgeries, focused pre-congress workshops on imaging (Ultraosund and MRI), infertility, robotics, deep endometriosis, as well as high-impact lectures from renowned national and international experts.
       </Text>
-    </View>
+
+      <Text style={globalStyles.h2}>
+      Expect dynamic discussions on:
+      </Text>
+
+      <View style={[globalStyles.bulletRowLight, {marginBottom: spacing.md}]}> 
+            <View style={globalStyles.bulletDotAccent} />
+            <Text style={globalStyles.bulletText}>
+            Emerging surgical strategies, including robotic innovation
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, {marginBottom: spacing.md}]}> 
+            <View style={globalStyles.bulletDotAccent} />
+            <Text style={globalStyles.bulletText}>
+         The role of AI, MRI, and ultrasound in diagnosis and mapping
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, {marginBottom: spacing.md}]}> 
+            <View style={globalStyles.bulletDotAccent} />
+            <Text style={globalStyles.bulletText}>
+            Multidisciplinary care models for complex endometriosis
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, {marginBottom: spacing.md}]}> 
+            <View style={globalStyles.bulletDotAccent} />
+            <Text style={globalStyles.bulletText}>
+            The patient voice—at the heart of clinical decision-making
+            </Text>
+          </View>
+
+          <Text style={styles.paragraph}>
+          Beyond science, we look forward to three days of collaboration, 
+          learning, and community-building—culminating with our signature
+           Yellow Ribbon Run for Endometriosis Awareness, uniting doctors,
+            patients, and the public in one movement of visibility and strength.
+      </Text>
+
+      <Text style={styles.paragraph}>
+      We warmly invite you to join us in Hyderabad—where tradition meets
+       innovation—for a congress that promises to be both intellectually 
+       enriching and personally meaningful.
+      </Text>
+
+      <Text style={[globalStyles.h2 , {marginBottom: spacing.lg}]}>
+      Let’s make endometriosis visible. Let’s make a difference.
+      </Text>
+
+          
+              <Text style={globalStyles.h2}>
+              Warm regards,
+              </Text>
+
+              <Text style={globalStyles.h2}>
+              The Organising Committee
+              </Text>
+
+              <Text style={globalStyles.h2}>
+              Endometriosis Foundation of India
+              </Text>
+          
+   </View>
+      
+ 
   );
 };
 

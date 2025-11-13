@@ -13,8 +13,8 @@ import { CommitteeFacultyModal, ConferenceMemberData } from '../../components/Co
 import { VenueFloatingIcon } from '../../components/icons';
 
 import { ProgramContent } from './ConferenceDetailsContent/ProgramContent';
-import { FacultyContent } from './ConferenceDetailsContent/FacultyContent';
-import { CommitteeContent } from './ConferenceDetailsContent/CommitteeContent';
+import { FacultyContent, FacultyTabs } from './ConferenceDetailsContent/FacultyContent';
+import { CommitteeContent, CommitteeTabs } from './ConferenceDetailsContent/CommitteeContent';
 import { AbstractsContent } from './ConferenceDetailsContent/AbstractsContent';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -40,6 +40,8 @@ const ConferenceDetails: React.FC<ConferenceDetailsProps> = ({
   onNavigateToVenue,
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('program');
+  const [activeFacultyTab, setActiveFacultyTab] = useState<'international' | 'national'>('international');
+  const [activeCommitteeTab, setActiveCommitteeTab] = useState<'organising' | 'scientific'>('organising');
   const [selectedMember, setSelectedMember] = useState<ConferenceMemberData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -62,9 +64,21 @@ const ConferenceDetails: React.FC<ConferenceDetailsProps> = ({
       case 'program':
         return <ProgramContent />;
       case 'faculty':
-        return <FacultyContent onMemberPress={handleMemberPress} />;
+        return (
+          <FacultyContent 
+            onMemberPress={handleMemberPress}
+            activeFacultyTab={activeFacultyTab}
+            onFacultyTabChange={setActiveFacultyTab}
+          />
+        );
       case 'committee':
-        return <CommitteeContent onMemberPress={handleMemberPress} />;
+        return (
+          <CommitteeContent 
+            onMemberPress={handleMemberPress}
+            activeCommitteeTab={activeCommitteeTab}
+            onCommitteeTabChange={setActiveCommitteeTab}
+          />
+        );
       case 'abstracts':
         return <AbstractsContent />;
       default:
@@ -104,6 +118,22 @@ const ConferenceDetails: React.FC<ConferenceDetailsProps> = ({
           );
         })}
       </View>
+
+      {/* Faculty Sub-tabs - Fixed outside ScrollView */}
+      {activeTab === 'faculty' && (
+        <FacultyTabs 
+          activeTab={activeFacultyTab}
+          onTabChange={setActiveFacultyTab}
+        />
+      )}
+
+      {/* Committee Sub-tabs - Fixed outside ScrollView */}
+      {activeTab === 'committee' && (
+        <CommitteeTabs 
+          activeTab={activeCommitteeTab}
+          onTabChange={setActiveCommitteeTab}
+        />
+      )}
 
       {/* Tab Content */}
       <View style={styles.contentContainer}>

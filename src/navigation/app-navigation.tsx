@@ -37,6 +37,7 @@ import FreeSurgeryProgram from '../pages/free-surgery-program/FreeSurgeryProgram
 import ContactUs from '../pages/contact-us/ContactUs';
 import Information from '../pages/information/Information';
 import SubmitAbstract from '../pages/conference/SubmitAbstract';
+import DonationsAndFundraising from '../pages/donations-fundraising/DonationsAndFundraising';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -364,6 +365,12 @@ function AppNavigation() {
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
         onSubmitSuccess={() => navigate.home()}
+      />
+    ),
+    donationsAndFundraising: (
+      <DonationsAndFundraising
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
       />
     ),
     aboutUs: (

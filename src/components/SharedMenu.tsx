@@ -127,6 +127,9 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
       case 'submitAbstract':
         navigate.submitAbstract();
         break;
+      case 'donations':
+        navigate.donationsAndFundraising();
+        break;
       case 'privacy':
       case 'posters':
       case 'speakers':

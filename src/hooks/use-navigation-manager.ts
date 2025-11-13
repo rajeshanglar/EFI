@@ -33,7 +33,8 @@ export type PageType =
   | 'membershipInfo'
   | 'contactUs'
   | 'information'
-  | 'submitAbstract';
+  | 'submitAbstract'
+  | 'donationsAndFundraising';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -126,6 +127,7 @@ export function useNavigationManager() {
     contactUs: () => setCurrentPage('contactUs'),
     information: () => setCurrentPage('information'),
     submitAbstract: () => setCurrentPage('submitAbstract'),
+    donationsAndFundraising: () => setCurrentPage('donationsAndFundraising'),
   };
 
 

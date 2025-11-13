@@ -93,6 +93,13 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  heroImage: {
+    width: '100%',
+    height: screenWidth * 0.45,
+    resizeMode: 'cover',
+    marginBottom: spacing.md,
+  },
+
   card: {
     backgroundColor: colors.primaryLight,
     borderRadius: borderRadius.lg,
@@ -974,6 +981,7 @@ boardMembercountry: {
 // Board Member Card Styles
 
 cardWhite: {
+
   backgroundColor: colors.white,
   borderRadius: borderRadius.lg,
   padding: spacing.md,
@@ -1141,8 +1149,14 @@ bgBottomRibbonImage: {
 bold:{
   fontFamily: Fonts.Bold,
 },
+mb0:{
+  marginBottom: 0,
+},
 mb20:{
   marginBottom: spacing.md,
+},
+mt20:{
+  marginTop: spacing.md,
 },
 mbSm:{
   marginBottom: spacing.sm,
