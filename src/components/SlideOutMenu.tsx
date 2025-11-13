@@ -43,8 +43,9 @@ import {
   ProfileIcon,
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
+import { Screen } from 'react-native-screens';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface MenuItem {
   id: string;
@@ -342,26 +343,26 @@ const styles = StyleSheet.create({
   menuGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Dimensions.get('window').width * 0.03,
+    gap: Dimensions.get('window').width * 0.05,
     paddingTop: 20,
     paddingBottom: 90,
   },
   menuItem: {
     alignItems: 'center',
     marginBottom: spacing.sm,
-    width: Dimensions.get('window').width * 0.22,
+    width: Dimensions.get('window').width * 0.20,
   },
   menuIconContainer: {
     backgroundColor: 'rgba(249,222,71,0.2)',
-    width: 60,
-    height: 60,
+    width:screenWidth * 0.16,
+    height: screenWidth * 0.16,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
   menuIconStyle: {
-    width: 50,
-    height: 50,
+    width: screenWidth * 0.14,
+    height: screenWidth * 0.14,
     borderRadius: 100,
     backgroundColor: colors.primaryLight,
     justifyContent: 'center',
@@ -381,9 +382,8 @@ const styles = StyleSheet.create({
 
   conferenceIconStyle: {
     backgroundColor: 'rgba(93, 92, 91, 0.36)',
-
-    width: 60,
-    height: 60,
+    width: screenWidth * 0.14,
+    height: screenWidth * 0.14,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
@@ -391,8 +391,8 @@ const styles = StyleSheet.create({
   },
 
   conferenceIconContainer: {
-    width: 50,
-    height: 50,
+    width: screenWidth * 0.14,
+    height: screenWidth * 0.14,
     borderRadius: 100,
     backgroundColor: colors.primary,
     justifyContent: 'center',

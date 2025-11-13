@@ -182,6 +182,7 @@ export const globalStyles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingBottom: spacing.md,
     backgroundColor: colors.primary,
+
     // borderBottomLeftRadius: borderRadius.xl,
     // borderBottomRightRadius: borderRadius.xl,
   },

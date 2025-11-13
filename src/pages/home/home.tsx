@@ -38,7 +38,7 @@ import {
 import EfiBoard from '../../components/EfiBoard';
 import GradientButton from '../../components/GradientButton';
 
-
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 interface HomePageProps {
   onNavigateToConference?: () => void;
   onLogout?: () => void;
@@ -196,7 +196,7 @@ const HomePage: React.FC<HomePageProps> = ({
                   <View style={styles.abstractArrowContainer}>
                     <Text style={styles.abstractTitle}>Submit Abstract</Text>
                     <View style={styles.arrowRounded}>
-                      <ArrowRightIcon size={13} color={colors.primaryLight} />
+                      <ArrowRightIcon size={12} color={colors.primaryLight} />
                     </View>
                   </View>
 
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
 
   congressCard: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.primary,
     marginHorizontal: spacing.md,
     marginTop: -87,
     overflow: 'hidden',
@@ -392,8 +392,8 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   conferenceImage: {
-    width: Dimensions.get('window').width * 0.93,
-    height: Dimensions.get('window').height * 0.17,
+    width: screenWidth * 0.92,
+    height: screenHeight * 0.17,
   },
 
   horizontalMargin: {
@@ -445,8 +445,8 @@ const styles = StyleSheet.create({
   arrowRounded: {
     backgroundColor: colors.primaryLight,
     borderRadius: 100,
-    width: 20,
-    height: 20,
+    width: Dimensions.get('window').width * 0.055,
+    height: Dimensions.get('window').width * 0.055,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 2,

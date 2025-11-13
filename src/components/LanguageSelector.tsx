@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { colors, spacing, borderRadius } from '../styles/globalStyles';
+import { Fonts } from '../styles/globalStyles';
 
 interface LanguageSelectorProps {
   onLanguageChange?: (language: 'en' | 'hi') => void;
@@ -117,10 +118,11 @@ const styles = StyleSheet.create({
   },
   languageText: {
     fontSize:Dimensions.get('window').width * 0.033,
-    fontWeight: '600',
+   fontFamily:Fonts.SemiBold,
     textAlign: 'center', 
     paddingHorizontal:10,
-    width: Dimensions.get('window').width * 0.10,
+    width: Dimensions.get('window').width * 0.12,
+    lineHeight: Dimensions.get('window').height * 0.03,
   },
   activeText: {
     color: colors.accent,

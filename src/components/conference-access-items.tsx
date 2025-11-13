@@ -47,7 +47,7 @@ export const ConferenceAccess = ({
     <View style={styles.wrapper}>
       {/* Header */}
       <TouchableOpacity
-        style={styles.header}
+        style={styles.accHeader}
         onPress={() => setIsExpanded(!isExpanded)}
         activeOpacity={0.8}
       >
@@ -110,17 +110,20 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     overflow: 'hidden',
   },
-  header: {
+  accHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: Dimensions.get('window').height * 0.014,
+    borderRadius: borderRadius.sm,
+   
   },
   title: {
     color: colors.primary,
     fontSize: Dimensions.get('window').width * 0.04,
     fontFamily: Fonts.Medium,
+    lineHeight: Dimensions.get('window').height * 0.03,
   },
   animatedContainer: {
     overflow: 'hidden',

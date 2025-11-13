@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
-import { colors, spacing, borderRadius } from '../styles/globalStyles';
+import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
 import { ArrowRightIcon } from './icons';
 
 interface EfiBoardProps {
@@ -40,9 +40,8 @@ export const EfiBoard: React.FC<EfiBoardProps> = ({ onViewAll }) => {
           <TouchableOpacity onPress={onViewAll}>
             <View style={styles.viewAllContainer}>
             <Text style={styles.viewAllText}>View All</Text>
-            <ArrowRightIcon size={16} color={colors.primaryLight} style={styles.viewAllIcon} />
-            </View>
-           
+            <ArrowRightIcon size={14} color={colors.primaryLight} style={styles.viewAllIcon} />
+            </View>           
           </TouchableOpacity>
         </View>
         {/* <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.boardScroll} contentContainerStyle={styles.boardContent}> */}
@@ -95,9 +94,8 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     color: colors.primary,
-    fontSize: Dimensions.get('window').width * 0.034,  
-    fontWeight: 600,
-   
+    fontSize: Dimensions.get('window').width * 0.034,     
+    fontFamily: Fonts.SemiBold,
   },
 
   viewAllIcon: {
@@ -112,14 +110,14 @@ const styles = StyleSheet.create({
   boardMemberCard: {
     alignItems: 'center',
     marginRight:Dimensions.get('window').width * 0.020,
-    minWidth:70,
+    minWidth:Dimensions.get('window').width * 0.15,
   },
  boardImageContainer: {
     marginBottom: spacing.sm,
   },
   boardImage: {
-    width:70,
-    height:70,
+    width:Dimensions.get('window').width * 0.19,
+    height:Dimensions.get('window').width * 0.19,
     borderRadius: 60,
     borderWidth: 1,
     borderColor: colors.gray,

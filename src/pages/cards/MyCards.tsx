@@ -168,13 +168,13 @@ const styles = StyleSheet.create({
 
   },
   flatListContent: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
+    paddingHorizontal: screenWidth * 0.04,
+    paddingVertical: screenWidth * 0.08,
   },
-  cardContainer: {
-    width: screenWidth - spacing.md * 2 - spacing.lg * 2,
-    marginRight: spacing.md,
-    paddingTop: spacing.md,
+  cardContainer: {  
+    width: screenWidth - screenWidth * 0.04 - screenWidth * 0.1,
+    marginRight: screenWidth * 0.02,
+    paddingTop: screenWidth * 0.02,
   },
   card: {
     backgroundColor: colors.white,
@@ -192,21 +192,22 @@ const styles = StyleSheet.create({
 
   cardBody: {
     backgroundColor: colors.white,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.md,
+    paddingTop:screenWidth * 0.02,
+    paddingBottom:screenWidth * 0.08,
+    paddingHorizontal: screenWidth * 0.02,
     alignItems: 'center',
   },
 
   qrCodeContainer: {
-    width: 170,
-    height: 170,
+    width: screenWidth * 0.35,
+    height: screenWidth * 0.35,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.md,
+    marginBottom: screenWidth * 0.02,
   },
   qrCode: {
-    width: 170,
-    height:170,
+    width: screenWidth * 0.35,
+    height: screenWidth * 0.35,
     resizeMode: 'contain',
   },
   cardName: {
@@ -230,8 +231,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   paginationDot: {
-    width: 15,
-    height: 15,
+    width: screenWidth * 0.04,
+    height: screenWidth * 0.04,
     borderRadius:100,
     backgroundColor: colors.white,
     borderWidth: 2,
