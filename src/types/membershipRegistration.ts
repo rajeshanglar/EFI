@@ -10,7 +10,7 @@ export interface MembershipRegistrationFormValues {
   hearAboutEFI: string;
   patientsPerYear: string;
   surgeriesPerYear: string;
-  paymentMode: string;
+  // paymentMode: string;
   couponCode: string;
   captcha: string;
 }

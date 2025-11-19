@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import globalStyles from '../styles/globalStyles';
 import { BackArrowIcon, HomeHeaderIcon, MenuIcon } from './icons';
 import { SharedMenu } from './SharedMenu';
 import { useNavigationContext } from '../contexts/NavigationContext';
 import { useMenu } from '../contexts/MenuContext';
+import { Screen } from 'react-native-screens';
+const { width: ScreenWidth, height: ScreenHeight } = Dimensions.get('window');
 
 interface HeaderProps {
   title: string;
@@ -63,20 +65,20 @@ const Header: React.FC<HeaderProps> = ({
         <View style={globalStyles.header}>
           <View style={globalStyles.headerBackBtTittle}>
             <TouchableOpacity onPress={goBack} style={globalStyles.headerIcon}>
-              <BackArrowIcon size={20} />
-            </TouchableOpacity>
-            <Text style={globalStyles.headerTitle}>{title}</Text>
+              <BackArrowIcon size={ScreenWidth * 0.05} />
+               <Text style={globalStyles.headerTitle}>{title}</Text>
+            </TouchableOpacity>           
           </View>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
             <TouchableOpacity onPress={goHome} style={globalStyles.headerIcon}>
-              <HomeHeaderIcon size={20} />
+              <HomeHeaderIcon size={ScreenWidth * 0.052} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={openMenu}
               style={globalStyles.headerIcon}
             >
-              <MenuIcon size={25} />
+              <MenuIcon size={ScreenWidth * 0.064} />
             </TouchableOpacity>
           </View>
         </View>

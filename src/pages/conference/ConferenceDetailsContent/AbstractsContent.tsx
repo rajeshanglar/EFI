@@ -3,13 +3,15 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
 import { GradientButton } from '../../../components/GradientButton';
 import { EmailIcon } from '../../../components/icons';
+import { useNavigationContext } from '../../../contexts/NavigationContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export const AbstractsContent: React.FC = () => {
+  const { navigate } = useNavigationContext();
+
   const handleSubmitAbstract = () => {
-    console.log('Submit Abstract pressed');
-    // Navigate to abstract submission page
+    navigate.submitAbstract();
   };
 
   const handleEmailPress = () => {

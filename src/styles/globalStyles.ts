@@ -187,7 +187,7 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.sm,
     backgroundColor: colors.primary,
 
     // borderBottomLeftRadius: borderRadius.xl,
@@ -200,16 +200,16 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerIcon: {
-    width:22,
-    height: 22,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+   
   },
   headerTitle: {
     color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.04,
+    fontSize: screenWidth * 0.042,
     fontFamily: Fonts.SemiBold,
-    marginLeft: spacing.sm,
+    marginLeft: screenWidth * 0.025,
   },
 
   headerBottomContainer: {
@@ -1303,9 +1303,9 @@ bulletDot: {
 },
 bulletText: {
   flex: 1,
-  fontSize: screenWidth * 0.036,
+  fontSize: screenWidth * 0.038,
   fontFamily: Fonts.Regular,
-  color: colors.darkGray,
+  color: colors.black,
   lineHeight: screenWidth * 0.055,
 },
 bulletRowLight: {

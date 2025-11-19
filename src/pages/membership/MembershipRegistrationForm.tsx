@@ -65,7 +65,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     hearAboutEFI: 'Website',
     patientsPerYear: '10',
     surgeriesPerYear: '10',
-    paymentMode: 'Online Payment',
+    // paymentMode: 'Online Payment',
     couponCode: '123456',
     captcha: 'ASASD',
   };
@@ -123,6 +123,16 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={globalStyles.formContainer}
               >
+
+                {/** Professionals Section */}
+                <View style={styles.professionalsSection}>
+                  <Text style={styles.professionalsTitle}>Professionals</Text>
+                  <Text style={styles.professionalsDescription}>
+                  Get access to exclusive content
+                  </Text>
+                  <Text style={styles.professionalsPrice}>11,800.00 ₹</Text>
+                </View>
+
                 {/** Basic Info Fields */}
                 {[
                   {
@@ -244,36 +254,41 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   )}
                 </View>
 
-                {/** Dropdowns */}
-                {[
-                  {
-                    label: 'Country',
-                    field: 'country' as keyof typeof initialValues,
-                    options: 'countries',
-                  },
-                  {
-                    label: 'How did you hear about EFI?',
-                    field: 'hearAboutEFI' as keyof typeof initialValues,
-                    options: 'hearAboutEFI',
-                  },
-                ].map(({ label, field, options }) => (
-                  <Dropdown
-                    key={field}
-                    label={label}
-                    value={values[field]}
-                    options={
-                      membershipFormOptions[
-                        options as keyof typeof membershipFormOptions
-                      ]
-                    }
-                    onSelect={(v) => setFieldValue(field, v)}
-                    error={
-                      touched[field] && formikErrors[field]
-                        ? formikErrors[field]
-                        : undefined
-                    }
+                {/** Country Dropdown */}
+                <Dropdown
+                  label="Country"
+                  value={values.country}
+                  options={membershipFormOptions.countries}
+                  onSelect={(v) => setFieldValue('country', v)}
+                  error={
+                    touched.country && formikErrors.country
+                      ? formikErrors.country
+                      : undefined
+                  }
+                />
+
+                {/** How did you hear about EFI? - Text Input */}
+                <View style={globalStyles.fieldContainer}>
+                  <Text style={globalStyles.fieldLabel}>How did you hear about EFI?</Text>
+                  <TextInput
+                    style={[
+                      globalStyles.fieldInput,
+                      touched.hearAboutEFI &&
+                        formikErrors.hearAboutEFI &&
+                        globalStyles.fieldInputError,
+                    ]}
+                    placeholder="Enter how you heard about EFI"
+                    placeholderTextColor={colors.gray}
+                    value={values.hearAboutEFI}
+                    onChangeText={handleChange('hearAboutEFI')}
+                    onBlur={handleBlur('hearAboutEFI')}
                   />
-                ))}
+                  {touched.hearAboutEFI && formikErrors.hearAboutEFI && (
+                    <Text style={globalStyles.fieldErrorText}>
+                      {formikErrors.hearAboutEFI}
+                    </Text>
+                  )}
+                </View>
 
                 {/** Numeric Fields */}
                 {[
@@ -312,7 +327,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   </View>
                 ))}
 
-                {/** Payment Mode Dropdown */}
+                {/** Payment Mode Dropdown 
                 <Dropdown
                   label="Payment Mode"
                   value={values.paymentMode}
@@ -323,17 +338,9 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       ? formikErrors.paymentMode
                       : undefined
                   }
-                />
+                />*/}
 
-                {/** Professionals Section */}
-                <View style={styles.professionalsSection}>
-                  <Text style={styles.professionalsTitle}>Professionals</Text>
-                  <Text style={styles.professionalsDescription}>
-                    Access to exclusive content such as video recordings of
-                    conferences and masterclasses
-                  </Text>
-                  <Text style={styles.professionalsPrice}>11,800.00 ₹</Text>
-                </View>
+      
 
                 {/** Coupon Code Section */}
                 <View style={styles.couponSection}>
@@ -462,9 +469,65 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                 </Text>
 
                 <Text style={globalStyles.modalInfoSectionTitle}>Member benefits for professionals</Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                    Access to exclusive content such as video recordings of conferences and masterclasses 
-                </Text>
+                
+
+         <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Access to exclusive content such as video recordings of conferences and masterclasses 
+            </Text>
+          </View> 
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Participation in training programmes 
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Reduced fees for annual conferences and paid workshops, teaching programmes and masterclasses
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Membership to an exclusive and dedicated endometriosis foundation 
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Lifetime membership certification 
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            The opportunity to elevate your skills and empower endometriosis management 
+            </Text>
+          </View>
+
+          <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+            <View style={globalStyles.bulletDot} />
+            <Text style={globalStyles.bulletText}>
+            Opportunity to be a faculty in future programs
+            </Text>
+          </View>
+
+          
+          <Text style={[globalStyles.h2, {fontSize: screenWidth * 0.037}]}>
+          Lifetime Membership Fee For Professionals :
+          </Text>
+          <Text style={[globalStyles.h2, globalStyles.mb20, globalStyles.bold, {fontSize: screenWidth * 0.052}]}>
+          INR 11,800 (Inclusive of GST)
+          </Text>
+         
                
               </View>
 
@@ -485,27 +548,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   professionalsSection: {
-
-    marginVertical: spacing.md,
+    backgroundColor: colors.primaryLight,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+ marginBottom: spacing.md,
    
   },
   professionalsTitle: {
-    fontSize: screenWidth * 0.04,
+    fontSize: screenWidth * 0.05,
     fontFamily: Fonts.Bold,
     color: colors.black,
-    marginBottom: spacing.xs,
-  },
+     },
   professionalsDescription: {
-    fontSize: screenWidth * 0.035,
-    fontFamily: Fonts.Regular,
+    fontSize: screenWidth * 0.039,
+    fontFamily: Fonts.Medium,
     color: colors.darkGray,
-    marginBottom: spacing.sm,
-    lineHeight: screenWidth * 0.05,
+    lineHeight: screenWidth * 0.04,
   },
   professionalsPrice: {
-    fontSize: screenWidth * 0.045,
+    fontSize: screenWidth * 0.048,
     fontFamily: Fonts.Bold,
     color: colors.primary,
+    marginTop: spacing.sm,
   },
   couponSection: {
     backgroundColor: colors.lightGray,

@@ -27,7 +27,7 @@ export const EfiBoard: React.FC<EfiBoardProps> = ({ onViewAll }) => {
     { 
       name: 'Yashodhan Deka', 
       title: 'Second Treasurer',
-      image: require('../assets/images/efiboard/viveksalunke.png')
+      image: require('../assets/images/efiboard/yashodan.jpg')
     },
    
   ];

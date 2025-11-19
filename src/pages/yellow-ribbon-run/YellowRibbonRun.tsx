@@ -139,8 +139,8 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
           </View>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionHeading}>Our Purpose</Text>
+        <View style={[styles.section, { marginBottom: 0 } ]}>
+          <Text style={[styles.sectionHeading, { marginBottom: 0 } ]}>Our Purpose</Text>
           <Text style={styles.sectionSubHeading}>
           Endometriosis is often described as an “invisible disease” — hidden pain, delayed diagnosis, misunderstood symptoms, and silent suffering. The Yellow Ribbon Run aims to:
           </Text>
@@ -304,9 +304,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
           </View>
         </View>
 
-        <View style={styles.section}>
-       
-
+        <View style={[styles.section, { marginBottom: 0 } ]}>
           <View style={styles.listContainer}>
             <View style={styles.listItem}>
               <View style={styles.listIconWrapper}></View>
@@ -344,7 +342,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
 
 
 
-        <View style={[styles.section]}>
+        <View style={[styles.section, { marginBottom: 0 } ]}>
         <Text style={[styles.sectionHeading, { marginBottom:0 }]}>
         Vision for Growth
           </Text>

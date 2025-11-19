@@ -22,57 +22,30 @@ import {
   CardRightArrowIcon,
 } from '../../components/icons';
 import Header from '../../components/Header';
+import { ConferenceOnlyContent } from './ConferenceRegistrationContent/ConferenceOnlyContent';
+import { PreCongressWorkshopsContent } from './ConferenceRegistrationContent/PreCongressWorkshopsContent';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface ConferenceRegistrationPageProps {
-  onBack: (tier?: 'Early Bird' | 'Regular' | 'On Spot') => void;
+  onBack: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => void;
   onNavigateToHome: () => void;
-  onNavigateToForm?: (tier: 'Early Bird' | 'Regular' | 'On Spot') => void;
+  onNavigateToForm?: (tier: 'Regular' | 'Late Registration' | 'On Spot') => void;
 }
+
+type TabType = 'conference' | 'workshops';
 
 const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
   onBack,
   onNavigateToHome,
   onNavigateToForm,
 }) => {
+  const [activeTab, setActiveTab] = useState<TabType>('conference');
   const [membershipType, setMembershipType] = useState<'efi' | 'nonEfi'>('efi');
   const [registrationTier, setRegistrationTier] = useState<
-    'earlyBird' | 'regular' | 'onSpot'
-  >('earlyBird');
+    'regular' | 'lateRegistration' | 'onSpot'
+  >('regular'); // regular maps to "Regular" tier in UI
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<'mar06' | 'mar07' | 'mar08'>(
-    'mar06',
-  );
-
-  // Pricing data for each tier
-  const pricingData = {
-    earlyBird: {
-      'National - Standard': '₹ 11,000',
-      "National - PG's/Fellows": '₹ 6,000',
-      'International - Standard': '190 USD',
-      "International - PG's/Fellows": '100 USD',
-    },
-    regular: {
-      'National - Standard': '₹ 13,000',
-      "National - PG's/Fellows": '₹ 8,000',
-      'International - Standard': '230 USD',
-      "International - PG's/Fellows": '140 USD',
-    },
-    onSpot: {
-      'National - Standard': '₹ 15,000',
-      "National - PG's/Fellows": '₹ 10,000',
-      'International - Standard': '280 USD',
-      "International - PG's/Fellows": '180 USD',
-    },
-  };
-
-  const registrationOptions = [
-    { category: 'National - Standard' as const },
-    { category: "National - PG's/Fellows" as const },
-    { category: 'International - Standard' as const },
-    { category: "International - PG's/Fellows" as const },
-  ];
 
   return (
     <View style={styles.container}>
@@ -116,7 +89,45 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
             </Text>
           </View>
 
-          {/* Membership Selection */}
+          {/* Tab Buttons */}
+          <View style={styles.tabButtonsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.tabButton,
+                activeTab === 'conference' && styles.tabButtonActive,
+              ]}
+              onPress={() => setActiveTab('conference')}
+            >
+              <Text
+                style={[
+                  styles.tabButtonText,
+                  activeTab === 'conference' && styles.tabButtonTextActive,
+                ]}
+              >
+                Conference Only
+              </Text>
+              
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.tabButton,
+                activeTab === 'workshops' && styles.tabButtonActive,
+              ]}
+              onPress={() => setActiveTab('workshops')}
+            >
+              <Text
+                style={[
+                  styles.tabButtonText,
+                  activeTab === 'workshops' && styles.tabButtonTextActive,
+                ]}
+              >
+                Pre-Congress Workshops
+              </Text>              
+            </TouchableOpacity>
+          </View>
+
+          {/* Membership Selection - Show for both tabs */}
           <View style={styles.membershipSection}>
             <TouchableOpacity
               style={styles.radioOption}
@@ -152,120 +163,46 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
           </View>
         </ImageBackground>
 
-
-
-        {/* Registration Tier Tabs */}
-        <View style={globalStyles.tierTabs}>
-          <TouchableOpacity
-            style={[
-              globalStyles.tierTab,
-              registrationTier === 'earlyBird' && globalStyles.tierTabActive,
-            ]}
-            onPress={() => setRegistrationTier('earlyBird')}
-          >
-            <Text
-              style={[
-                globalStyles.tierTabText,
-                registrationTier === 'earlyBird' &&
-                  globalStyles.tierTabTextActive,
-              ]}
-            >
-              Early Bird
-            </Text>
-            <Text
-              style={[
-                globalStyles.tierTabSubtext,
-                registrationTier === 'earlyBird' &&
-                  globalStyles.tierTabSubtextActive,
-              ]}
-            >
-              Upto 15 Oct 2025
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              globalStyles.tierTab,
-              registrationTier === 'regular' && globalStyles.tierTabActive,
-            ]}
-            onPress={() => setRegistrationTier('regular')}
-          >
-            <Text
-              style={[
-                globalStyles.tierTabText,
-                registrationTier === 'regular' &&
-                  globalStyles.tierTabTextActive,
-              ]}
-            >
-              Regular
-            </Text>
-            <Text
-              style={[
-                globalStyles.tierTabSubtext,
-                registrationTier === 'regular' &&
-                  globalStyles.tierTabSubtextActive,
-              ]}
-            >
-              Upto 15 Feb 2026
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              globalStyles.tierTab,
-              registrationTier === 'onSpot' && globalStyles.tierTabActive,
-            ]}
-            onPress={() => setRegistrationTier('onSpot')}
-          >
-            <Text
-              style={[
-                globalStyles.tierTabText,
-                registrationTier === 'onSpot' && globalStyles.tierTabTextActive,
-              ]}
-            >
-              On Spot
-            </Text>
-            <Text
-              style={[
-                globalStyles.tierTabSubtext,
-                registrationTier === 'onSpot' &&
-                  globalStyles.tierTabSubtextActive,
-              ]}
-            >
-              After 15 Feb 2026
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Registration Options Card */}
-        <View style={styles.cardContainer}>
-          {registrationOptions.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.card, styles.cardBottom]}
-              onPress={() => {
-                const tierMap: {
-                  [key: string]: 'Early Bird' | 'Regular' | 'On Spot';
-                } = {
-                  earlyBird: 'Early Bird',
-                  regular: 'Regular',
-                  onSpot: 'On Spot',
-                };
-                onNavigateToForm?.(tierMap[registrationTier]);
-              }}
-            >
-              <View style={[styles.optionCard]}>
-                <Text style={styles.optionText}>{option.category}</Text>
-                <View style={styles.priceArrowContainer}>
-                  <Text style={styles.priceText}>
-                    {pricingData[registrationTier][option.category]}
-                  </Text>
-                  <CardRightArrowIcon size={16} color={colors.darkGray} />
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
+        {/* Tab Content */}
+        {activeTab === 'conference' ? (
+          <ConferenceOnlyContent
+            membershipType={membershipType}
+            onMembershipTypeChange={setMembershipType}
+            registrationTier={registrationTier}
+            onRegistrationTierChange={setRegistrationTier}
+            onCategorySelect={(tier) => {
+              const tierMap: {
+                [key: string]: 'Regular' | 'Late Registration' | 'On Spot';
+              } = {
+                regular: 'Regular',
+                lateRegistration: 'Regular',
+                onSpot: 'On Spot',
+              };
+              onNavigateToForm?.(tierMap[registrationTier]);
+            }}
+          />
+        ) : (
+          <PreCongressWorkshopsContent
+            membershipType={membershipType}
+            onMembershipTypeChange={setMembershipType}
+            registrationTier={registrationTier}
+            onRegistrationTierChange={setRegistrationTier}
+            onCategorySelect={(tier) => {
+              const tierMap: {
+                [key: string]: 'Regular' | 'Late Registration' | 'On Spot';
+              } = {
+                regular: 'Regular',
+                lateRegistration: 'Late Registration',
+                onSpot: 'On Spot',
+              };
+              onNavigateToForm?.(tierMap[registrationTier]);
+            }}
+            onWorkshopPress={(workshopId) => {
+              console.log('Workshop pressed:', workshopId);
+              // Handle workshop selection if needed
+            }}
+          />
+        )}
       </ScrollView>
 
       {/* Footer */}
@@ -380,6 +317,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
 const styles = StyleSheet.create({
   container: {
+    paddingBottom: spacing.xxl,
     flex: 1,
     backgroundColor: colors.white,
   },
@@ -388,7 +326,7 @@ const styles = StyleSheet.create({
   },
 
   titleSection: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
     paddingBottom: spacing.sm,
     paddingTop: 0,
   },
@@ -402,11 +340,44 @@ const styles = StyleSheet.create({
     color: colors.primaryLight,
     fontSize: screenWidth * 0.035,
     fontFamily: Fonts.Regular,
+  },    
+  tabButtonsContainer: {
+    flexDirection: 'row',
+gap: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,   
   },
+  tabButton: {
+    paddingVertical:0,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    minHeight: 50,
+    opacity:0.75,
+  },
+  tabButtonActive: {
+    backgroundColor: colors.primaryLight,
+    opacity:1,
+  },
+  tabButtonText: {
+    fontSize: screenWidth * 0.037,
+    fontFamily: Fonts.Bold,
+    color: colors.primary,
+  },
+  tabButtonTextActive: {
+    color: colors.primary,
+  },
+  
   membershipSection: {
     flexDirection: 'row',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
+
   },
   radioOption: {
     flexDirection: 'row',
@@ -439,49 +410,6 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Medium,
   },
-
-  cardContainer: {
-    padding: spacing.md,
-  },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.sm,
-
-    shadowColor: '#746ABE',
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 2,
-    elevation: 4,
-  },
-
-  cardBottom: {
-    marginBottom: spacing.md,
-  },
-  optionCard: {
-    padding: spacing.md,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  optionText: {
-    flex: 1,
-    color: colors.darkGray,
-    fontSize: screenWidth * 0.038,
-    fontFamily: Fonts.Medium,
-  },
-  priceArrowContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  priceText: {
-    color: colors.darkGray,
-    fontSize: screenWidth * 0.038,
-    fontFamily: Fonts.Medium,
-  },
-
-
- 
 });
 
 export default ConferenceRegistrationPage;

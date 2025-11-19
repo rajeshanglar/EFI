@@ -21,12 +21,14 @@
     "react-native-asset": "^2.1.1",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.14.5",
+    "react-native-pell-rich-editor": "^1.10.0",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.17.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^15.14.0",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-vector-icons": "^10.3.0",
+    "react-native-webview": "^13.16.0",
     "yup": "^1.7.1"
   },
   "devDependencies": {

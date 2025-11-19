@@ -183,56 +183,171 @@ and medication
         
         </View>
 
-        <Text style={[globalStyles.headingH1]}>Make a Donation</Text>
-        <Text style={[globalStyles.paragraphP]}>
-        [Donate Now] (CTA button leading to payment gateway or donation form)
-        </Text>
+        <View style={[globalStyles.sectionContent, { marginBottom:0, }]}>
+                <Text style={[globalStyles.headingH1]}>Make a Donation</Text>
+                <Text style={[globalStyles.paragraphP]}>
+                [Donate Now] (CTA button leading to payment gateway or donation form)
+                </Text>
 
-        <Text style={[globalStyles.paragraphP]}>
-        All contributions are eligible for tax exemption under Section 80G of the Income Tax Act, 1961. 
-        </Text>
+                <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
+                All contributions are eligible for tax exemption under Section 80G of the Income Tax Act, 1961. 
+                </Text>
 
-        <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
-        EFI accepts payments via UPI, credit/debit cards, bank transfer, and verified international 
-        donation platforms. For queries or large contributions, write to donate@endofoundindia.org. 
-        </Text>
+                <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
+                EFI accepts payments via UPI, credit/debit cards, bank transfer, and verified international 
+                donation platforms. For queries or large contributions, write to donate@endofoundindia.org. 
+                </Text>
 
-        <Text style={[globalStyles.headingH1]}>Why It Matters </Text>
-        <Text style={[globalStyles.paragraphP]}>
-        Endometriosis affects 1 in 10 women worldwide. Yet in India, awareness, diagnosis, and access 
-to skilled care remain extremely limited. Many women spend years living with chronic pain that 
-affects their health, work, and dignity.  
-        </Text>
+                <Text style={[globalStyles.headingH1]}>Why It Matters </Text>
+                <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
+                Endometriosis affects 1 in 10 women worldwide. Yet in India, awareness, diagnosis, and access 
+        to skilled care remain extremely limited. Many women spend years living with chronic pain that 
+        affects their health, work, and dignity.  
+                </Text>
 
-        <Text style={[globalStyles.paragraphP]}>
-        Your donation helps us change this reality — one surgery, one recovery, and one empowered 
-        woman at a time. 
-        </Text>
+                <Text style={[globalStyles.paragraphP]}>
+                Your donation helps us change this reality — one surgery, one recovery, and one empowered 
+                woman at a time. 
+                </Text>
 
-        <Text style={[globalStyles.headingH1]}>Donor Voices </Text>
-        <Text style={[globalStyles.paragraphP]}>
-        Our donors come from all walks of life — united by the belief that no woman should live in pain 
-because she cannot afford care. Their generosity fuels change and gives women across India a 
-second chance at health.
-        </Text>
+                <Text style={[globalStyles.headingH1 , globalStyles.mt20]}>Donor Voices</Text>
+                <Text style={globalStyles.paragraphP}>
+                Our donors come from all walks of life — united by the belief that no woman should live in pain 
+        because she cannot afford care. Their generosity fuels change and gives women across India a 
+        second chance at health.
+                </Text>
 
-        <Text style={[globalStyles.paragraphP]}>
-        “This is one of the few organisations in India that’s creating real impact in 
-endometriosis care. Knowing my contribution directly helps a woman receive 
-surgery gives my donation real meaning.”  --  EFI Donor 
-        </Text>
+                <Text style={[globalStyles.paragraphP, globalStyles.mt20, globalStyles.mb20]}>
+                “This is one of the few organisations in India that’s creating real impact in 
+        endometriosis care. Knowing my contribution directly helps a woman receive 
+        surgery gives my donation real meaning.”  --  EFI Donor 
+                </Text>
+
+                <Text style={[globalStyles.headingH1 , globalStyles.mt20]}>Partner With Us: CSR and Institutional Giving</Text>
+                <Text style={[globalStyles.paragraphP , globalStyles.mt20]}>
+                Create long-term impact through strategic support
+                </Text>
+
+                <Text style={[globalStyles.paragraphP , globalStyles.mt20]}>  
+                Endometriosis affects millions of Indian women across urban and rural areas, yet it remains 
+        underdiagnosed, undertreated, and surrounded by silence. Your organisation can help us 
+        change this.
+                </Text>
+
+                <Text style={[globalStyles.paragraphP , globalStyles.mt20]}>  
+                The Endometriosis Foundation of India (EFI) invites companies, philanthropic foundations, and 
+        CSR teams to partner with us in delivering <Text style={globalStyles.bold}>free surgical care, long-term recovery support, 
+        and large-scale awareness programs across India. </Text>
+                </Text>
+
+                <Text style={[globalStyles.paragraphP , globalStyles.mt20]}>  
+                Through your partnership, you enable high-impact interventions for women who are otherwise 
+                left behind by the healthcare system.
+                </Text>
+                
+                <Text style={[globalStyles.headingH1 , globalStyles.mt20, globalStyles.mb20]}>  
+                Why Partner With EFI
+                </Text>
+
+                <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>First-of-its-kind surgical intervention model</Text> in India for endometriosis care 
+                    </Text>
+                  </View>
+
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    Focused on <Text style={globalStyles.bold}>underserved communities</Text> with limited access to diagnosis or treatment 
+                    </Text>
+                  </View>
+
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold} >Transparent, accountable fund use</Text> with detailed reporting and outcome tracking
+                    </Text>
+                  </View>
+
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    Aligned with key CSR focus areas: <Text style={globalStyles.bold} >Women’s Health, Gender Equity, Rural Health 
+        Access, and Public Health Infrastructure </Text>
+
+                    </Text>
+                  </View>
 
 
+                  <Text style={[globalStyles.headingH1 , globalStyles.mt20]}>  
+                  Ways to Support
+                </Text>
+                <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
+                  Your organisation can fund or co-fund: 
+                  </Text>
 
-             
+                <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>Free surgeries</Text> for low-income women  
+                  </Text>
+                  </View>
 
-            
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>Surgery-to-recovery packages</Text> including diagnostics, hospital care, medication, and 
+                    follow-ups 
+                  </Text>
+                  </View>
 
-             
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>Nutrition and rehabilitation support</Text>
+                  </Text>
+                  </View>
 
-             
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>Community awareness campaigns</Text> in schools, rural areas, and low-income 
+                    settlements 
+                  </Text>
+                  </View>
 
-             
+                  <View style={[globalStyles.bulletRowLight, globalStyles.mb20]}>
+                    <View style={globalStyles.bulletDot} />
+                    <Text style={globalStyles.bulletText}>
+                    <Text style={globalStyles.bold}>Research and capacity-building efforts</Text> to train frontline health workers and improve 
+                    early diagnosis 
+                  </Text>
+                  </View>
+
+              
+                <Text style={[globalStyles.paragraphP, globalStyles.mb20]}>
+                We offer comprehensive impact reports, patient stories, and media-ready assets for all 
+        institutional partners. Custom donor visibility options can be discussed. 
+                  </Text>
+                  
+
+        </View>
+
+
+        <View style={globalStyles.sectionCardBlue}>
+          <Text style={[globalStyles.headingH1, globalStyles.primaryLightColor]}>Connect With Us </Text>        
+          <Text style={[globalStyles.paragraphP, globalStyles.whiteColor]}>
+          For customised CSR partnerships, bulk donations, or foundation support, please write to:  
+           <Text style={globalStyles.bold}> csr@endofoundindia.org </Text>
+          </Text>
+
+          <Text style={[globalStyles.paragraphP, globalStyles.whiteColor]}>
+          Our team will respond within 3 working days to schedule a call or share a proposal.  
+          </Text>
+        
+        </View>   
+
             
             </View>
       
@@ -249,6 +364,8 @@ surgery gives my donation real meaning.”  --  EFI Donor
 
         
           </View>
+
+          
         </View>
       </ScrollView>
     </View>

@@ -23,7 +23,7 @@ import {
 import { ConferenceRegistrationFormValues } from '../../types/conferenceRegistration';
 
 interface Props {
-  registrationTier: 'Early Bird' | 'Regular' | 'On Spot';
+  registrationTier: 'Regular' | 'Late Registration' | 'On Spot';
   onBack: () => void;
   onNavigateToHome: () => void;
   onNavigateToConferencePayment?: (formData: ConferenceRegistrationFormValues) => void;
@@ -51,7 +51,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
     category: 'National - Standard',
     morningWorkshop: 'Workshop 1: Advanced Techniques',
     afternoonWorkshop: 'Workshop 2: Case Studies',
-    paymentMode: 'Online Payment',
+    // paymentMode: 'Online Payment',
     captcha: 'ASASD',
   };
 
@@ -199,11 +199,11 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                     field: 'afternoonWorkshop' as keyof typeof initialValues,
                     options: 'workshops',
                   },
-                  {
-                    label: 'Payment Mode',
-                    field: 'paymentMode' as keyof typeof initialValues,
-                    options: 'paymentModes',
-                  },
+                  // {
+                  //   label: 'Payment Mode',
+                  //   field: 'paymentMode' as keyof typeof initialValues,
+                  //   options: 'paymentModes',
+                  // },
                 ].map(({ label, field, options }) => (
                   <Dropdown
                     key={field}

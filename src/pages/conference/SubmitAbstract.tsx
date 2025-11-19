@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
   StyleSheet,
   Dimensions,
+  Modal,
 } from 'react-native';
 import { Formik, FieldArray, FormikErrors, FormikTouched } from 'formik';
 import { pick, types } from '@react-native-documents/picker';
@@ -17,6 +18,7 @@ import type { KeyboardTypeOptions } from 'react-native';
 
 import Header from '../../components/Header';
 import { GradientButton } from '../../components/GradientButton';
+import { RichEditor, RichToolbar, actions } from 'react-native-pell-rich-editor';
 import { RefreshIcon, WhiteMyCardsIcon } from '../../components/icons';
 import globalStyles, {
   colors,
@@ -32,12 +34,17 @@ import {
 } from '../../schemas/submitAbstractSchema';
 import { SubmitAbstractAuthor, SubmitAbstractFormValues } from '../../types/submitAbstract';
 
+
 interface SubmitAbstractProps {
   onBack: () => void;
   onNavigateToHome: () => void;
   onSubmitSuccess?: (values: SubmitAbstractFormValues) => void;
 }
 const { width: screenWidth } = Dimensions.get('window');
+
+
+
+  
 const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
   onBack,
   onNavigateToHome,
@@ -45,6 +52,10 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
 }) => {
   const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
   const [documentError, setDocumentError] = useState<string | null>(null);
+  const richTextEditorRef = useRef<RichEditor>(null);
+  const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
 
   const initialValues = useMemo<SubmitAbstractFormValues>(() => {
     const clonedAuthors = submitAbstractInitialAuthors.map(author => ({ ...author }));
@@ -166,6 +177,42 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
 
           const toggleDeclaration = () =>
             setFieldValue('acceptDeclaration', !values.acceptDeclaration);
+
+          const handleInsertLink = () => {
+            setIsLinkModalVisible(true);
+          };
+
+          const handleLinkSubmit = async () => {
+            if (linkUrl.trim()) {
+              try {
+                // Ensure URL has protocol
+                let url = linkUrl.trim();
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                  url = 'https://' + url;
+                }
+                
+                // Get selected text or use provided link text
+                const selectedText = linkText.trim() || url;
+                
+                // Insert link using RichEditor's insertLink method
+                // insertLink(title: string, url: string)
+                richTextEditorRef.current?.insertLink(selectedText, url);
+                
+                // Reset and close
+                setLinkUrl('');
+                setLinkText('');
+                setIsLinkModalVisible(false);
+              } catch (error) {
+                console.error('Error inserting link:', error);
+              }
+            }
+          };
+
+          const handleLinkCancel = () => {
+            setLinkUrl('');
+            setLinkText('');
+            setIsLinkModalVisible(false);
+          };
 
           return (
             <>
@@ -341,21 +388,60 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
                       touched.abstractTitle,
                       { placeholder: 'Enter abstract title', autoCapitalize: 'sentences' },
                     )}
-                    {renderTextField(
-                      'Description',
-                      'abstractDescription',
-                      values.abstractDescription,
-                      handleChange('abstractDescription'),
-                      () => handleBlur('abstractDescription'),
-                      errors.abstractDescription,
-                      touched.abstractDescription,
-                      {
-                        placeholder: 'Enter abstract description',
-                        multiline: true,
-                        numberOfLines: 4,
-                        autoCapitalize: 'sentences',
-                      },
-                    )}
+                    <View style={globalStyles.fieldContainer}>
+                      <Text style={globalStyles.fieldLabel}>
+                        Description
+                        <Text style={styles.requiredAsterisk}> *</Text>
+                      </Text>
+                      <View
+                        style={[
+                          styles.richEditorContainer,
+                          touched.abstractDescription && errors.abstractDescription
+                            ? styles.richEditorContainerError
+                            : null,
+                        ]}
+                      >
+                        <RichToolbar
+                          editor={richTextEditorRef}
+                          actions={[
+                            actions.setBold,
+                            actions.setItalic,
+                            actions.setUnderline,
+                            actions.removeFormat,
+                            actions.insertBulletsList,
+                            actions.insertOrderedList,
+                            actions.insertLink,
+                            actions.setStrikethrough,
+                            actions.undo,
+                            actions.redo,
+                          ]}
+                          onInsertLink={handleInsertLink}
+                          iconTint={colors.primary}
+                          selectedIconTint={colors.primaryLight}
+                          selectedButtonStyle={styles.richToolbarButtonSelected}
+                        />
+                        <RichEditor
+                          ref={richTextEditorRef}
+                          onChange={(text: string) => {
+                            setFieldValue('abstractDescription', text);
+                          }}
+                          onBlur={() => {
+                            handleBlur('abstractDescription');
+                            richTextEditorRef.current?.blurContentEditor();
+                          }}
+                          placeholder="Enter abstract description"
+                          initialContentHTML={values.abstractDescription || ''}
+                          editorStyle={styles.richEditorStyle}
+                          containerStyle={styles.richEditorInnerContainer}
+                          useContainer={true}
+                        />
+                      </View>
+                      {touched.abstractDescription && errors.abstractDescription ? (
+                        <Text style={globalStyles.fieldErrorText}>
+                          {errors.abstractDescription}
+                        </Text>
+                      ) : null}
+                    </View>
 
                     <View style={globalStyles.fieldContainer}>
                       <Text style={globalStyles.fieldLabel}>
@@ -449,6 +535,85 @@ const SubmitAbstract: React.FC<SubmitAbstractProps> = ({
           disabled={!isValid}         
         />
       </View>
+
+            {/* Link Insertion Modal */}
+            <Modal
+              visible={isLinkModalVisible}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={handleLinkCancel}
+            >
+              <View style={styles.linkModalOverlay}>
+                <View style={styles.linkModalContainer}>
+                  <View style={styles.linkModalHeader}>
+                    <Text style={styles.linkModalTitle}>Insert Link</Text>
+                    <TouchableOpacity onPress={handleLinkCancel}>
+                      <Text style={styles.linkModalClose}>✕</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.linkModalContent}>
+                    <View style={globalStyles.fieldContainer}>
+                      <Text style={globalStyles.fieldLabel}>
+                        URL
+                        <Text style={styles.requiredAsterisk}> *</Text>
+                      </Text>
+                      <TextInput
+                        style={globalStyles.fieldInput}
+                        placeholder="https://example.com"
+                        placeholderTextColor={colors.gray}
+                        value={linkUrl}
+                        onChangeText={setLinkUrl}
+                        autoCapitalize="none"
+                        keyboardType="url"
+                        autoCorrect={false}
+                      />
+                    </View>
+
+                    <View style={globalStyles.fieldContainer}>
+                      <Text style={globalStyles.fieldLabel}>Link Text (Optional)</Text>
+                      <TextInput
+                        style={globalStyles.fieldInput}
+                        placeholder="Click here"
+                        placeholderTextColor={colors.gray}
+                        value={linkText}
+                        onChangeText={setLinkText}
+                        autoCapitalize="sentences"
+                      />
+                      <Text style={styles.linkModalHint}>
+                        If left empty, the URL will be used as the link text
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.linkModalFooter}>
+                    <TouchableOpacity
+                      style={styles.linkModalCancelButton}
+                      onPress={handleLinkCancel}
+                    >
+                      <Text style={styles.linkModalCancelText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.linkModalSubmitButton,
+                        !linkUrl.trim() && styles.linkModalSubmitButtonDisabled,
+                      ]}
+                      onPress={handleLinkSubmit}
+                      disabled={!linkUrl.trim()}
+                    >
+                      <Text
+                        style={[
+                          styles.linkModalSubmitText,
+                          !linkUrl.trim() && styles.linkModalSubmitTextDisabled,
+                        ]}
+                      >
+                        Insert
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
             </>
           );
           
@@ -504,6 +669,31 @@ const styles = StyleSheet.create({
   multilineInput: {
     textAlignVertical: 'top',
     minHeight: 120,
+  },
+  richEditorContainer: {
+    borderWidth: 1,
+    borderColor: colors.gray,
+    borderRadius: 0,
+    backgroundColor: colors.white,
+    minHeight:Dimensions.get('window').height * 0.2,
+    marginTop: spacing.xs,
+  },
+  richEditorContainerError: {
+    borderColor: colors.red,
+  },
+  richEditorInnerContainer: {
+    backgroundColor: colors.white,
+    padding: spacing.sm,
+  },
+  richEditorStyle: {
+    backgroundColor: colors.white,
+    color: colors.black,
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    minHeight: 150,
+  },
+  richToolbarButtonSelected: {
+    backgroundColor: colors.primary,
   },
   authorCard: {
     backgroundColor: '#F0F5FF',
@@ -607,6 +797,93 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: spacing.sm,
  
+  },
+  linkModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.md,
+  },
+  linkModalContainer: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    width: '100%',
+    maxWidth: 500,
+    maxHeight: '80%',
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  linkModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGray,
+  },
+  linkModalTitle: {
+    fontSize: screenWidth * 0.045,
+    fontFamily: Fonts.Bold,
+    color: colors.primary,
+  },
+  linkModalClose: {
+    fontSize: screenWidth * 0.06,
+    color: colors.darkGray,
+    fontWeight: 'bold',
+  },
+  linkModalContent: {
+    padding: spacing.md,
+    maxHeight: Dimensions.get('window').height * 0.5,
+  },
+  linkModalHint: {
+    fontSize: screenWidth * 0.032,
+    fontFamily: Fonts.Regular,
+    color: colors.gray,
+    marginTop: spacing.xs,
+    fontStyle: 'italic',
+  },
+  linkModalFooter: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.lightGray,
+  },
+  linkModalCancelButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.gray,
+    backgroundColor: colors.white,
+  },
+  linkModalCancelText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Medium,
+    color: colors.darkGray,
+  },
+  linkModalSubmitButton: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.sm,
+    backgroundColor: colors.primary,
+  },
+  linkModalSubmitButtonDisabled: {
+    backgroundColor: colors.lightGray,
+    opacity: 0.6,
+  },
+  linkModalSubmitText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Medium,
+    color: colors.white,
+  },
+  linkModalSubmitTextDisabled: {
+    color: colors.gray,
   },
 });
 

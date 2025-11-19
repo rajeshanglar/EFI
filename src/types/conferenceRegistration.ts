@@ -12,7 +12,7 @@ export interface ConferenceRegistrationFormValues {
   category: string;
   morningWorkshop: string;
   afternoonWorkshop: string;
-  paymentMode: string;
+  // paymentMode: string;
   captcha: string;
 }
 

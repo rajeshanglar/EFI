@@ -21,18 +21,18 @@ interface BoardProps {
   onNavigateToHome: () => void;
 }
 
-type TabKey = 'efiBoard' | 'advisoryBoard' | 'voluntaryTeam';
+type TabKey = 'efiBoard' | 'advisoryBoard' | 'youngTeam';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'efiBoard', label: 'EFI Board' },
   { key: 'advisoryBoard', label: 'Advisory Board' },
-  { key: 'voluntaryTeam', label: 'Voluntary Team' },
+  { key: 'youngTeam', label: 'Young Team' },
 ];
 
 const tabContentMap: Record<TabKey, any> = {
   efiBoard: EFIBoardContent,
   advisoryBoard: AdvisoryBoardContent,
-  voluntaryTeam: VoluntaryTeamContent,
+  youngTeam: VoluntaryTeamContent,
 };
 
 const Board: React.FC<BoardProps> = ({

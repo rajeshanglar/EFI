@@ -2,12 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
 import { GradientButton } from '../../../components/GradientButton';
+import { useNavigationContext } from '../../../contexts/NavigationContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export const ProgramContent: React.FC = () => {
+  const { navigate } = useNavigationContext();
+
   const handleRegistrationPress = () => {
-    console.log('Registration Details pressed');
+    navigate.conference();
   };
 
   return (

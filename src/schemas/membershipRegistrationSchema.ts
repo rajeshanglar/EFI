@@ -83,7 +83,7 @@ export const membershipRegistrationSchema = (captcha: string) =>
     
     hearAboutEFI: yup
       .string()
-      .required('Please select how you heard about EFI'),
+      .required('Please enter how you heard about EFI'),
     
     patientsPerYear: yup
       .string()

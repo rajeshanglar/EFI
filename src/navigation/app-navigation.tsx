@@ -146,6 +146,7 @@ function AppNavigation() {
         onNavigateToContactUs={navigate.contactUs}
         onNavigateToInformation={navigate.information}
         onNavigateToSubmitAbstract={navigate.submitAbstract}
+        onNavigateToDonationsAndFundraising={navigate.donationsAndFundraising}
       />
     ),
     conference: (

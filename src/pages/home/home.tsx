@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  FlatList,
 } from 'react-native';
 import {
   globalStyles,
@@ -59,7 +60,34 @@ interface HomePageProps {
   onNavigateToContactUs?: () => void;
   onNavigateToInformation?: () => void;
   onNavigateToSubmitAbstract?: () => void;
+  onNavigateToDonationsAndFundraising?: () => void;
 }
+
+// Conference Banner Data
+interface ConferenceBanner {
+  id: string;
+  image: any;
+  title?: string;
+  subtitle?: string;
+}
+
+const conferenceBanners: ConferenceBanner[] = [
+  {
+    id: '1',
+    image: require('../../assets/images/conference-banner.jpg'),
+    
+  },
+  {
+    id: '2',
+    image: require('../../assets/images/conference-banner.jpg'),
+   
+  },
+  {
+    id: '3',
+    image: require('../../assets/images/conference-banner.jpg'),
+  
+  },
+];
 
 const HomePage: React.FC<HomePageProps> = ({
   onNavigateToConference,
@@ -81,8 +109,11 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToContactUs,
   onNavigateToInformation,
   onNavigateToSubmitAbstract,
+  onNavigateToDonationsAndFundraising,
 }) => {
   const { openMenu } = useMenu();
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+  const bannerFlatListRef = useRef<FlatList>(null);
 
   const actionButtons = [
     {
@@ -104,7 +135,8 @@ const HomePage: React.FC<HomePageProps> = ({
     {
       title: 'Donations And Fundraising',
       icon: FundraisingIcon,
-      onPress: () => console.log('Donations'),
+      onPress: () =>
+        onNavigateToDonationsAndFundraising?.() || console.log('Donations'),
     },
     {
       title: 'Join\nThe Cause',
@@ -171,15 +203,63 @@ const HomePage: React.FC<HomePageProps> = ({
             </ImageBackground>
           </View>
 
-          <TouchableOpacity 
-            style={styles.congressCard} 
-            onPress={() => onNavigateToConferenceDetails?.() || console.log('Conference Details')}
-          >
-            <Image
-              source={require('../../assets/images/conference-banner.jpg')}
-              style={styles.conferenceImage}
+          {/* Conference Banner Swiper */}
+          <View style={styles.congressCardContainer}>
+            <FlatList
+              ref={bannerFlatListRef}
+              data={conferenceBanners}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.congressCard}
+                  onPress={() => onNavigateToConferenceDetails?.() || console.log('Conference Details')}
+                  activeOpacity={0.9}
+                >
+                  <Image
+                    source={item.image}
+                    style={styles.conferenceImage}
+                    resizeMode="cover"
+                  />
+                  {/* {(item.title || item.subtitle) && (
+                    <View style={styles.bannerOverlay}>
+                      {item.title && (
+                        <Text style={styles.bannerTitle}>{item.title}</Text>
+                      )}
+                      {item.subtitle && (
+                        <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+                      )}
+                    </View>
+                  )} */}
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item) => item.id}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={(event) => {
+                const contentOffsetX = event.nativeEvent.contentOffset.x;
+                const cardWidth = screenWidth - spacing.md * 2;
+                const index = Math.round(contentOffsetX / cardWidth);
+                setCurrentBannerIndex(index);
+              }}
+              scrollEventThrottle={16}
+              snapToInterval={screenWidth - spacing.md * 2}
+              decelerationRate="fast"
             />
-          </TouchableOpacity>
+            {/* Pagination Dots */}
+            {conferenceBanners.length > 1 && (
+              <View style={styles.paginationContainer}>
+                {conferenceBanners.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.paginationDot,
+                      index === currentBannerIndex && styles.paginationDotActive,
+                    ]}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
           
           <View style={styles.horizontalMargin}>
             <EfiBoard onViewAll={onNavigateToBoard} />
@@ -380,20 +460,63 @@ const styles = StyleSheet.create({
     lineHeight: Dimensions.get('window').width * 0.04,
   },
 
-  congressCard: {
-    backgroundColor: colors.primary,
+  congressCardContainer: {
     marginHorizontal: spacing.md,
     marginTop: -87,
-    overflow: 'hidden',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: 0,
     borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+  },
+  congressCard: {
+    backgroundColor: colors.primary,
+    width: screenWidth - spacing.md * 2,
+    overflow: 'hidden',
+    borderRadius: borderRadius.sm,
+    position: 'relative',
   },
   conferenceImage: {
-    width: screenWidth * 0.92,
+    width: screenWidth - spacing.md * 2,
     height: screenHeight * 0.17,
+  },
+  bannerOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: spacing.md,
+    borderBottomLeftRadius: borderRadius.sm,
+    borderBottomRightRadius: borderRadius.sm,
+  },
+  bannerTitle: {
+    color: colors.white,
+    fontSize: screenWidth * 0.042,
+    fontFamily: Fonts.Bold,
+    marginBottom: spacing.xs,
+  },
+  bannerSubtitle: {
+    color: colors.white,
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Medium,
+    opacity: 0.9,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    gap: spacing.xs,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.primary,
+    opacity: 0.4,
+  },
+  paginationDotActive: {
+    opacity: 1,
+    width: 20,
+    backgroundColor: colors.primary,
   },
 
   horizontalMargin: {
