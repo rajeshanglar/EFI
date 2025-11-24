@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, TextInput } from 'react-native';
 import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
 import { Dimensions } from 'react-native';
-import { BottomArrowIcon } from './icons';
+import { BottomArrowIcon, SearchIcon,CloseIcon } from './icons';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -18,6 +18,8 @@ interface DropdownProps {
   onSelect: (value: string) => void;
   error?: string;
   placeholder?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -26,14 +28,32 @@ export const Dropdown: React.FC<DropdownProps> = ({
   options,
   onSelect,
   error,
-  placeholder = 'Select an option'
+  placeholder = 'Select an option',
+  searchable = false,
+  searchPlaceholder = 'Search...',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const selectedOption = options.find(opt => opt.value === value);
+  const [searchQuery, setSearchQuery] = useState('');
+  // Ensure options is always an array to prevent undefined errors
+  const safeOptions = options || [];
+  const selectedOption = safeOptions.find(opt => opt.value === value);
+
+  // Filter options based on search query
+  const filteredOptions = searchable && searchQuery
+    ? safeOptions.filter(option =>
+        option.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : safeOptions;
 
   const handleSelect = (optionValue: string) => {
     onSelect(optionValue);
     setIsOpen(false);
+    setSearchQuery(''); // Clear search when item is selected
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setSearchQuery(''); // Clear search when modal closes
   };
 
   return (
@@ -54,40 +74,61 @@ export const Dropdown: React.FC<DropdownProps> = ({
         visible={isOpen}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setIsOpen(false)}
+        onRequestClose={handleClose}
       >
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setIsOpen(false)}
+          onPress={handleClose}
         >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{label}</Text>
-              <TouchableOpacity onPress={() => setIsOpen(false)}>
-                <Text style={styles.modalClose}>Close</Text>
+              <TouchableOpacity onPress={handleClose}>
+                <Text style={styles.modalClose}> <CloseIcon size={12} color={colors.primary} /> <Text style={styles.modalCloseText}>Close</Text></Text>
               </TouchableOpacity>
             </View>
-            <FlatList
-              data={options}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.optionItem,
-                    value === item.value && styles.optionItemActive
-                  ]}
-                  onPress={() => handleSelect(item.value)}
-                >
-                  <Text style={[
-                    styles.optionText,
-                    value === item.value && styles.optionTextActive
-                  ]}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            />
+            {searchable && (
+              <View style={styles.searchContainer}>
+                <View style={styles.searchInputWrapper}>
+                  <SearchIcon size={20} color={colors.gray} style={styles.searchIcon} />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder={searchPlaceholder}
+                    placeholderTextColor={colors.primary}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    autoFocus={false}
+                  />
+                </View>
+              </View>
+            )}
+            {filteredOptions.length > 0 ? (
+              <FlatList
+                data={filteredOptions}
+                keyExtractor={(item) => item.value}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.optionItem,
+                      value === item.value && styles.optionItemActive
+                    ]}
+                    onPress={() => handleSelect(item.value)}
+                  >
+                    <Text style={[
+                      styles.optionText,
+                      value === item.value && styles.optionTextActive
+                    ]}>
+                      {item.label}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            ) : (
+              <View style={styles.noResultsContainer}>
+                <Text style={styles.noResultsText}>No results found</Text>
+              </View>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -155,11 +196,17 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGray,
   },
   modalTitle: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Bold,
+    fontSize: screenWidth * 0.042,
+    fontFamily: Fonts.SemiBold,
     color: colors.black,
   },
   modalClose: {
+    fontSize: screenWidth * 0.037,
+    fontFamily: Fonts.SemiBold,
+    color: colors.primary,
+    
+  },
+  modalCloseText: {
     fontSize: screenWidth * 0.037,
     fontFamily: Fonts.SemiBold,
     color: colors.primary,
@@ -180,6 +227,42 @@ const styles = StyleSheet.create({
   optionTextActive: {
     fontFamily: Fonts.SemiBold,
     color: colors.primary,
+  },
+  searchContainer: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGray,
+  },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D8E3F9',
+    borderRadius: 4,
+    backgroundColor: colors.lightGray,
+    paddingHorizontal: spacing.sm,
+  },
+  searchIcon: {
+    marginRight: spacing.xs,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.xs,
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.black,
+    backgroundColor: 'transparent',
+  },
+  noResultsContainer: {
+    padding: spacing.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  noResultsText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    color: colors.gray,
   },
 });
 

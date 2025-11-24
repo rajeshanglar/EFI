@@ -42,14 +42,21 @@ export const membershipRegistrationSchema = (captcha: string) =>
     dateOfBirth: yup
       .string()
       .required('Date of birth is required')
-      .test('is-valid-date', 'Please enter a valid date', function(value) {
+      .test('is-valid-date', 'Please enter a valid date of birth', function(value) {
         if (!value) return false;
-        // Handle DD/MM/YYYY format
-        const parts = value.split('/');
-        if (parts.length === 3) {
-          const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
-          const year = parseInt(parts[2], 10);
+        
+        // Handle DD-MM-YY format (used by the form)
+        const dashParts = value.split('-');
+        if (dashParts.length === 3) {
+          const day = parseInt(dashParts[0], 10);
+          const month = parseInt(dashParts[1], 10) - 1; // Month is 0-indexed
+          let year = parseInt(dashParts[2], 10);
+          
+          // Handle 2-digit year (YY) - assume 1900-2099 range
+          if (year < 100) {
+            year = year < 50 ? 2000 + year : 1900 + year;
+          }
+          
           const date = new Date(year, month, day);
           if (
             date.getDate() !== day ||
@@ -60,6 +67,24 @@ export const membershipRegistrationSchema = (captcha: string) =>
           }
           return date < new Date(); // Must be in the past
         }
+        
+        // Handle DD/MM/YYYY format
+        const slashParts = value.split('/');
+        if (slashParts.length === 3) {
+          const day = parseInt(slashParts[0], 10);
+          const month = parseInt(slashParts[1], 10) - 1; // Month is 0-indexed
+          const year = parseInt(slashParts[2], 10);
+          const date = new Date(year, month, day);
+          if (
+            date.getDate() !== day ||
+            date.getMonth() !== month ||
+            date.getFullYear() !== year
+          ) {
+            return false; // Invalid date
+          }
+          return date < new Date(); // Must be in the past
+        }
+        
         // Try standard date format
         const date = new Date(value);
         return !isNaN(date.getTime()) && date < new Date();
@@ -67,14 +92,12 @@ export const membershipRegistrationSchema = (captcha: string) =>
     
     address1: yup
       .string()
-      .required('Address is required')
-      .min(10, 'Address must be at least 10 characters')
+      .optional()
       .trim(),
     
     city: yup
       .string()
-      .required('City is required')
-      .min(2, 'City must be at least 2 characters')
+      .optional()
       .trim(),
     
     country: yup
@@ -83,7 +106,8 @@ export const membershipRegistrationSchema = (captcha: string) =>
     
     hearAboutEFI: yup
       .string()
-      .required('Please enter how you heard about EFI'),
+      .optional()
+      .trim(),
     
     patientsPerYear: yup
       .string()
@@ -101,10 +125,7 @@ export const membershipRegistrationSchema = (captcha: string) =>
         return !isNaN(Number(value)) && Number(value) >= 0;
       }),
     
-    paymentMode: yup
-      .string()
-      .required('Payment mode is required'),
-    
+
     couponCode: yup
       .string()
       .optional()
@@ -120,15 +141,15 @@ export const membershipRegistrationSchema = (captcha: string) =>
 
 // Export dropdown options
 export const membershipFormOptions = {
-  countries: [
-    { label: 'India', value: 'india' },
-    { label: 'USA', value: 'usa' },
-    { label: 'UK', value: 'uk' },
-    { label: 'Canada', value: 'canada' },
-    { label: 'Australia', value: 'australia' },
-    { label: 'Germany', value: 'germany' },
-    { label: 'France', value: 'france' },
-  ],
+  // countries: [
+  //   { label: 'India', value: 'india' },
+  //   { label: 'USA', value: 'usa' },
+  //   { label: 'UK', value: 'uk' },
+  //   { label: 'Canada', value: 'canada' },
+  //   { label: 'Australia', value: 'australia' },
+  //   { label: 'Germany', value: 'germany' },
+  //   { label: 'France', value: 'france' },
+  // ],
   hearAboutEFI: [
     { label: 'Website', value: 'website' },
     { label: 'Social Media', value: 'social_media' },

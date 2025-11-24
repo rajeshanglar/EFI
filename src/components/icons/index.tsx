@@ -98,7 +98,8 @@ import MissionIconSvg from '../../assets/images/mission-icon.svg';
 import VisionIconSvg from '../../assets/images/vision-icon.svg';
 import ObjectivesIconSvg from '../../assets/images/objectives-icon.svg';
 import RibbonRunBulletIconSvg from '../../assets/images/ribbonrun-icon-bullet.svg';
-
+import SearchIconSvg from '../../assets/images/search-icon.svg';
+import TickIconSvg from '../../assets/images/tick-icon.svg';
 interface IconProps {
   size?: number;
   color?: string;
@@ -449,4 +450,12 @@ export const ObjectivesIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const RibbonRunBulletIcon = ({ size = 24, color, style }: IconProps) => (
   <RibbonRunBulletIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const SearchIcon = ({ size = 24, color, style }: IconProps) => (
+  <SearchIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const TickIcon = ({ size = 24, color, style }: IconProps) => (
+  <TickIconSvg width={size} height={size} color={color} style={style} />
 );

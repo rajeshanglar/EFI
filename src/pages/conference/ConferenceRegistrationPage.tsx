@@ -175,7 +175,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
                 [key: string]: 'Regular' | 'Late Registration' | 'On Spot';
               } = {
                 regular: 'Regular',
-                lateRegistration: 'Regular',
+                lateRegistration: 'Late Registration',
                 onSpot: 'On Spot',
               };
               onNavigateToForm?.(tierMap[registrationTier]);

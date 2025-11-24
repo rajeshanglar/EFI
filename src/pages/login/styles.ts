@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginTop: spacing.md,
 
-    minHeight: Dimensions.get('window').height * 0.5,
+    minHeight: Dimensions.get('window').height * 0.46,
     position: 'relative',
     shadowColor: colors.gray,
     shadowOffset: { width: 0, height: -4 },
@@ -162,8 +162,12 @@ const styles = StyleSheet.create({
   },
 
   mainInputContainer: {
-    marginHorizontal: spacing.md,
+    marginHorizontal: spacing.sm,
     marginBottom: spacing.md,
+  },
+
+  emailContainer:{
+    marginBottom:29,
   },
 
   inputContainer: {
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
     borderRadius: borderRadius.md,
     paddingHorizontal: spacing.sm,
-    marginBottom: 19,
+    marginBottom: 0,
   },
 
   input: {
@@ -189,6 +193,19 @@ const styles = StyleSheet.create({
   },
   forgotButton: {
     padding: spacing.xs,
+  },
+  passwordActionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  eyeIconContainer: {
+    padding: spacing.xs,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  eyeIconText: {
+    fontSize: Dimensions.get('window').width * 0.045,
   },
   forgotText: {
     color: colors.blue,

@@ -66,6 +66,7 @@ interface SlideOutMenuProps {
   onLogout?: () => void;
   onLoginPress?: () => void;
   onProfilePress?: () => void;
+  isAuthenticated?: boolean; // Add auth status
   socialIcons?: SocialIconConfig[]; // Optional: override default social icons
 }
 
@@ -128,6 +129,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   onLogout,
   onLoginPress,
   onProfilePress,
+  isAuthenticated = false, // Default to false if not provided
   socialIcons = defaultSocialIcons, // Use provided social icons or default
 }) => {
   const translateX = useRef(new Animated.Value(screenWidth)).current; // start off-screen right
@@ -224,14 +226,21 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
           <TouchableOpacity
             style={styles.leftSection}
             onPress={() => {
-              onLoginPress?.();
-              onClose();
+              if (isAuthenticated && onLogout) {
+                // User is logged in, call logout
+                onLogout();
+                onClose();
+              } else {
+                // User is not logged in, go to login page
+                onLoginPress?.();
+                onClose();
+              }
             }}
           >
             <View style={styles.leftIcon}>
               <WhiteLoginIcon size={20} color={colors.white} />
             </View>
-            <Text style={styles.leftIconText}>LOGIN</Text>
+            <Text style={styles.leftIconText}>{isAuthenticated ? 'LOGOUT' : 'LOGIN'}</Text>
           </TouchableOpacity>
         </View>
 
@@ -269,11 +278,11 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
             style={styles.menuContainer}
             showsVerticalScrollIndicator={false}
           >
-            <ConferenceAccess
+            {/* <ConferenceAccess
               styles={styles}
               conferenceAccessItems={conferenceAccessItems}
               renderConferenceItem={renderConferenceItem}
-            />
+            /> */}
             <View style={styles.menuGrid}>{menuItems.map(renderMenuItem)}</View>
           </ScrollView>
         </ImageBackground>

@@ -23,6 +23,7 @@ import { SharedMenu } from '../../components/SharedMenu';
 import LanguageSelector from '../../components/LanguageSelector';
 import Header from '../../components/Header';
 import { useMenu } from '../../contexts/MenuContext';
+import { useAuth } from '../../contexts/AuthContext';
 import {
   AbstractIcon,
   ArrowRightIcon,
@@ -48,6 +49,7 @@ interface HomePageProps {
   onNavigateToTrainingPrograms?: () => void;
   onNavigateToMembership?: () => void;
   onNavigateToMembershipInfo?: () => void;
+  onNavigateToMembershipExclusiveAccess?: () => void;
   onNavigateToBoard?: () => void;
   onNavigateToProfile?: () => void;
   onNavigateToMyCards?: () => void;
@@ -97,6 +99,7 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToTrainingPrograms,
   onNavigateToMembership,
   onNavigateToMembershipInfo,
+  onNavigateToMembershipExclusiveAccess,
   onNavigateToBoard,
   onNavigateToProfile,
   onNavigateToMyCards,
@@ -112,41 +115,68 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToDonationsAndFundraising,
 }) => {
   const { openMenu } = useMenu();
+  const { user, isAuthenticated } = useAuth();
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const bannerFlatListRef = useRef<FlatList>(null);
 
+  // Get registration_type from user data
+  const registrationType = user?.registration_type || '';
+
+  // Determine button titles and styles based on registration_type
+  const membershipTitle = isAuthenticated && registrationType === 'membership' 
+    ? 'Membership\nExclusive Access' 
+    : 'Membership Registration';
+  
+  const conferenceTitle = isAuthenticated && (registrationType === 'conference' || registrationType === 'Conference')
+    ? 'Conference'
+    : 'Conference Registration';
+
   const actionButtons = [
     {
-      title: 'Membership Registration',
+      title: membershipTitle,
       icon: MembershipIcon,
       // onPress: () => console.log('Membership'),
-      onPress: () => onNavigateToMembership?.() || console.log('Membership'),
+      onPress: () => {
+        // If user has membership registration_type, navigate to Exclusive Access page
+        if (isAuthenticated && registrationType === 'membership') {
+          onNavigateToMembershipExclusiveAccess?.() || console.log('Membership Exclusive Access');
+        } else {
+          // Otherwise, navigate to membership registration form
+          onNavigateToMembership?.() || console.log('Membership Registration');
+        }
+      },
+      isSpecial: isAuthenticated && registrationType === 'membership', // Special styling only for membership users
     },
     {
       title: 'Training\nSession',
       icon: TrainingIcon,
       onPress: () => console.log('Training'),
+      isSpecial: false,
     },
     {
-      title: 'Conference Registration',
+      title: conferenceTitle,
       icon: CongressIcon,
       onPress: () => onNavigateToConference?.() || console.log('Conference'),
+      isSpecial: isAuthenticated && (registrationType === 'conference' || registrationType === 'Conference'), // Special styling only for conference users
     },
     {
       title: 'Donations And Fundraising',
       icon: FundraisingIcon,
       onPress: () =>
         onNavigateToDonationsAndFundraising?.() || console.log('Donations'),
+      isSpecial: false,
     },
     {
       title: 'Join\nThe Cause',
       icon: JoinCauseIcon,
       onPress: () => console.log('Join Cause'),
+      isSpecial: false,
     },
     {
       title: 'Explore Corporate Partnerships',
       icon: PartnershipsIcon,
       onPress: () => console.log('Partnerships'),
+      isSpecial: false,
     },
   ];
 
@@ -194,9 +224,10 @@ const HomePage: React.FC<HomePageProps> = ({
                     icon={button.icon}
                     onPress={button.onPress}
                     style={styles.actionButton}
-                    iconStyle={styles.iconStyle}
+                    iconStyle={button.isSpecial ? styles.iconStyleSpecial : styles.iconStyle}
                     textStyle={styles.actionButtonText}
-                    iconContainer={styles.iconContainer}
+                    iconContainer={button.isSpecial ? styles.iconContainerSpecial : styles.iconContainer}
+                    isSpecial={button.isSpecial}
                   />
                 ))}
               </View>
@@ -425,6 +456,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.29,
   },
   iconContainer: {
+    position: 'relative',
     backgroundColor: 'rgba(249, 222, 71, 0.2)',
     width: 70,
     height: 70,
@@ -441,6 +473,26 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 
+  iconContainerSpecial: {
+    position: 'relative',
+    backgroundColor:colors.white,
+    width: 80,
+    height: 80,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.white,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,  
+  },
+
   iconStyle: {
     width: 60,
     height: 60,
@@ -448,6 +500,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+
+  iconStyleSpecial: {
+    width: 70,
+    height: 70,
+    borderRadius: 100,
+    backgroundColor:colors.primaryLight, // Dark blue for card icon background
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
   },
 
   actionButtonText: {
@@ -645,6 +707,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     transform: [{ rotate: '15deg' }],
   },
+
+
 });
 
 export default HomePage;

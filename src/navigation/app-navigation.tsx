@@ -108,6 +108,7 @@ function AppNavigation() {
     selectedTier,
     selectedSession,
     myConferenceSessions,
+    membershipFormData,
     navigate,
     myConference,
     handleLogout,
@@ -134,6 +135,7 @@ function AppNavigation() {
         onNavigateToTrainingPrograms={navigate.trainingPrograms}
         onNavigateToMembership={navigate.membershipForm}
         onNavigateToMembershipInfo={navigate.membershipInfo}
+        onNavigateToMembershipExclusiveAccess={navigate.membershipExclusiveAccess}
         onNavigateToBoard={navigate.board}
         onNavigateToProfile={navigate.profile}
         onNavigateToMyCards={navigate.myCards}
@@ -272,6 +274,9 @@ function AppNavigation() {
         onBack={navigate.membershipForm}
         onNavigateToHome={navigate.home}
         onNavigateToLogin={navigate.login}
+        formData={membershipFormData?.formData}
+        userData={membershipFormData?.userData}
+        paymentData={membershipFormData?.paymentData}
       />
     ),
     membershipExclusiveAccess: (

@@ -19,11 +19,6 @@ export const loginSchema = (captcha: string) =>
         'Password must contain at least one letter and one number',
       ),
     
-    loginType: yup
-      .string()
-      .oneOf(['member', 'conference'], 'Invalid login type')
-      .required('Login type is required'),
-    
     captcha: yup
       .string()
       .required('CAPTCHA is required')
@@ -31,5 +26,9 @@ export const loginSchema = (captcha: string) =>
       .test('captcha-match', 'Invalid CAPTCHA. Please try again.', function(value) {
         return value?.toUpperCase().trim() === captcha.toUpperCase();
       }),
+    
+    device_id: yup.string().optional(),
+    app_version: yup.string().optional(),
+    app_name: yup.string().optional(),
   });
 

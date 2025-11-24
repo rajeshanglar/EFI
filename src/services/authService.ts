@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { LoginFormValues } from '../types/login';
+import api from './api';
 export interface LoginCredentials {
   email: string;
   password: string;
-  loginType: 'member' | 'conference';
   captcha: string;
+  device_id: string;
+  app_version: string;
+  app_name: string;
 }
 
 export interface ValidationResult {
@@ -121,7 +124,7 @@ class AuthService {
 
   /**
    * Attempts to login with credentials
-   * In a real app, this would make an API call
+   * Calls the Login API and stores the api_token and user data
    */
   async login(credentials: LoginCredentials): Promise<{ success: boolean; error?: string; user?: any }> {
     try {
@@ -137,22 +140,131 @@ class AuthService {
         return { success: false, error: 'Invalid CAPTCHA. Please try again.' };
       }
 
-      // Mock API call - In a real app, replace this with actual API call
-      const mockUser = {
-        email: credentials.email,
-        loginType: credentials.loginType,
-        name: credentials.email.split('@')[0],
-        token: this.generateAuthToken(),
+      // Call Login API
+      const loginPayload = {
+        email_id: credentials.email,
+        password: credentials.password,
+        device_id: credentials.device_id || 'device123',
+        app_version: credentials.app_version || '1.0.0',
+        app_name: credentials.app_name || 'EFI App',
       };
 
-      // Store auth token
-      await AsyncStorage.setItem(this.AUTH_TOKEN_KEY, mockUser.token);
-      await AsyncStorage.setItem(this.USER_DATA_KEY, JSON.stringify(mockUser));
+      console.log('=== LOGIN API CALL ===');
+      console.log('Payload:', JSON.stringify(loginPayload, null, 2));
 
-      return { success: true, user: mockUser };
-    } catch (error) {
+      let result;
+      try {
+        result = await Login(loginPayload);
+      } catch (apiError: any) {
+        // Handle API errors (401, 403, etc.) that might be thrown by axios
+        console.error('Login API call failed:', apiError);
+        
+        // If API returns error response with data, extract it
+        if (apiError?.response?.data) {
+          const errorData = apiError.response.data;
+          const errorMessage = errorData?.message || 'Login failed. Please try again.';
+          
+          console.error('=== LOGIN API ERROR RESPONSE ===');
+          console.error('Error Data:', JSON.stringify(errorData, null, 2));
+          console.error('Error Message:', errorMessage);
+          console.error('Error Status:', apiError.response?.status);
+          console.error('================================');
+          
+          return { success: false, error: errorMessage };
+        }
+        
+        // Re-throw if it's not an API error response
+        throw apiError;
+      }
+
+      console.log('=== LOGIN API RESPONSE ===');
+      console.log('Full Response:', JSON.stringify(result, null, 2));
+      console.log('Response Success:', result?.success);
+      console.log('Response Message:', result?.message);
+      console.log('Response Status:', result?.status);
+      console.log('Response Data:', JSON.stringify(result?.data, null, 2));
+      if (result?.data) {
+        console.log('User ID:', result.data.user_id);
+        console.log('Email:', result.data.email_id);
+        console.log('Name:', result.data.first_name, result.data.last_name);
+        console.log('Role:', result.data.role_name);
+        console.log('API Token:', result.data.api_token ? result.data.api_token.substring(0, 20) + '...' : 'Not provided');
+      }
+      console.log('========================');
+
+      // Handle API response with success: false
+      if (result?.success === false) {
+        const errorMessage = result?.message || 'Login failed. Please try again.';
+        return { success: false, error: errorMessage };
+      }
+
+      if (result?.success === true && result?.data) {
+        const userData = result.data;
+        const apiToken = userData.api_token;
+
+        if (!apiToken) {
+          return { success: false, error: 'API token not received from server' };
+        }
+
+        // Store api_token as accessToken (for API interceptor)
+        await AsyncStorage.setItem('accessToken', apiToken);
+        
+        // Also store in auth_token key for backward compatibility
+        await AsyncStorage.setItem(this.AUTH_TOKEN_KEY, apiToken);
+        
+        // Store user data
+        await AsyncStorage.setItem(this.USER_DATA_KEY, JSON.stringify(userData));
+
+        // Store device_id, app_version, and app_name from API response (or use request payload as fallback)
+        const deviceId = userData.device_id || loginPayload.device_id;
+        const appVersion = userData.app_version || loginPayload.app_version;
+        const appName = userData.app_name || loginPayload.app_name;
+
+        if (deviceId) {
+          await AsyncStorage.setItem('device_id', deviceId);
+        }
+        if (appVersion) {
+          await AsyncStorage.setItem('app_version', appVersion);
+        }
+        if (appName) {
+          await AsyncStorage.setItem('app_name', appName);
+        }
+
+        console.log('=== TOKEN STORED ===');
+        console.log('accessToken stored:', apiToken.substring(0, 20) + '...');
+        console.log('device_id stored:', deviceId);
+        console.log('app_version stored:', appVersion);
+        console.log('app_name stored:', appName);
+        console.log('===================');
+
+        return { success: true, user: userData };
+      } else {
+        const errorMessage = result?.message || 'Login failed. Please try again.';
+        return { success: false, error: errorMessage };
+      }
+    } catch (error: any) {
       console.error('Login error:', error);
-      return { success: false, error: 'An error occurred during login' };
+      console.error('Error response:', error?.response);
+      console.error('Error response data:', error?.response?.data);
+      console.error('Error status:', error?.response?.status);
+      console.error('Error config:', error?.config);
+      
+      // Extract error message from API response
+      const errorData = error?.response?.data;
+      let errorMessage = 'An error occurred during login';
+      
+      if (errorData?.message) {
+        errorMessage = errorData.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Handle specific error cases
+      if (errorMessage.includes('Mobile app access is not enabled')) {
+        errorMessage = 'Mobile app access is not enabled for this account. Please contact administrator.';
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 
@@ -171,6 +283,9 @@ class AuthService {
       await AsyncStorage.removeItem(this.AUTH_TOKEN_KEY);
       await AsyncStorage.removeItem(this.USER_DATA_KEY);
       await AsyncStorage.removeItem(this.CAPTCHA_KEY);
+      // Remove accessToken so static token will be used after logout
+      await AsyncStorage.removeItem('accessToken');
+      console.log('=== LOGGED OUT: REMOVED ACCESS TOKEN ===');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -181,8 +296,10 @@ class AuthService {
    */
   async isAuthenticated(): Promise<boolean> {
     try {
-      const token = await AsyncStorage.getItem(this.AUTH_TOKEN_KEY);
-      return !!token;
+      // Check accessToken (used by API interceptor) first, then fallback to AUTH_TOKEN_KEY
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const authToken = await AsyncStorage.getItem(this.AUTH_TOKEN_KEY);
+      return !!(accessToken || authToken);
     } catch (error) {
       console.error('Auth check error:', error);
       return false;
@@ -202,5 +319,17 @@ class AuthService {
     }
   }
 }
+
+export const Login = async (payload: {
+  email_id: string;
+  password: string;
+  device_id: string;
+  app_version: string;
+  app_name: string;
+}) => {
+  const response = await api.post('v1/login', payload);
+  return response.data;
+};
+
 
 export default new AuthService();

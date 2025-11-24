@@ -16,12 +16,7 @@ const DonationsAndFundraising: React.FC<DonationsAndFundraisingProps> = ({
   onBack,
   onNavigateToHome,
 }) => {
-  const handleDonateNow = () => {
-    // Open donation link or payment gateway
-    Linking.openURL('https://www.example.com/donate').catch(err => 
-      console.error('Failed to open donation link:', err)
-    );
-  };
+
 
   return (
     <View style={styles.container}>

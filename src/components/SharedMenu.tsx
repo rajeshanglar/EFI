@@ -2,6 +2,7 @@ import React from 'react';
 import SlideOutMenu from './SlideOutMenu';
 import { useMenu } from '../contexts/MenuContext';
 import { useNavigationContext } from '../contexts/NavigationContext';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * SharedMenu Component
@@ -27,6 +28,7 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
 }) => {
   const { isMenuVisible, closeMenu } = useMenu();
   const { navigate } = useNavigationContext();
+  const { isAuthenticated, logout: authLogout } = useAuth();
 
   // Handle profile press - always navigate to profile page
   const handleProfilePress = () => {
@@ -41,7 +43,7 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
     navigate.profile();
   };
 
-  // Handle login press - always navigate to login page
+  // Handle login press - navigate to login page (only if not logged in)
   const handleLoginPress = () => {
     closeMenu();
     
@@ -50,8 +52,32 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
       onLoginPress();
     }
     
-    // Always navigate to login page
-    navigate.login();
+    // Navigate to login page only if not authenticated
+    if (!isAuthenticated) {
+      navigate.login();
+    }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    closeMenu();
+    
+    try {
+      // Call custom logout handler if provided
+      if (onLogout) {
+        onLogout();
+      }
+      
+      // Call auth service logout
+      await authLogout();
+      
+      // Navigate to home after logout
+      navigate.home();
+      
+      console.log('=== LOGOUT SUCCESSFUL ===');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const handleMenuItemPress = (id: string) => {
@@ -150,9 +176,10 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
       isVisible={isMenuVisible}
       onClose={closeMenu}
       onMenuItemPress={handleMenuItemPress}
-      onLogout={onLogout}
+      onLogout={handleLogout}
       onLoginPress={handleLoginPress}
       onProfilePress={handleProfilePress}
+      isAuthenticated={isAuthenticated}
     />
   );
 };

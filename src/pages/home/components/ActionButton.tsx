@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import globalStyles, { colors, spacing, borderRadius } from '../../../styles/globalStyles';
+import { TickIcon } from '../../../components/icons';
+import styles from '../../login/styles';
 
 interface ActionButtonProps {
   title: string;
@@ -10,6 +12,7 @@ interface ActionButtonProps {
   iconStyle?: any;
   textStyle?: any;
   iconContainer?: any;
+  isSpecial?: boolean;
 }
 
 export const ActionButton: React.FC<ActionButtonProps> = ({ 
@@ -19,13 +22,19 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   style, 
   iconStyle, 
   textStyle,
-  iconContainer
+  iconContainer,
+  isSpecial = false
 }) => (
   <TouchableOpacity style={[style]} onPress={onPress}>
     <View style={[iconContainer]}>
       <View style={[iconStyle]}>
-        <Icon size={34} />
-      </View> 
+        <Icon size={isSpecial ? 34 : 34} color={isSpecial ? colors.white : undefined} />
+      </View>
+      {isSpecial && (
+          <View style={globalStyles.tickIconContainer}>
+          <TickIcon size={16} color={colors.primary} />
+        </View>
+      )}
     </View>
     <Text style={[textStyle]}>{title}</Text>
   </TouchableOpacity>

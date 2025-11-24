@@ -78,7 +78,7 @@ export const globalStyles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    backgroundColor: colors.primary,
+   
   },
   centerContent: {
     justifyContent: 'center',
@@ -296,12 +296,13 @@ export const globalStyles = StyleSheet.create({
 
   footerBtContainer: {
     position: 'absolute',
-    bottom: Dimensions.get('window').height * 0,
+    bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: colors.lightGray,
-    paddingTop: Dimensions.get('window').height * 0.012,
-    paddingBottom: Dimensions.get('window').height * 0.012,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.md,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.6,
@@ -1327,6 +1328,29 @@ bulletTextLight: {
   fontFamily: Fonts.Regular,
   color: colors.white,
   lineHeight: screenWidth * 0.055,
+},
+
+
+tickIconContainer: {
+  position: 'absolute',
+  top:-4,
+  right: 2,
+  width: 28,
+  height: 28,
+  borderRadius: 14,
+  backgroundColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center',
+  borderWidth: 2,
+  borderColor: colors.primary,
+  shadowColor: colors.black,
+  shadowOffset: {
+    width: 0,
+    height: 1,
+  },
+  shadowOpacity: 0.2,
+  shadowRadius: 2,
+  elevation: 3,
 },
 });
 export default globalStyles;

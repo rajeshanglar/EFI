@@ -40,12 +40,26 @@ export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [selectedTier, setSelectedTier] = useState<
-    'Early Bird' | 'Regular' | 'On Spot'
-  >('Early Bird');
+    'Regular' | 'Late Registration' | 'On Spot'
+  >('Regular');
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [myConferenceSessions, setMyConferenceSessions] = useState<string[]>(
     [],
   );
+  const [membershipFormData, setMembershipFormData] = useState<{
+    formData?: any;
+    userData?: {
+      name?: string;
+      email?: string;
+      phone?: string;
+      country?: string;
+    };
+    paymentData?: {
+      subTotal?: number;
+      coupon?: number;
+      grandTotal?: number;
+    };
+  } | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) setCurrentPage('home');
@@ -56,8 +70,8 @@ export function useNavigationManager() {
     home: () => setCurrentPage('home'),
     login: () => setCurrentPage('login'),
     conference: () => setCurrentPage('conference'),
-    conferenceForm: (tier?: 'Early Bird' | 'Regular' | 'On Spot') => {
-      setSelectedTier(tier || 'Early Bird');
+    conferenceForm: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => {
+      setSelectedTier(tier || 'Regular');
       setCurrentPage('conferenceForm');
     },
     conferencePayment: () => setCurrentPage('conferencePayment'),
@@ -91,7 +105,24 @@ export function useNavigationManager() {
     myConference: () => setCurrentPage('myConference'),
     trainingPrograms: () => setCurrentPage('trainingPrograms'),
     membershipForm: () => setCurrentPage('membershipForm'),
-    membershipPaymentDetails: () => setCurrentPage('membershipPaymentDetails'),
+    membershipPaymentDetails: (data?: {
+      userData?: {
+        name?: string;
+        email?: string;
+        phone?: string;
+        country?: string;
+      };
+      paymentData?: {
+        subTotal?: number;
+        coupon?: number;
+        grandTotal?: number;
+      };
+    }) => {
+      if (data) {
+        setMembershipFormData(data);
+      }
+      setCurrentPage('membershipPaymentDetails');
+    },
     membershipExclusiveAccess: () => setCurrentPage('membershipExclusiveAccess'),
     myConferenceSession: (eventData: any) => {
       const sessionData = {
@@ -148,6 +179,7 @@ export function useNavigationManager() {
     selectedTier,
     selectedSession,
     myConferenceSessions,
+    membershipFormData,
     navigate,
     myConference,
     handleLogout,

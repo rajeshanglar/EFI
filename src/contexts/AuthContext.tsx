@@ -2,10 +2,12 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import authService from '../services/authService';
 
 interface User {
-  email: string;
-  loginType: 'member' | 'conference';
-  name: string;
-  token: string;
+  email?: string;
+  loginType?: 'membership' | 'conference';
+  name?: string;
+  token?: string;
+  registration_type?: string; // From login API response
+  [key: string]: any; // Allow additional properties from API
 }
 
 interface AuthContextType {
@@ -13,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   login: (credentials: any) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  refreshAuthStatus: () => Promise<void>;
   loading: boolean;
 }
 
@@ -78,9 +81,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await authService.logout();
       setIsAuthenticated(false);
       setUser(null);
+      console.log('=== AUTH CONTEXT: LOGGED OUT ===');
     } catch (error) {
       console.error('Logout error:', error);
     }
+  };
+
+  // Refresh auth status - useful after login/logout operations
+  const refreshAuthStatus = async () => {
+    await checkAuthStatus();
   };
 
   const value: AuthContextType = {
@@ -88,6 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     login,
     logout,
+    refreshAuthStatus,
     loading,
   };
 
