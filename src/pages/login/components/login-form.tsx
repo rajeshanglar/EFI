@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { EmailIcon, PasswordIcon } from '../../../components/icons';
+import { EmailIcon, PasswordIcon, PasswordViewIcon, PasswordViewHideIcon } from '../../../components/icons';
 import styles from '../styles';
 import { colors } from '../../../styles/globalStyles';
 
@@ -63,7 +63,11 @@ const LoginForm: React.FC<Props> = React.memo(
                   style={styles.eyeIconContainer}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.eyeIconText}>{showPassword ? '👁️' : '👁'}</Text>
+                  {showPassword ? (
+                    <PasswordViewHideIcon size={20} color={colors.primary} />
+                  ) : (
+                    <PasswordViewIcon size={20} color={colors.primary} />
+                  )}
                 </TouchableOpacity>
                 <TouchableOpacity>
                   <Text style={styles.forgotText}>Forgot?</Text>

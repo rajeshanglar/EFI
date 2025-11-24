@@ -42,6 +42,8 @@ import WhiteUserIconSvg from '../../assets/images/white-user-icon.svg';
 import WhiteCloseIconSvg from '../../assets/images/white-close-icon.svg';
 import EmailIconSvg from '../../assets/images/email-icon.svg';
 import PasswordIconSvg from '../../assets/images/password-icon.svg';
+import PasswordViewIconSvg from '../../assets/images/password-view.svg';
+import PasswordViewHideIconSvg from '../../assets/images/password-viewhide.svg';
 import YellowRibbonIconSvg from '../../assets/images/yellow-ribbon-icon.svg';
 import RefreshIconSvg from '../../assets/images/refresh-icon.svg';
 
@@ -262,6 +264,14 @@ export const EmailIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const PasswordIcon = ({ size = 24, color, style }: IconProps) => (
   <PasswordIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const PasswordViewIcon = ({ size = 24, color, style }: IconProps) => (
+  <PasswordViewIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const PasswordViewHideIcon = ({ size = 24, color, style }: IconProps) => (
+  <PasswordViewHideIconSvg width={size} height={size} color={color} style={style} />
 );
 
 export const YellowRibbonIcon = ({ size = 24, color, style }: IconProps) => (
