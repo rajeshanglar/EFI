@@ -210,19 +210,20 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
       <View style={styles.sidebar}>
 
         <View style={styles.leftSectionContainer}>
-
-          <TouchableOpacity 
-           style={styles.leftSection}
-           onPress={() => {
-             onProfilePress?.();
-             onClose();
-           }}>
-            <View style={styles.leftIcon}>
-              <WhiteUserIcon size={20} color={colors.white} />
-            </View>
-            <Text style={styles.leftIconText}>PROFILE</Text>
-          </TouchableOpacity>
-
+          {isAuthenticated && (
+            <TouchableOpacity 
+              style={styles.leftSection}
+              onPress={() => {
+                onProfilePress?.();
+                onClose();
+              }}>
+              <View style={styles.leftIcon}>
+                <WhiteUserIcon size={20} color={colors.white} />
+              </View>
+              <Text style={styles.leftIconText}>PROFILE</Text>
+            </TouchableOpacity>
+          )}
+          
           <TouchableOpacity
             style={styles.leftSection}
             onPress={() => {

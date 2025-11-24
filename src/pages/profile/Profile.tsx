@@ -21,6 +21,7 @@ import {
   EditProfileIcon,
   PhoneIcon,
   } from '../../components/icons';
+import { useAuth } from '../../contexts/AuthContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -39,11 +40,18 @@ const Profile: React.FC<ProfileProps> = ({
   onNavigateToEditProfile,
   onNavigateToChangePassword,
 }) => {
-  // Mock user data - Replace with actual user data from context/store
+  // Get user data from AuthContext
+  const { user } = useAuth();
+  
+  // Get user data from context or use fallback values
   const userData = {
-    name: 'Mr. Hitesh Bharadwaj',
-    email: 'hiteshb755@gmail.com',
-    phone: '9848923344',
+    name: user?.first_name && user?.last_name 
+      ? `${user.first_name} ${user.last_name}` 
+      : user?.first_name 
+      ? user.first_name 
+      : user?.name || 'User',
+    email: user?.email_id || user?.email || '',
+    phone: user?.mobile_no || user?.phone || '',
   };
 
   return (
@@ -75,14 +83,14 @@ const Profile: React.FC<ProfileProps> = ({
           {/* Profile Picture Section */}
           <View style={styles.profilePictureContainer}>
             <View style={styles.profileIconContainer}>
-              <UserIcon size={60} color={colors.primary} />
+              <UserIcon size={screenWidth * 0.12} color={colors.primary} />
             </View>
             <TouchableOpacity
               style={styles.editProfileIconButton}
               onPress={onNavigateToEditProfile}
             >
               <View style={styles.editProfileIconCircle}>
-                <ProfileEditIcon size={35} color={colors.primaryLight} />
+                <ProfileEditIcon size={screenWidth * 0.08} color={colors.primaryLight} />
               </View>
             </TouchableOpacity>
           </View>
@@ -93,7 +101,7 @@ const Profile: React.FC<ProfileProps> = ({
             onPress={onNavigateToEditProfile}
             activeOpacity={0.7}
           >
-            <EditProfileIcon size={22} color={colors.primary} />
+            <EditProfileIcon size={screenWidth * 0.055} color={colors.primary} />
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </TouchableOpacity>
 
@@ -103,11 +111,11 @@ const Profile: React.FC<ProfileProps> = ({
           {/* Contact Information */}
           <View style={styles.contactInfo}>
             <View style={styles.contactRow}>
-              <EmailIcon size={20} color={colors.primary} />
+              <EmailIcon size={screenWidth * 0.05} color={colors.primary} />
               <Text style={styles.contactText}>{userData.email}</Text>
             </View>
             <View style={styles.contactRow}>
-              <PhoneIcon size={20} color={colors.primary} />
+              <PhoneIcon size={screenWidth * 0.047} color={colors.primary} />
               <Text style={styles.contactText}>{userData.phone}</Text>
             </View>
           </View>
@@ -214,8 +222,8 @@ const styles = StyleSheet.create({
     marginTop:-60,
   },
   profileIconContainer: {
-    width: 100,
-    height: 100,
+    width: screenWidth * 0.21,
+    height: screenWidth * 0.21,
     borderRadius: 50,
     borderWidth: 2,
     borderColor: colors.primaryLight,

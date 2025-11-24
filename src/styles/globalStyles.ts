@@ -1333,8 +1333,8 @@ bulletTextLight: {
 
 tickIconContainer: {
   position: 'absolute',
-  top:-4,
-  right: 2,
+  top:-10,
+  right:0,
   width: 28,
   height: 28,
   borderRadius: 14,

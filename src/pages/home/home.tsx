@@ -36,6 +36,7 @@ import {
   MenuIcon,
   WhiteMyCardsIcon,
   ArrowLeftIconYellow,
+  UserIcon,
 } from '../../components/icons';
 import EfiBoard from '../../components/EfiBoard';
 import GradientButton from '../../components/GradientButton';
@@ -186,10 +187,21 @@ const HomePage: React.FC<HomePageProps> = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image
-            source={require('../../assets/images/logo-w.png')}
-            style={styles.logoHome}
-          />
+          {isAuthenticated && user ? (
+            <TouchableOpacity style={styles.userIconDashHeader} onPress={() => onNavigateToProfile?.() || console.log('Profile')}>
+              <View style={styles.userIconContainer}>
+                <UserIcon size={24} color={colors.primary} />
+              </View>
+              <Text style={styles.greetingText}>
+                Hello, {user?.first_name || user?.name || 'User'}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <Image
+              source={require('../../assets/images/logo-w.png')}
+              style={styles.logoHome}
+            />
+          )}
         </View>
         <View style={styles.headerRight}>
           <NotificationBadge count={0} />
@@ -378,6 +390,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  userIconDashHeader:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+
   logoHome: {
     width: Dimensions.get('window').width * 0.34,
     height: Dimensions.get('window').width * 0.1,
@@ -395,7 +413,7 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.04,
+    fontSize: Dimensions.get('window').width * 0.038,
     fontWeight: '500',
   },
 
@@ -435,7 +453,6 @@ const styles = StyleSheet.create({
 
   actionGridContent: {
     backgroundColor: colors.primary,
-
     paddingTop: 20,
     paddingBottom: 90,
     borderBottomEndRadius: 25,
@@ -476,8 +493,8 @@ const styles = StyleSheet.create({
   iconContainerSpecial: {
     position: 'relative',
     backgroundColor:colors.white,
-    width: 80,
-    height: 80,
+    width:70,
+    height:70,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
@@ -503,8 +520,8 @@ const styles = StyleSheet.create({
   },
 
   iconStyleSpecial: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     borderRadius: 100,
     backgroundColor:colors.primaryLight, // Dark blue for card icon background
     justifyContent: 'center',
