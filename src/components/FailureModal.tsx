@@ -1,27 +1,22 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Dimensions } from 'react-native';
 import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
-import { SuccessIcon, DownloadIcon } from './icons';
 import { GradientButton } from './GradientButton';
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
-interface SuccessModalProps {
+interface FailureModalProps {
   visible: boolean;
   message: string;
   onClose: () => void;
-  onDownload?: () => void;
-  downloadText?: string;
   icon?: React.ReactNode;
   instructionText?: string;
 }
 
-export const SuccessModal: React.FC<SuccessModalProps> = ({
+export const FailureModal: React.FC<FailureModalProps> = ({
   visible,
   message,
   onClose,
-  onDownload,
-  downloadText = 'Download Payment Receipt',
   icon,
   instructionText,
 }) => {
@@ -41,11 +36,13 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           style={styles.container}
           onStartShouldSetResponder={() => true}
         >
-          {/* Success Icon */}
+          {/* Failure Icon */}
           <View style={styles.iconContainer}>
-           
-          {icon ? icon : <SuccessIcon size={60} color="#4CAF50" />}
-           
+            {icon ? icon : (
+              <View style={styles.errorIconCircle}>
+                <Text style={styles.errorIconText}>✕</Text>
+              </View>
+            )}
           </View>
 
           {/* Message */}
@@ -64,14 +61,6 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             onPress={onClose}
             style={styles.buttonContainer}
           />
-
-          {/* Download Link */}
-          {onDownload && (
-            <TouchableOpacity onPress={onDownload} style={styles.downloadContainer}>
-              <DownloadIcon size={20} color={colors.black} />
-              <Text style={styles.downloadText}>{downloadText}</Text>
-            </TouchableOpacity>
-          )}
         </View>
       </TouchableOpacity>
     </Modal>
@@ -80,9 +69,8 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
 
 const styles = StyleSheet.create({
   overlay: {
-
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',   
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -96,7 +84,21 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: spacing.lg,
   },
-
+  errorIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#FFEBEE',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#F44336',
+  },
+  errorIconText: {
+    fontSize: 48,
+    color: '#F44336',
+    fontWeight: 'bold',
+  },
   message: {
     fontSize: screenWidth * 0.04,
     lineHeight: screenWidth * 0.064,
@@ -106,11 +108,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   instructionBox: {
-    backgroundColor: colors.primaryLight,
+    backgroundColor: '#FFEBEE',
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.lg,
     width: '100%',
+    borderLeftWidth: 4,
+    borderLeftColor: '#F44336',
   },
   instructionText: {
     fontSize: screenWidth * 0.038,
@@ -122,20 +126,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: spacing.xl,
   },
-  downloadContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.xs,
-    paddingTop: spacing.md,
-  },
-  downloadText: {
-    fontSize: screenWidth * 0.04,
-    fontFamily: Fonts.Medium,
-    color: colors.black,
-    textDecorationLine: 'underline',
-  },
 });
 
-export default SuccessModal;
+export default FailureModal;
 

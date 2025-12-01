@@ -1,19 +1,19 @@
 // Form values type (camelCase, for form state)
-export interface MembershipRegistrationFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  address1: string;
-  city: string;
-  country: string;
-  hearAboutEFI: string;
-  patientsPerYear: string;
-  surgeriesPerYear: string;
-  couponCode: string;
-  // captcha: string;
-}
+// export interface MembershipRegistrationFormValues {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   phone: string;
+//   dateOfBirth: string;
+//   address1: string;
+//   city: string;
+//   country: string;
+//   hearAboutEFI: string;
+//   patientsPerYear: string;
+//   surgeriesPerYear: string;
+//   couponCode: string;
+ 
+// }
 
 // API payload type (snake_case, for API request)
 export type MembershipRegPayload = {
@@ -22,6 +22,7 @@ export type MembershipRegPayload = {
   email_id: string;
   phone_number: string;
   dob: string;
+  grand_total: number;
   city: string;
   country: number;
   hear_about_efi: string;
@@ -30,19 +31,16 @@ export type MembershipRegPayload = {
   address: string;
   coupon_code: string;
   sub_total: number;
-  grand_total: number;
-  coupon_value: string;
+  coupon_value: number;
+  source_type: string; 
   payment_gateway: string;
   payment_method: string;
-  transaction_id: string;
+  payment_status: string;
   gateway_transaction_id: string;
   gateway_order_id: string;
-  payment_status: string;
   currency: string;
-  gateway_response: string;
-  failure_reason: string;
   payment_date: string;
-  source_type: string;
+  gateway_response: string;
 };
 
 
@@ -57,6 +55,20 @@ export type CheckMembershipExistsPayload = {
 };
 
 
+export type DownloadMembershipInvoicePayload = {
+  registration_id: number;
+};
 
 
-
+export type DownloadMembershipInvoiceResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    pdf_base64: string;
+    filename: string;
+    registration_id: number;
+    invoice_number: number;
+    mime_type: string;
+  };
+  status: number;
+};

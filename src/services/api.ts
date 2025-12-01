@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import dayjs from 'dayjs';
-import RNFS from 'react-native-fs';
+import ReactNativeBlobUtil from 'react-native-blob-util';
 
 import {API_BASE_URL, ENABLE_API_LOGGING, STATIC_API_TOKEN} from '../utils/enums';
 
@@ -14,12 +14,12 @@ const downloadApiLog = async (msg: string) => {
     const logText = `${timestamp}  ${msg}\n`;
 
     const fileName = `rainbow-api-log-${dayjs().format('YYYY-MM-DD')}.txt`;
-    const filePath = RNFS.DownloadDirectoryPath + '/' + fileName;
-    const exists = await RNFS.exists(filePath);
+    const filePath = `${ReactNativeBlobUtil.fs.dirs.DownloadDir}/${fileName}`;
+    const exists = await ReactNativeBlobUtil.fs.exists(filePath);
     if (!exists) {
-      await RNFS.writeFile(filePath, logText, 'utf8');
+      await ReactNativeBlobUtil.fs.writeFile(filePath, logText, 'utf8');
     } else {
-      await RNFS.appendFile(filePath, logText, 'utf8');
+      await ReactNativeBlobUtil.fs.appendFile(filePath, logText, 'utf8');
     }
   } catch (error: any) {
     console.warn('Failed to download log:', error);
@@ -69,17 +69,22 @@ api.interceptors.request.use(async config => {
     config.headers['Content-Type'] = 'application/json';
   }
   
-  // Check if this is a login endpoint
+  // Check if this is a login, forgot password, or reset password endpoint
   const isLoginEndpoint = config.url?.includes('v1/login') || config.url?.includes('/login');
+  const isForgotPasswordEndpoint = config.url?.includes('v1/forgot-password') || config.url?.includes('/forgot-password');
+  const isResetPasswordEndpoint = config.url?.includes('v1/reset-password') || config.url?.includes('/reset-password');
   
-  // For login endpoint, always use static token
-  if (isLoginEndpoint) {
+  // For login, forgot password, and reset password endpoints, always use static token
+  if (isLoginEndpoint || isForgotPasswordEndpoint || isResetPasswordEndpoint) {
     if (STATIC_API_TOKEN) {
       config.headers.Authorization = `Bearer ${STATIC_API_TOKEN}`;
       console.log('=== LOGIN ENDPOINT: USING STATIC TOKEN ===');
     }
     return config;
   }
+  
+  // Check if this is a videos endpoint - may need special handling
+  const isVideosEndpoint = config.url?.includes('v1/videos') || config.url?.includes('/videos');
   
   // For all other endpoints: use login api_token if available, otherwise use static token
   let accessToken = await AsyncStorage.getItem('accessToken');
@@ -94,12 +99,26 @@ api.interceptors.request.use(async config => {
   if (accessToken) {
     // User is logged in, use their api_token
     config.headers.Authorization = `Bearer ${accessToken}`;
-    console.log('=== USING LOGIN API TOKEN (USER LOGGED IN) ===');
+    if (isVideosEndpoint) {
+      console.log('=== VIDEOS ENDPOINT: USING LOGIN API TOKEN ===');
+    } else {
+      console.log('=== USING LOGIN API TOKEN (USER LOGGED IN) ===');
+    }
     console.log('Token:', accessToken.substring(0, 20) + '...');
   } else if (STATIC_API_TOKEN) {
     // User not logged in, use static token
     config.headers.Authorization = `Bearer ${STATIC_API_TOKEN}`;
-    console.log('=== USING STATIC TOKEN (NOT LOGGED IN) ===');
+    if (isVideosEndpoint) {
+      console.log('=== VIDEOS ENDPOINT: USING STATIC TOKEN ===');
+      console.log('Static Token:', STATIC_API_TOKEN.substring(0, 20) + '...');
+    } else {
+      console.log('=== USING STATIC TOKEN (NOT LOGGED IN) ===');
+    }
+  } else {
+    console.error('=== NO AUTHENTICATION TOKEN AVAILABLE ===');
+    if (isVideosEndpoint) {
+      console.error('Videos endpoint requires authentication but no token found!');
+    }
   }
 
   return config;
@@ -140,6 +159,56 @@ api.interceptors.response.use(
         data: config?.data,
       }, null, 2));
       console.error('===========================');
+    }
+
+    // Enhanced logging for membership registration endpoint errors
+    const isMembershipRegistrationEndpoint = config?.url?.includes('v1/membership-registration') || config?.url?.includes('/membership-registration');
+    if (isMembershipRegistrationEndpoint) {
+      console.error('=== MEMBERSHIP REGISTRATION REQUEST ERROR ===');
+      console.error('Status:', status);
+      console.error('Status Text:', error.response?.statusText);
+      console.error('Error Response Data:', JSON.stringify(error.response?.data, null, 2));
+      console.error('Error Response Headers:', JSON.stringify(error.response?.headers, null, 2));
+      console.error('Request Payload:', JSON.stringify(config?.data, null, 2));
+      console.error('Request Config:', JSON.stringify({
+        url: config?.url,
+        method: config?.method,
+        headers: config?.headers,
+      }, null, 2));
+      
+      // Log validation errors if status is 422
+      if (status === 422 && error.response?.data) {
+        const errorData = error.response.data;
+        console.error('=== VALIDATION ERRORS ===');
+        if (errorData.errors) {
+          console.error('Validation Errors Object:', JSON.stringify(errorData.errors, null, 2));
+        }
+        if (errorData.message) {
+          console.error('Error Message:', errorData.message);
+        }
+        console.error('========================');
+      }
+      console.error('===========================================');
+    }
+
+    // Enhanced logging for videos endpoint errors (especially 401)
+    const isVideosEndpoint = config?.url?.includes('v1/videos') || config?.url?.includes('/videos');
+    if (isVideosEndpoint) {
+      console.error('=== VIDEOS ENDPOINT REQUEST ERROR ===');
+      console.error('Status:', status);
+      console.error('Status Text:', error.response?.statusText);
+      console.error('Error Response Data:', JSON.stringify(error.response?.data, null, 2));
+      console.error('Request URL:', config?.url);
+      console.error('Request Method:', config?.method);
+      console.error('Authorization Header:', config?.headers?.Authorization ? config.headers.Authorization.substring(0, 30) + '...' : 'MISSING');
+      
+      if (status === 401) {
+        console.error('=== 401 UNAUTHORIZED ERROR ===');
+        console.error('This endpoint requires valid authentication.');
+        console.error('Check if STATIC_API_TOKEN is valid or if user needs to be logged in.');
+        console.error('================================');
+      }
+      console.error('===========================================');
     }
 
     downloadApiLog(msg); // 👈 still download even if it fails

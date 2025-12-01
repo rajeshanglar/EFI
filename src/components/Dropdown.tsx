@@ -56,9 +56,20 @@ export const Dropdown: React.FC<DropdownProps> = ({
     setSearchQuery(''); // Clear search when modal closes
   };
 
+  // Check if label contains asterisk and split it
+  const hasAsterisk = label.includes('*');
+  const labelText = hasAsterisk ? label.replace(/\s*\*$/, '') : label;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <Text style={styles.label}>{labelText}</Text>
+        {hasAsterisk && (
+          <Text style={[styles.label, { color: colors.red }]}>
+            {' *'}
+          </Text>
+        )}
+      </View>
       <TouchableOpacity
         style={[styles.dropdown, error && styles.dropdownError]}
         onPress={() => setIsOpen(true)}

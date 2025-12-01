@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginFormValues } from '../types/login';
 import api from './api';
 export interface LoginCredentials {
-  email: string;
+  email_id: string;
   password: string;
   captcha: string;
   device_id: string;
@@ -13,7 +13,7 @@ export interface LoginCredentials {
 export interface ValidationResult {
   isValid: boolean;
   errors: {
-    email?: string;
+    email_id?: string;
     password?: string;
     captcha?: string;
   };
@@ -47,9 +47,9 @@ class AuthService {
     const errors: { email?: string; password?: string; captcha?: string } = {};
 
     // Email validation
-    if (!credentials.email.trim()) {
+    if (!credentials.email_id.trim()) {
       errors.email = 'Email is required';
-    } else if (!this.validateEmail(credentials.email)) {
+    } else if (!this.validateEmail(credentials.email_id)) {
       errors.email = 'Please enter a valid email address';
     }
 
@@ -142,7 +142,7 @@ class AuthService {
 
       // Call Login API
       const loginPayload = {
-        email_id: credentials.email,
+        email_id: credentials.email_id,
         password: credentials.password,
         device_id: credentials.device_id || 'device123',
         app_version: credentials.app_version || '1.0.0',
@@ -276,6 +276,122 @@ class AuthService {
   }
 
   /**
+   * Sends forgot password request
+   */
+  async forgotPassword(email: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    try {
+      if (!email.trim()) {
+        return { success: false, error: 'Email is required' };
+      }
+
+      if (!this.validateEmail(email)) {
+        return { success: false, error: 'Please enter a valid email address' };
+      }
+
+      console.log('=== FORGOT PASSWORD API CALL ===');
+      console.log('Email:', email);
+
+      const payload = {
+        email_id: email,
+      };
+
+      const result = await ForgotPassword(payload);
+
+      console.log('=== FORGOT PASSWORD API RESPONSE ===');
+      console.log('Response:', JSON.stringify(result, null, 2));
+      console.log('===================================');
+
+      if (result?.success === true) {
+        return { success: true, message: result?.message || 'Password reset instructions sent to your email' };
+      } else {
+        return { success: false, error: result?.message || 'Failed to send password reset instructions' };
+      }
+    } catch (error: any) {
+      console.error('Forgot password error:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred. Please try again.';
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
+   * Resets password using OTP code
+   */
+  async resetPassword(email_id: string, otp_code: string, new_password: string, new_password_confirmation: string): Promise<{ success: boolean; message?: string; error?: string; api_token?: string }> {
+    try {
+      if (!email_id.trim()) {
+        return { success: false, error: 'Email is required' };
+      }
+
+      if (!this.validateEmail(email_id)) {
+        return { success: false, error: 'Please enter a valid email address' };
+      }
+
+      if (!otp_code.trim()) {
+        return { success: false, error: 'OTP code is required' };
+      }
+
+      if (!new_password.trim()) {
+        return { success: false, error: 'New password is required' };
+      }
+
+      if (!this.validatePassword(new_password)) {
+        return { success: false, error: 'Password must be at least 6 characters with letters and numbers' };
+      }
+
+      if (new_password !== new_password_confirmation) {
+        return { success: false, error: 'Passwords do not match' };
+      }
+
+      console.log('=== RESET PASSWORD API CALL ===');
+      console.log('Email:', email_id);
+      console.log('OTP Code:', otp_code);
+
+      const payload = {
+        email_id: email_id,
+        otp_code: otp_code,
+        new_password: new_password,
+        new_password_confirmation: new_password_confirmation,
+      };
+
+      const result = await ResetPassword(payload);
+
+      console.log('=== RESET PASSWORD API RESPONSE ===');
+      console.log('Response:', JSON.stringify(result, null, 2));
+      console.log('===================================');
+
+      if (result?.success === true && result?.data?.api_token) {
+        const apiToken = result.data.api_token;
+
+        // Store api_token as accessToken (for API interceptor)
+        await AsyncStorage.setItem('accessToken', apiToken);
+        
+        // Also store in auth_token key for backward compatibility
+        await AsyncStorage.setItem(this.AUTH_TOKEN_KEY, apiToken);
+
+        // Store user data if available
+        if (result.data) {
+          await AsyncStorage.setItem(this.USER_DATA_KEY, JSON.stringify(result.data));
+        }
+
+        console.log('=== RESET PASSWORD: STORED API TOKEN ===');
+        console.log('Token:', apiToken.substring(0, 20) + '...');
+
+        return { 
+          success: true, 
+          message: result?.message || 'Password reset successfully',
+          api_token: apiToken
+        };
+      } else {
+        return { success: false, error: result?.message || 'Failed to reset password' };
+      }
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred. Please try again.';
+      return { success: false, error: errorMessage };
+    }
+  }
+
+  /**
    * Logs out the user
    */
   async logout(): Promise<void> {
@@ -331,5 +447,42 @@ export const Login = async (payload: {
   return response.data;
 };
 
+export const ForgotPassword = async (payload: {
+  email_id: string;
+}) => {
+  const response = await api.post('v1/forgot-password', payload);
+  return response.data;
+};
+
+export const ResetPassword = async (payload: {
+  email_id: string;
+  otp_code: string;
+  new_password: string;
+  new_password_confirmation: string;
+}) => {
+  const response = await api.post('v1/reset-password', payload);
+  return response.data;
+};
+
+export const ChangePassword = async (payload: {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+}) => {
+  const response = await api.post('v1/change-password', payload);
+  return response.data;
+};
+
+export const CreateOrderPayment = async (payload: {
+  amount: number;
+  currency: string;
+  first_name: string;
+  last_name: string;
+  email_id: string;
+  phone_number: string;
+}) => {
+  const response = await api.post('v1/membership/create-order', payload);
+  return response.data;
+};
 
 export default new AuthService();

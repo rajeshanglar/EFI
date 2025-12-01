@@ -25,7 +25,9 @@ import MembershipExclusiveAccess from '../pages/membership/membershipExclusiveAc
 import MembershipInfo from '../pages/membership-info/MembershipInfo';
 import Board from '../pages/board/Board';
 import Profile from '../pages/profile/Profile';
+import ChangePassword from '../pages/profile/ChangePassword';
 import MyPayments from '../pages/payments/MyPayments';
+import MyPaymentsDetails from '../pages/payments/MyPaymentsDetails';
 import MyCards from '../pages/cards/MyCards';
 import ConferenceDetails from '../pages/conference/ConferenceDetails';
 import ConferenceVenue from '../pages/conference/ConferenceVenue';
@@ -38,6 +40,7 @@ import ContactUs from '../pages/contact-us/ContactUs';
 import Information from '../pages/information/Information';
 import SubmitAbstract from '../pages/conference/SubmitAbstract';
 import DonationsAndFundraising from '../pages/donations-fundraising/DonationsAndFundraising';
+import SponsorPatient from '../pages/sponsor-patient/SponsorPatient';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -107,6 +110,7 @@ function AppNavigation() {
     currentPage,
     selectedTier,
     selectedSession,
+    selectedPayment,
     myConferenceSessions,
     membershipFormData,
     navigate,
@@ -297,12 +301,27 @@ function AppNavigation() {
         onBack={navigate.home}
         onNavigateToHome={navigate.home}    
         onNavigateToMyPayments={navigate.myPayments}
+        onNavigateToChangePassword={navigate.changePassword}
+      />
+    ),
+    changePassword: (
+      <ChangePassword
+        onBack={navigate.profile}
+        onNavigateToHome={navigate.home}
       />
     ),
     myPayments: (
       <MyPayments
         onBack={navigate.profile}
         onNavigateToHome={navigate.home}
+        onNavigateToPaymentDetails={navigate.myPaymentsDetails}
+      />
+    ),
+    myPaymentsDetails: (
+      <MyPaymentsDetails
+        onBack={navigate.myPayments}
+        onNavigateToHome={navigate.home}
+        paymentData={selectedPayment}
       />
     ),
     myCards: (
@@ -375,6 +394,12 @@ function AppNavigation() {
     ),
     donationsAndFundraising: (
       <DonationsAndFundraising
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    sponsorPatient: (
+      <SponsorPatient
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
       />

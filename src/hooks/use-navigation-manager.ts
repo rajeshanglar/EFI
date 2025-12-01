@@ -21,7 +21,9 @@ export type PageType =
   | 'membershipExclusiveAccess'
   | 'board'
   | 'profile'
+  | 'changePassword'
   | 'myPayments'
+  | 'myPaymentsDetails'
   | 'myCards'
   | 'conferenceDetails'
   | 'conferenceVenue'
@@ -34,7 +36,8 @@ export type PageType =
   | 'contactUs'
   | 'information'
   | 'submitAbstract'
-  | 'donationsAndFundraising';
+  | 'donationsAndFundraising'
+  | 'sponsorPatient';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -43,6 +46,7 @@ export function useNavigationManager() {
     'Regular' | 'Late Registration' | 'On Spot'
   >('Regular');
   const [selectedSession, setSelectedSession] = useState<any>(null);
+  const [selectedPayment, setSelectedPayment] = useState<any>(null);
   const [myConferenceSessions, setMyConferenceSessions] = useState<string[]>(
     [],
   );
@@ -145,7 +149,12 @@ export function useNavigationManager() {
     handouts: () => setCurrentPage('handouts'),
     board: () => setCurrentPage('board'),
     profile: () => setCurrentPage('profile'),
+    changePassword: () => setCurrentPage('changePassword'),
     myPayments: () => setCurrentPage('myPayments'),
+    myPaymentsDetails: (paymentData?: any) => {
+      if (paymentData) setSelectedPayment(paymentData);
+      setCurrentPage('myPaymentsDetails');
+    },
     myCards: () => setCurrentPage('myCards'),
     conferenceDetails: () => setCurrentPage('conferenceDetails'),
     conferenceVenue: () => setCurrentPage('conferenceVenue'),
@@ -159,6 +168,7 @@ export function useNavigationManager() {
     information: () => setCurrentPage('information'),
     submitAbstract: () => setCurrentPage('submitAbstract'),
     donationsAndFundraising: () => setCurrentPage('donationsAndFundraising'),
+    sponsorPatient: () => setCurrentPage('sponsorPatient'),
   };
 
 
@@ -178,6 +188,7 @@ export function useNavigationManager() {
     currentPage,
     selectedTier,
     selectedSession,
+    selectedPayment,
     myConferenceSessions,
     membershipFormData,
     navigate,

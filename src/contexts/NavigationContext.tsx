@@ -25,6 +25,7 @@ export const useNavigationContext = (): NavigationContextType => {
       aboutUs: () => {},
       information: () => {},
       outreachPrograms: () => {},
+      sponsorPatient: () => {},
       yellowRibbonRun: () => {},
       endoCongress: () => {},
       freeSurgeryProgram: () => {},

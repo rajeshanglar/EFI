@@ -10,6 +10,7 @@ interface Props {
   setEmail: (text: string) => void;
   setPassword: (text: string) => void;
   errors: { email?: string; password?: string };
+  onForgotPress?: () => void;
 }
 
 const LoginForm: React.FC<Props> = React.memo(
@@ -19,6 +20,7 @@ const LoginForm: React.FC<Props> = React.memo(
     setEmail,
     setPassword,
     errors,
+    onForgotPress,
   }) => {
     const [showPassword, setShowPassword] = useState(false);
     
@@ -40,6 +42,7 @@ const LoginForm: React.FC<Props> = React.memo(
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            autoCorrect={false}
           />
         </View>
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -69,7 +72,7 @@ const LoginForm: React.FC<Props> = React.memo(
                     <PasswordViewIcon size={20} color={colors.primary} />
                   )}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={onForgotPress} activeOpacity={0.7}>
                   <Text style={styles.forgotText}>Forgot?</Text>
                 </TouchableOpacity>
               </View>

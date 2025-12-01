@@ -190,9 +190,9 @@ const HomePage: React.FC<HomePageProps> = ({
           {isAuthenticated && user ? (
             <TouchableOpacity style={styles.userIconDashHeader} onPress={() => onNavigateToProfile?.() || console.log('Profile')}>
               <View style={styles.userIconContainer}>
-                <UserIcon size={24} color={colors.primary} />
+                <UserIcon size={22} color={colors.primary} />
               </View>
-              <Text style={styles.greetingText}>
+              <Text style={[styles.greetingText, {width: Dimensions.get('window').width * 0.36}]} numberOfLines={1} ellipsizeMode="tail">
                 Hello, {user?.first_name || user?.name || 'User'}
               </Text>
             </TouchableOpacity>
@@ -403,13 +403,13 @@ const styles = StyleSheet.create({
   },
 
   userIconContainer: {
-    width: 38,
-    height: 38,
+    width: 32,
+    height: 32,
     borderRadius: 40,
     backgroundColor: colors.white,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: spacing.sm,
+    marginRight:3,
   },
   greetingText: {
     color: colors.white,

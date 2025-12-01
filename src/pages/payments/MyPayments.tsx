@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,58 +6,171 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
-import { DownloadWhiteIcon } from '../../components/icons';
+import { CardRightArrowIcon, DownloadWhiteIcon } from '../../components/icons';
+import { getPaymentTransactions } from '../../services/commonService';
+import { ToastService } from '../../utils/service-handlers';
+import { useAuth } from '../../contexts/AuthContext';
 
 const { width: screenWidth } = Dimensions.get('window');
+const PER_PAGE = 10;
+
+interface PaymentTransaction {
+  id: number;
+  transaction_id: string;
+  registration_type: string;
+  reference_id: number;
+  payment_gateway: string;
+  payment_method: string;
+  amount: number;
+  currency: string;
+  status: string;
+  gateway_transaction_id: string;
+  gateway_order_id: string;
+  failure_reason: string | null;
+  payment_date: string;
+  created_on: string;
+  updated_on: string;
+  first_name: string;
+  last_name: string;
+  registration_email: string;
+  registration_phone: string;
+  registration_serial_number: string;
+  full_name: string;
+}
 
 interface PaymentData {
   id: string;
-  title: string;
+  registration_type: string;
   date: string;
   amount: number;
   status: 'Paid' | 'Pending' | 'Failed';
+  transaction_id?: string;
 }
 
 interface MyPaymentsProps {
   onBack: () => void;
   onNavigateToHome: () => void;
+  onNavigateToPaymentDetails?: (paymentData: PaymentTransaction) => void;
 }
 
 const MyPayments: React.FC<MyPaymentsProps> = ({
   onBack,
   onNavigateToHome,
+  onNavigateToPaymentDetails,
 }) => {
-  // Mock payment data - Replace with actual API data
-  const payments: PaymentData[] = [
-    {
-      id: '1',
-      title: '3rd Edition of Endometriosis Congress',
-      date: '17-10-2025',
-      amount: 11000,
-      status: 'Paid',
-    },
-    // Add more payments as needed
-  ];
+  const { isAuthenticated } = useAuth();
+  const [payments, setPayments] = useState<PaymentData[]>([]);
+  const [transactionsMap, setTransactionsMap] = useState<Map<string, PaymentTransaction>>(new Map());
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
 
-  const handleDownload = (paymentId: string) => {
-    console.log('Downloading receipt for payment:', paymentId);
-    // Implement download logic here
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+    } catch {
+      return dateString;
+    }
+  };
+
+  const mapStatus = (status: string): 'Paid' | 'Pending' | 'Failed' => {
+    const s = status.toLowerCase();
+    if (s === 'success' || s === 'paid') return 'Paid';
+    if (s === 'pending' || s === 'processing') return 'Pending';
+    return 'Failed';
+  };
+
+  const mapTransactions = (transactions: PaymentTransaction[]): PaymentData[] => {
+    return transactions.map((t) => ({
+      id: t.id.toString(),
+      registration_type: t.registration_type || '',
+      date: formatDate(t.payment_date || t.created_on),
+      amount: t.amount || 0,
+      status: mapStatus(t.status),
+      transaction_id: t.transaction_id,
+    }));
+  };
+
+  const fetchPayments = async (pageNum: number, isLoadMore: boolean = false) => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      setError('Please login to view your payments');
+      return;
+    }
+
+    try {
+      isLoadMore ? setLoadingMore(true) : (setLoading(true), setError(null));
+      
+      const response = await getPaymentTransactions(pageNum, PER_PAGE);
+      
+      if (response?.success && response?.data?.transactions) {
+        const transactions: PaymentTransaction[] = response.data.transactions;
+        const mappedPayments = mapTransactions(transactions);
+        
+        // Store full transaction data in map
+        setTransactionsMap((prevMap) => {
+          const newMap = new Map(prevMap);
+          transactions.forEach((t) => {
+            newMap.set(t.id.toString(), t);
+          });
+          return newMap;
+        });
+        
+        setPayments((prev) => isLoadMore ? [...prev, ...mappedPayments] : mappedPayments);
+        setPage(response.data.pagination?.current_page || pageNum);
+        setHasNextPage(response.data.pagination?.has_next_page || false);
+      } else if (!isLoadMore) {
+        setError(response?.message || 'Failed to fetch payments');
+        setPayments([]);
+      }
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.message || err?.message || 'Failed to fetch payment transactions. Please try again.';
+      if (!isLoadMore) {
+        setError(errorMessage);
+        setPayments([]);
+      }
+      ToastService.error('Error', isLoadMore ? 'Failed to load more payments' : errorMessage);
+    } finally {
+      isLoadMore ? setLoadingMore(false) : setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPayments(1, false);
+  }, [isAuthenticated]);
+
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    const isNearBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+    
+    if (isNearBottom && hasNextPage && !loadingMore) {
+      fetchPayments(page + 1, true);
+    }
+  };
+  
+
+  const handlePaymentDetails = (paymentId: string) => {
+    const transaction = transactionsMap.get(paymentId);
+    if (transaction && onNavigateToPaymentDetails) {
+      onNavigateToPaymentDetails(transaction);
+    }
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Paid':
-        return '#4CAF50'; // Green
-      case 'Pending':
-        return '#FF9800'; // Orange
-      case 'Failed':
-        return '#F44336'; // Red
-      default:
-        return colors.darkGray;
-    }
+    const colorsMap: Record<string, string> = {
+      'Paid': '#4CAF50',
+      'Pending': '#FF9800',
+      'Failed': '#F44336',
+    };
+    return colorsMap[status] || colors.darkGray;
   };
 
   return (
@@ -73,8 +186,23 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={400}
       >
-        {payments.length === 0 ? (
+        {loading ? (
+          <View style={styles.emptyContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.emptyText, { marginTop: spacing.md }]}>
+              Loading payments...
+            </Text>
+          </View>
+        ) : error ? (
+          <View style={styles.emptyContainer}>
+            <Text style={[styles.emptyText, { color: colors.red }]}>
+              {error}
+            </Text>
+          </View>
+        ) : payments.length === 0 ? (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No payments found</Text>
           </View>
@@ -85,19 +213,30 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
               <View style={styles.paymentCardTop}>
                 <View style={styles.paymentCardLeft}>
                   <Text style={styles.paymentLabel}>Payment</Text>
-                  <Text style={styles.paymentTitle}>{payment.title}</Text>
+                  <Text style={styles.paymentTitle}>{payment.registration_type}</Text>
+                  <Text style={styles.paymentTransactionIdLabel}>Transaction ID</Text>
+                <Text style={styles.paymentTransactionId}>{payment.transaction_id}</Text>
                 </View>
-                <TouchableOpacity
+
+                {/* <TouchableOpacity
                   style={styles.downloadButton}
-                  onPress={() => handleDownload(payment.id)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.downloadIconContainer}>
+                  onPress={() => handleDownloadInvoice(payment.id)}
+                  activeOpacity={0.7}>               
+                 <View style={styles.downloadIconContainer}>                   
                     <DownloadWhiteIcon size={18} color={colors.white} />
                   </View>
-                </TouchableOpacity>
-              </View>
+                </TouchableOpacity> */}
 
+              <TouchableOpacity
+                  style={styles.rightArrowButton}
+                  onPress={() => handlePaymentDetails(payment.id)}
+                  activeOpacity={0.7}>               
+                 <View style={styles.rightArrowIconContainer}>
+                    <CardRightArrowIcon size={18} color={colors.white} />
+                  </View> 
+                </TouchableOpacity> 
+              </View>
+              
               {/* Bottom Section */}
               <View style={styles.paymentCardBottom}>
                 {/* Date */}
@@ -129,6 +268,21 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
               </View>
             </View>
           ))
+        )}
+        
+        {/* Loading more indicator */}
+        {loadingMore && (
+          <View style={styles.loadingMoreContainer}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={styles.loadingMoreText}>Loading more...</Text>
+          </View>
+        )}
+        
+        {/* End of list indicator */}
+        {!hasNextPage && payments.length > 0 && !loading && (
+          <View style={styles.endOfListContainer}>
+            <Text style={styles.endOfListText}>No more payments to load</Text>
+          </View>
         )}
       </ScrollView>
     </View>
@@ -177,7 +331,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   paymentCardLeft: {
     flex: 1,
@@ -187,19 +341,45 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.03,
     fontFamily: Fonts.Regular,
     color: colors.gray,
-    marginBottom: spacing.xs,
+    marginBottom:0,
   },
   paymentTitle: {
     fontSize: screenWidth * 0.038,
     fontFamily: Fonts.Bold,
     color: colors.black,
     lineHeight: screenWidth * 0.05,
+    textTransform: 'capitalize',
+  },
+
+  paymentTransactionIdLabel:{
+    fontSize: screenWidth * 0.032,
+    fontFamily: Fonts.Regular,
+    color: colors.black,
+    marginBottom:0,
+    marginTop: spacing.sm,
+  },
+  paymentTransactionId:{
+    fontSize: screenWidth * 0.032,
+    fontFamily: Fonts.SemiBold,
+    color: colors.primary,
+    marginBottom:0,
+  },
+  rightArrowButton:{
+    width: 40,
+    height: 40,
+    borderRadius: 20,    
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   downloadButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 20,    
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: colors.primary,
+  },
+  rightArrowIconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -210,7 +390,7 @@ const styles = StyleSheet.create({
   paymentCardBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: spacing.md,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: colors.lightGray,
   },
@@ -222,12 +402,33 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.032,
     fontFamily: Fonts.Regular,
     color: colors.black,
-    marginBottom: spacing.xs,
+    marginBottom:0,
   },
   paymentInfoValue: {
     fontSize: screenWidth * 0.036,
-    fontFamily: Fonts.Medium,
+    fontFamily: Fonts.SemiBold,
     color: colors.black,
+  },
+  loadingMoreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.lg,
+    gap: spacing.sm,
+  },
+  loadingMoreText: {
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Medium,
+    color: colors.darkGray,
+  },
+  endOfListContainer: {
+    paddingVertical: spacing.lg,
+    alignItems: 'center',
+  },
+  endOfListText: {
+    fontSize: screenWidth * 0.033,
+    fontFamily: Fonts.Regular,
+    color: colors.gray,
   },
 });
 

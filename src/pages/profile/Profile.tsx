@@ -96,14 +96,14 @@ const Profile: React.FC<ProfileProps> = ({
           </View>
 
           {/* Edit Profile Link */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.editProfileLink}
             onPress={onNavigateToEditProfile}
             activeOpacity={0.7}
           >
             <EditProfileIcon size={screenWidth * 0.055} color={colors.primary} />
             <Text style={styles.editProfileText}>Edit Profile</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
@@ -121,6 +121,18 @@ const Profile: React.FC<ProfileProps> = ({
           </View>
 
           {/* Change Password Button */}
+          <View style={styles.changeEditButtonContainer}>
+
+          <TouchableOpacity
+            style={[styles.changePasswordButton, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs}]}
+            onPress={onNavigateToEditProfile}
+            activeOpacity={0.7}
+          >
+            {/* <EditProfileIcon size={screenWidth * 0.055} color={colors.primary} /> */}
+            <Text style={styles.changePasswordText}>Edit Profile</Text>
+          </TouchableOpacity>
+
+
           <TouchableOpacity
             style={styles.changePasswordButton}
             onPress={onNavigateToChangePassword}
@@ -128,6 +140,9 @@ const Profile: React.FC<ProfileProps> = ({
           >
             <Text style={styles.changePasswordText}>Change Password</Text>
           </TouchableOpacity>
+
+          </View>
+    
         </View>
 
         {/* Navigation Items */}
@@ -158,7 +173,7 @@ const Profile: React.FC<ProfileProps> = ({
           </TouchableOpacity>
 
           {/* Training Session */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.navItem}
             onPress={() => console.log('Training Session')}
             activeOpacity={0.7}
@@ -168,7 +183,7 @@ const Profile: React.FC<ProfileProps> = ({
               <Text style={styles.navItemText}>Training Session</Text>
             </View>
             <CardRightArrowIcon size={20} color={colors.primary} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         </View>
       </ScrollView>
@@ -199,6 +214,15 @@ const styles = StyleSheet.create({
   scrollContent: {
    
   },
+
+  changeEditButtonContainer:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    gap: spacing.sm,
+  },
+
   profileCard: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.lg,
@@ -289,13 +313,14 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderRadius: borderRadius.round,
     paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    minWidth: 150,
+    paddingHorizontal: spacing.sm,
+    width:screenWidth * 0.40,
+    backgroundColor: colors.primary,
   },
   changePasswordText: {
     fontSize: screenWidth * 0.035,
     fontFamily: Fonts.Medium,
-    color: colors.primary,
+    color: colors.white,
     textAlign: 'center',
   },
   navigationItems: {

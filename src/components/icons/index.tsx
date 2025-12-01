@@ -102,6 +102,7 @@ import ObjectivesIconSvg from '../../assets/images/objectives-icon.svg';
 import RibbonRunBulletIconSvg from '../../assets/images/ribbonrun-icon-bullet.svg';
 import SearchIconSvg from '../../assets/images/search-icon.svg';
 import TickIconSvg from '../../assets/images/tick-icon.svg';
+import OtpIconSvg from '../../assets/images/otp-icon.svg';
 interface IconProps {
   size?: number;
   color?: string;
@@ -468,4 +469,8 @@ export const SearchIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const TickIcon = ({ size = 24, color, style }: IconProps) => (
   <TickIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const OtpIcon = ({ size = 24, color, style }: IconProps) => (
+  <OtpIconSvg width={size} height={size} color={color} style={style} />
 );

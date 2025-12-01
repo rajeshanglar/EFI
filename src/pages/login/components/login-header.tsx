@@ -30,7 +30,7 @@ const LoginHeader: React.FC<Props> = React.memo(({ onBackToHome }) => (
     </View>
 
     <TouchableOpacity style={styles.homeBackButton} onPress={onBackToHome}>
-      <ArrowLeftIconYellow size={20} />
+      <ArrowLeftIconYellow size={Dimensions.get('window').width * 0.035} />
       <Text style={styles.backButtonText}>BACK TO HOME</Text>
     </TouchableOpacity>
 

@@ -40,6 +40,7 @@ import {
   KeynoteSpeakersIcon,
   DelegateListIcon,
   MyAbstractsIcon,
+  FundraisingIcon,
   ProfileIcon,
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
@@ -88,6 +89,7 @@ const menuItems: MenuItem[] = [
   { id: 'training', title: 'EFI Training\nPrograms', icon: TrainingIcon },
   { id: 'outreach', title: 'EFI Outreach\nPrograms', icon: OutreachIcon },
   { id: 'surgery', title: 'Free Surgery Program', icon: SurgeryIcon },
+  { id: 'sponsorPatient', title: 'Sponsor Patient', icon: FundraisingIcon },
   { id: 'congress', title: 'Endo Congress', icon: CongressIcon },
   { id: 'run', title: 'Yellow Ribbon Run', icon: RunIcon },
   { id: 'membership', title: 'Membership', icon: MembershipIcon },

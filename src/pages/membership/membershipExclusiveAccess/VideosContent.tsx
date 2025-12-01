@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,169 +6,240 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
-  ScrollView,
-  ImageSourcePropType,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  Linking,
+  Modal,
 } from 'react-native';
+import YoutubePlayer from "react-native-youtube-iframe";
+import { WebView } from "react-native-webview";
 import { colors, spacing, borderRadius, Fonts } from '../../../styles/globalStyles';
+import { GetVideos } from '../../../services/membershipService';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-interface VideoItem {
-  id: string;
+interface Video {
+  id: number;
   title: string;
-  thumbnail: ImageSourcePropType;
+  description: string;
+  video_link: string;
+  video_thumbnail_url: string | null;
 }
 
 interface VideosContentProps {
-  videos?: VideoItem[];
-  onVideoPress?: (videoId: string) => void;
+  onVideoPress?: (videoId: string | number, videoLink?: string) => void;
 }
 
 export const VideosContent: React.FC<VideosContentProps> = ({
-  videos = [],
   onVideoPress,
 }) => {
-  // Default videos data
-  const defaultVideos: VideoItem[] = [
-    {
-      id: '1',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '2',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '3',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '4',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '5',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '6',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
+  const perPage = 10;
+  const defaultThumbnail = require('../../../assets/images/membership-exclusive-access-img.jpg');
 
-    {
-      id: '7',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '8',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
+  // Extract YouTube video ID - handles multiple URL formats
+  const getVideoId = (url: string): string => {
+    if (!url) return "";
+    
+    // Handle different YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/.*[?&]v=([^&\n?#]+)/,
+      /youtu\.be\/([^&\n?#]+)/,
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return match[1];
+      }
+    }
+    
+    return "";
+  };
 
+  // Open fullscreen YouTube overlay
+  const openPlayer = (url: string) => {
+    setSelectedVideoUrl(url);
+  };
 
-    {
-      id: '9',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-    {
-      id: '10',
-      thumbnail: require('../../../assets/images/membership-exclusive-access-img.jpg'),
-      title: 'Characterizing the Genetic and Biological...',
-    },
-  ];
+  // Close overlay
+  const closePlayer = () => {
+    setSelectedVideoUrl(null);
+  };
 
-  const videoList = videos.length > 0 ? videos : defaultVideos;
+  const loadVideos = useCallback(async (page: number, append: boolean = false) => {
+    try {
+      if (append) setLoadingMore(true);
+      else setLoading(true);
 
-  const handleVideoPress = (videoId: string) => {
-    onVideoPress?.(videoId);
-    console.log('Video pressed:', videoId);
+      const result = await GetVideos(page, perPage);
+      const newVideos = result?.data?.videos || [];
+      const pagination = result?.data?.pagination;
+
+      if (append) {
+        setVideos(prev => [...prev, ...newVideos]);
+      } else {
+        setVideos(newVideos);
+      }
+
+      setCurrentPage(pagination?.current_page || 1);
+      setHasNextPage(pagination?.has_next_page || false);
+    } catch (err: any) {
+      setError("Failed to load videos.");
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadVideos(1, false);
+  }, []);
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasNextPage) {
+      loadVideos(currentPage + 1, true);
+    }
+  };
+
+  const handleVideoPress = (video: Video) => {
+    if (video?.video_link) {
+      openPlayer(video.video_link); 
+    }
+  };
+
+  const renderVideoItem = ({ item }: { item: Video }) => {
+    const thumbnailSource = item.video_thumbnail_url
+      ? { uri: item.video_thumbnail_url }
+      : defaultThumbnail;
+
+    return (
+      <TouchableOpacity
+        style={styles.videoCard}
+        activeOpacity={0.9}
+        onPress={() => handleVideoPress(item)}
+      >
+        {/* Thumbnail */}
+        <View style={styles.thumbnailContainer}>
+          <ImageBackground
+            source={thumbnailSource}
+            style={styles.thumbnail}
+            imageStyle={styles.thumbnailImage}
+          >
+            <View style={styles.playButtonWrapper}>
+              <View style={styles.playButton}>
+                <View style={styles.playTriangle} />
+              </View>
+            </View>
+          </ImageBackground>
+        </View>
+
+        <Text style={styles.videoTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+
+    return (
+      <View style={styles.footerLoader}>
+        <ActivityIndicator color={colors.primary} />
+      </View>
+    );
+  };
+
+  const renderVideoPlayer = () => {
+    if (!selectedVideoUrl) return null;
+
+    const videoId = getVideoId(selectedVideoUrl);
+    if (!videoId) {
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Invalid video URL</Text>
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.playerContainer}>
+        <YoutubePlayer
+          height={screenHeight * 0.6}
+          width={screenWidth * 0.9}
+          play={true}
+          videoId={videoId}
+          webViewProps={{
+            androidLayerType: "hardware",
+            renderToHardwareTextureAndroid: true,
+            allowsInlineMediaPlayback: true,
+            mediaPlaybackRequiresUserAction: false,
+          }}
+          initialPlayerParams={{
+            controls: true,
+            modestbranding: true,
+            rel: false,
+          }}
+        />
+      </View>
+    );
   };
 
   return (
-    <ScrollView
-      style={styles.scrollView}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
+    <>
+      {/* VIDEO LIST */}
+      <FlatList
+        data={videos}
+        renderItem={renderVideoItem}
+        keyExtractor={item => item.id.toString()}
+        numColumns={2}
+        contentContainerStyle={styles.flatListContent}
+        columnWrapperStyle={styles.videoGrid}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        showsVerticalScrollIndicator={false}
+      />
 
-
-      {/* Video Grid */}
-      <View style={styles.videoGrid}>
-        {videoList.map((video) => (
-          <TouchableOpacity
-            key={video.id}
-            style={styles.videoCard}
-            activeOpacity={0.9}
-            onPress={() => handleVideoPress(video.id)}
-          >
-            {/* Video Thumbnail */}
-            <View style={styles.thumbnailContainer}>
-              <ImageBackground
-                source={video.thumbnail}
-                style={styles.thumbnail}
-                imageStyle={styles.thumbnailImage}
-                resizeMode="cover"
-              >
-                {/* Play Button */}
-                <View style={styles.playButtonWrapper}>
-                  <View style={styles.playButton}>
-                    <View style={styles.playButtonTriangle} />
-                  </View>
-                </View>
-              </ImageBackground>
-            </View>
-
-            {/* Video Title */}
-            <View style={styles.videoTitleContainer}>
-              <Text style={styles.videoTitle} numberOfLines={2}>
-                {video.title}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </ScrollView>
+      {/* FULLSCREEN OVERLAY PLAYER */}
+      <Modal
+        visible={!!selectedVideoUrl}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={closePlayer}
+        statusBarTranslucent={true}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.closeBtnWrapper}>
+            <TouchableOpacity onPress={closePlayer} style={styles.closeButton}>
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          {renderVideoPlayer()}
+        </View>
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: spacing.xl,
-  },
-  titleContainer: {
+  flatListContent: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.md,
-  },
-  videosTitle: {
-    fontSize: screenWidth * 0.06,
-    fontFamily: Fonts.Bold,
-    color: colors.black,
-    marginBottom: spacing.xs,
-  },
-  titleUnderline: {
-    width: 80,
-    height: 4,
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.sm,
+    paddingBottom: spacing.xl,
+    paddingTop: spacing.sm,
   },
   videoGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
     gap: spacing.md,
   },
   videoCard: {
@@ -189,22 +260,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: borderRadius.sm,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#6B46C1',
-    overflow: 'hidden',
   },
   thumbnailImage: {
     opacity: 0.9,
   },
   playButtonWrapper: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   playButton: {
     width: 40,
@@ -213,31 +276,77 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
   },
-  playButtonTriangle: {
+  playTriangle: {
     width: 0,
     height: 0,
     borderLeftWidth: 14,
     borderTopWidth: 9,
     borderBottomWidth: 9,
+    borderLeftColor: colors.primary,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
-    borderLeftColor: colors.primary,
     marginLeft: 4,
   },
-  videoTitleContainer: {
-    paddingHorizontal: spacing.xs,
+
+  /* Fullscreen Overlay */
+  overlay: {
+    flex: 1,
+   backgroundColor: "rgba(0,0,0,0.95)",
+    justifyContent: "center",
+    alignItems: "center",
   },
+
+  playerContainer: {
+    width: screenWidth * 0.9,
+    height: screenHeight * 0.6,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
+    borderRadius: 8,
+    overflow: "hidden",
+
+  },
+
+  closeBtnWrapper: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+    zIndex: 99999,
+  },
+  closeButton: {
+    padding: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+
+  errorContainer: {
+    padding: 20,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderRadius: 10,
+  },
+  errorText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+  },
+
+  footerLoader: {
+    paddingVertical: 20,
+  },
+
   videoTitle: {
     fontSize: screenWidth * 0.035,
     fontFamily: Fonts.Regular,
     color: colors.black,
-    lineHeight: screenWidth * 0.045,
   },
 });
-

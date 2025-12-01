@@ -126,6 +126,9 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
       case 'surgery':
         navigate.freeSurgeryProgram();
         break;
+        case 'sponsorPatient':
+        navigate.sponsorPatient();
+        break;
       case 'congress':
         navigate.endoCongress();
         break;

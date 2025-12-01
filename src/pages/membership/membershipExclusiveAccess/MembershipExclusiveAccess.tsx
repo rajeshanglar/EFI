@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  ScrollView,
 } from 'react-native';
 import Header from '../../../components/Header';
 import globalStyles, { colors, spacing } from '../../../styles/globalStyles';
@@ -22,7 +21,7 @@ type TabKey = 'videos' | 'documents';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'videos', label: 'Videos' },
-  { key: 'documents', label: 'Documents' },
+  // { key: 'documents', label: 'Documents' },
 ];
 
 const tabContentMap: Record<TabKey, any> = {
@@ -73,20 +72,13 @@ const MembershipExclusiveAccess: React.FC<MembershipExclusiveAccessProps> = ({
         })}
       </View>
 
-      {/* Yellow Accent Bar */}
-      <View style={styles.yellowBar} />
-
-      {/* Tab Content */}
-      <ScrollView
-      style={styles.scrollView}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      <Content 
-        onVideoPress={onVideoPress}
-        onDocumentPress={onDocumentPress}
-      />
-      </ScrollView>
+     {/* Tab Content */}
+      <View style={styles.contentContainer}>
+        <Content 
+          onVideoPress={onVideoPress}
+          onDocumentPress={onDocumentPress}
+        />
+      </View>
     </View>
   );
 };
@@ -101,12 +93,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
     width: '100%',
   },
-  scrollView: {
+  contentContainer: {
     flex: 1,
     marginTop: spacing.md,
-  },
-  scrollContent: {
-    paddingBottom: spacing.xl,
   },
     });
 

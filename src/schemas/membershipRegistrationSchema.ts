@@ -12,34 +12,34 @@ export const generateCaptcha = () => {
 // Yup validation schema for membership registration
 export const membershipRegistrationSchema = (captcha: string) =>
   yup.object().shape({
-    firstName: yup
+    first_name: yup
       .string()
       .required('First name is required')
       .min(2, 'First name must be at least 2 characters')
       .max(50, 'First name must not exceed 50 characters')
       .trim(),
     
-    lastName: yup
+    last_name: yup
       .string()
       .required('Last name is required')
       .min(2, 'Last name must be at least 2 characters')
       .max(50, 'Last name must not exceed 50 characters')
       .trim(),
     
-    email: yup
+    email_id: yup
       .string()
       .required('Email is required')
       .email('Please enter a valid email address')
       .trim()
       .lowercase(),
     
-    phone: yup
+    phone_number: yup
       .string()
       .required('Phone number is required')
       .matches(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, 'Invalid phone number format')
       .trim(),
     
-    dateOfBirth: yup
+    dob: yup
       .string()
       .required('Date of birth is required')
       .test('is-valid-date', 'Please enter a valid date of birth', function(value) {
@@ -90,9 +90,10 @@ export const membershipRegistrationSchema = (captcha: string) =>
         return !isNaN(date.getTime()) && date < new Date();
       }),
     
-    address1: yup
+    address: yup
       .string()
-      .optional()
+      .required('Postal address is required')
+      .min(5, 'Address must be at least 5 characters')
       .trim(),
     
     city: yup
@@ -100,33 +101,42 @@ export const membershipRegistrationSchema = (captcha: string) =>
       .optional()
       .trim(),
     
-    country: yup
+    pin_code: yup
       .string()
-      .required('Country is required'),
+      .required('Pin code is required')
+      .matches(/^\d{6}$/, 'Pin code must be exactly 6 digits')
+      .trim(),
     
-    hearAboutEFI: yup
+    country: yup
+      .mixed()
+      .required('Country is required')
+      .test('is-valid-country', 'Please select a valid country', function(value) {
+        return value !== 0 && value !== '' && value != null;
+      }),
+    
+    hear_about_efi: yup
       .string()
       .optional()
       .trim(),
     
-    patientsPerYear: yup
-      .string()
+    patient_count: yup
+      .number()
       .optional()
       .test('is-number', 'Must be a valid number', function(value) {
-        if (!value) return true; // Optional field
+        if (value === undefined || value === null) return true; // Optional field
         return !isNaN(Number(value)) && Number(value) >= 0;
       }),
     
-    surgeriesPerYear: yup
-      .string()
+    surgery_count: yup
+      .number()
       .optional()
       .test('is-number', 'Must be a valid number', function(value) {
-        if (!value) return true; // Optional field
+        if (value === undefined || value === null) return true; // Optional field
         return !isNaN(Number(value)) && Number(value) >= 0;
       }),
     
 
-    couponCode: yup
+    coupon_code: yup
       .string()
       .optional()
       .trim(),

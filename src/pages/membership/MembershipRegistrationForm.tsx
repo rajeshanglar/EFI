@@ -12,6 +12,7 @@ import {
   ImageBackground,
   Modal,
   Animated,
+  Keyboard,
 } from 'react-native';
 import { Formik } from 'formik';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
@@ -26,12 +27,14 @@ import {
   generateCaptcha,
 
 } from '../../schemas/membershipRegistrationSchema';
-import { MembershipRegistrationFormValues } from '../../utils/types';
+
 import {
   getCountries,
+  getStates,
   CheckMembershipExists,
   CouponValidation,
   Country,
+  State,
 } from '../../services/membershipService';
 import { ToastService } from '../../utils/service-handlers';
 import { MembershipRegPayload, CouponPayload, CheckMembershipExistsPayload } from '../../utils/types';
@@ -55,7 +58,7 @@ interface Props {
     };
   }) => void;
   onNavigateToLogin?: () => void;
-  onSubmit?: (formData: MembershipRegistrationFormValues) => void;
+  onSubmit?: (formData: MembershipRegPayload) => void;
 }
 
 const MembershipRegistrationForm: React.FC<Props> = ({
@@ -71,6 +74,8 @@ const MembershipRegistrationForm: React.FC<Props> = ({
   const [showPicker, setShowPicker] = useState(false);
   const [countries, setCountries] = useState<Country[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(false);
+  const [states, setStates] = useState<State[]>([]);
+  const [statesLoading, setStatesLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
@@ -115,6 +120,32 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     loadCountries();
   }, []);
 
+  // Function to load states for a given country
+  const loadStates = React.useCallback(async (countryId: number | string) => {
+    const id = typeof countryId === 'string' ? parseInt(countryId, 10) : countryId;
+    
+    if (!id || id === 0) {
+      setStates([]);
+      return;
+    }
+
+    setStatesLoading(true);
+    try {
+      const response = await getStates(id);
+      if (response?.success && response?.data) {
+        setStates(response.data);
+      } else {
+        console.error('Failed to load states:', response?.message);
+        setStates([]);
+      }
+    } catch (error: any) {
+      console.error('Failed to load states:', error);
+      setStates([]);
+    } finally {
+      setStatesLoading(false);
+    }
+  }, []);
+
 
   // Format countries for dropdown
   const countryOptions = React.useMemo(() => {
@@ -126,21 +157,57 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       value: country.id.toString(),
     }));
   }, [countries]);
-  const initialValues: MembershipRegistrationFormValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    address1: '',
+
+  // Format states for dropdown
+  const stateOptions = React.useMemo(() => {
+    if (!states || states.length === 0) {
+      return [];
+    }
+    return states.map(state => ({
+      label: state.state_name,
+      value: state.id.toString(),
+    }));
+  }, [states]);
+
+  // Format hear about EFI options for dropdown
+  const hearAboutEfiOptions = React.useMemo(() => {
+    return [
+      { label: 'Instagram', value: 'Instagram' },
+      { label: 'Facebook', value: 'Facebook' },
+      { label: 'X', value: 'X' },
+      { label: 'LinkedIn', value: 'LinkedIn' },
+      { label: 'Website', value: 'Website' },
+      { label: 'Google', value: 'Google' },
+      { label: 'Reference / Word of mouth', value: 'Reference / Word of mouth' },
+    ];
+  }, []);
+  const initialValues: MembershipRegPayload & { state?: number; pin_code?: string } = {
+    first_name: '',
+    last_name: '',
+    email_id: '',
+    phone_number: '',
+    dob: '',
+    grand_total: 0,
     city: '',
-    country: '',
-    hearAboutEFI: '',
-    patientsPerYear: '',
-    surgeriesPerYear: '',
-    // paymentMode: 'Online Payment',
-    couponCode: '',
-    // captcha: '',
+    country: 0,
+    state: 0,
+    pin_code: '',
+    hear_about_efi: '',
+    patient_count: 0,
+    surgery_count: 0,
+    address: '',
+    coupon_code: '',
+    sub_total: 0,
+    coupon_value: 0,
+    source_type: '',
+    payment_gateway: '',
+    payment_method: '',
+    payment_status: '',
+    gateway_transaction_id: '',
+    gateway_order_id: '',
+    currency: '',
+    payment_date: '',
+    gateway_response: '',
   };
 
   const refreshCaptcha = () => {
@@ -194,6 +261,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         const couponType = couponData?.coupon_type || '';
         const couponAmount = couponData?.coupon_amount || 0;
         
+        Keyboard.dismiss();
         console.log('=== COUPON DATA EXTRACTION ===');
         console.log('Coupon Type:', couponType);
         console.log('Coupon Amount:', couponAmount);
@@ -361,54 +429,108 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     return country?.id || 0;
   };
 
-  const handleSubmit = async (values: MembershipRegistrationFormValues) => {
+  const handleSubmit = async (values: MembershipRegPayload) => {
     if (isSubmitting) return;
-
-    // Log form values to see filled data
-    console.log('=== FORM VALUES (Filled Data) ===');
-    console.log(JSON.stringify(values, null, 2));
-    console.log('================================');
 
     // Note: Formik validation happens automatically before onSubmit is called
     // If validation fails, onSubmit won't be called and errors will show below inputs
     setIsSubmitting(true);
+    
+    // Log form submission start
+    console.log('\n');
+    console.log('===============================================================');
+    console.log('=== MEMBERSHIP REGISTRATION FORM SUBMIT STARTED ===');
+    console.log('===============================================================');
+    
+    // Log complete form values (payload)
+    console.log('=== FORM VALUES (PAYLOAD) ===');
+    console.log(JSON.stringify(values, null, 2));
+    console.log('===========================================');
+    
+    // Log individual field values for easy reading
+    console.log('=== FORM FIELD VALUES ===');
+    console.log('First Name:', values.first_name);
+    console.log('Last Name:', values.last_name);
+    console.log('Email ID:', values.email_id);
+    console.log('Phone Number:', values.phone_number);
+    console.log('Date of Birth:', values.dob);
+    console.log('Address:', values.address);
+    console.log('City:', values.city);
+    console.log('Country:', values.country);
+    console.log('Hear About EFI:', values.hear_about_efi);
+    console.log('Patient Count:', values.patient_count);
+    console.log('Surgery Count:', values.surgery_count);
+    console.log('Coupon Code:', values.coupon_code || 'None');
+    console.log('===========================================');
     try {
       const SUB_TOTAL = membershipPrice;
       const discount = couponApplied ? couponDiscount : 0;
       const grandTotal = SUB_TOTAL - discount;
 
+      console.log('=== PAYMENT CALCULATION ===');
+      console.log('Sub Total:', SUB_TOTAL);
+      console.log('Coupon Applied:', couponApplied);
+      console.log('Discount:', discount);
+      console.log('Grand Total:', grandTotal);
+      console.log('Coupon Code:', values.coupon_code || 'None');
+      console.log('============================');
+
       // Prepare CheckMembershipExists API payload
       const checkPayload: CheckMembershipExistsPayload = {
-        email_id: values.email,
-        phone_number: values.phone,
+        email_id: values.email_id,
+        phone_number: values.phone_number,
       };
 
       // Log API payload being sent
-      console.log('=== CHECK MEMBERSHIP EXISTS - API PAYLOAD ===');
+      console.log('\n');
+      console.log('===============================================================');
+      console.log('=== CHECK MEMBERSHIP EXISTS - API REQUEST ===');
+      console.log('===============================================================');
+      console.log('=== API PAYLOAD ===');
       console.log(JSON.stringify(checkPayload, null, 2));
-      console.log('=============================================');
+      console.log('Email ID:', checkPayload.email_id);
+      console.log('Phone Number:', checkPayload.phone_number);
+      console.log('==============================================');
 
       // Call CheckMembershipExists API
       const result = await CheckMembershipExists(checkPayload);
 
       // Log API response
+      console.log('\n');
+      console.log('===============================================================');
       console.log('=== CHECK MEMBERSHIP EXISTS - API RESPONSE ===');
+      console.log('===============================================================');
+      console.log('=== FULL API RESPONSE ===');
       console.log(JSON.stringify(result, null, 2));
-      console.log('=============================================');
+      console.log('=== RESPONSE DETAILS ===');
+      console.log('Success:', result?.success);
+      console.log('Status Code:', result?.status);
+      console.log('Message:', result?.message);
+      console.log('Email Exists:', result?.data?.email_exists);
+      console.log('Phone Exists:', result?.data?.phone_exists);
+      console.log('=== RESPONSE DATA ===');
+      console.log(JSON.stringify(result?.data, null, 2));
+      console.log('===============================================================');
 
       // Check for email_exists and phone_exists flags first (even if success is true)
       const emailExists = result?.data?.email_exists === true;
       const phoneExists = result?.data?.phone_exists === true;
       const hasExistsError = emailExists || phoneExists;
 
+
+
       // Handle success response (only if no exists errors)
       if (result?.success === true && !hasExistsError) {
+        console.log('\n');
+        console.log('✅ ENTERING SUCCESS BLOCK');
+        console.log('result?.data:', JSON.stringify(result?.data, null, 2));
+        console.log('========================');
         // Clear API errors on success
         setApiErrors({});
         
         // Get country name from country value
         const selectedCountry = countries.find(
-          c => c.id.toString() === values.country || c.country_name === values.country,
+          c => c.id.toString() === values.country.toString() || c.country_name === values.country.toString(),
         );
         const countryName = selectedCountry?.country_name || values.country || '';
 
@@ -416,10 +538,10 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         const paymentDetailsData = {
           formData: values, // Pass entire form data
           userData: {
-            name: `${values.firstName} ${values.lastName}`.trim(),
-            email: values.email,
-            phone: values.phone,
-            country: countryName,
+            name: `${values.first_name} ${values.last_name}`.trim(),
+            email: values.email_id,
+            phone: values.phone_number,
+            country: countryName.toString(),
           },
           paymentData: {
             subTotal: SUB_TOTAL,
@@ -428,15 +550,36 @@ const MembershipRegistrationForm: React.FC<Props> = ({
           },
         };
 
-        // Log success result
-        console.log('=== SUCCESS - Navigate to Payment Details ===');
-        console.log('Payment Details Data:', JSON.stringify(paymentDetailsData, null, 2));
-        console.log('============================================');
+        // Log success result and payment details data
+        console.log('\n');
+        console.log('===============================================================');
+        console.log('=== ✅ SUCCESS - Navigate to Payment Details ===');
+        console.log('===============================================================');
+        console.log('=== PAYMENT DETAILS PAYLOAD ===');
+        console.log(JSON.stringify(paymentDetailsData, null, 2));
+        console.log('\n=== Form Data ===');
+        console.log(JSON.stringify(paymentDetailsData.formData, null, 2));
+        console.log('\n=== User Data ===');
+        console.log(JSON.stringify(paymentDetailsData.userData, null, 2));
+        console.log('\n=== Payment Data ===');
+        console.log(JSON.stringify(paymentDetailsData.paymentData, null, 2));
+        console.log('\n=== Payment Calculation Details ===');
+        console.log('Sub Total:', SUB_TOTAL);
+        console.log('Coupon Discount:', discount);
+        console.log('Grand Total:', grandTotal);
+        console.log('===============================================================');
+        console.log('✅ About to navigate to payment details page...');
+        console.log('===============================================================');
+        
+        // Add a small delay to ensure logs are visible before navigation
+        await new Promise<void>(resolve => setTimeout(() => resolve(), 100));
         
         // Call onSubmit if provided (for data handling)
         onSubmit?.(values);
         // Navigate to payment details page with data
         onNavigateToMembershipPayment?.(paymentDetailsData);
+        
+        console.log('✅ Navigation triggered');
       } else if (hasExistsError || result?.success === false) {
         // Handle error response from API (including duplicate email/phone)
         const errorMessage = result?.message || result?.error || 'Check failed. Please try again.';
@@ -510,9 +653,18 @@ const MembershipRegistrationForm: React.FC<Props> = ({
           }
         }
         
+        console.log('\n');
+        console.log('===============================================================');
+        console.log('=== CHECK MEMBERSHIP EXISTS - ERROR RESPONSE ===');
+        console.log('===============================================================');
+        console.log('=== FULL ERROR RESPONSE ===');
+        console.log(JSON.stringify(result, null, 2));
         console.log('=== PARSED ERRORS ===');
         console.log('Email Error:', emailError);
         console.log('Phone Error:', phoneError);
+        console.log('Email Exists:', emailExists);
+        console.log('Phone Exists:', phoneExists);
+        console.log('===============================================================\n');
         
         // Show toast messages for errors
         if (emailError && phoneError) {
@@ -534,7 +686,15 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       }
     } catch (error: any) {
       // Handle network/request errors
-      console.error('Check membership exists error:', error);
+      console.log('\n');
+      console.log('===============================================================');
+      console.log('=== CHECK MEMBERSHIP EXISTS - API ERROR (CATCH BLOCK) ===');
+      console.log('===============================================================');
+      console.error('=== ERROR OBJECT ===');
+      console.error(JSON.stringify(error, null, 2));
+      console.error('=== ERROR RESPONSE ===');
+      console.error(JSON.stringify(error?.response, null, 2));
+      
       const errorResponse = error?.response?.data || {};
       const errorMessage =
         errorResponse?.message ||
@@ -543,6 +703,11 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         'An unexpected error occurred. Please try again.';
       
       const errorData = errorResponse?.data || errorResponse?.errors || {};
+      
+      console.error('=== ERROR DETAILS ===');
+      console.error('Error Message:', errorMessage);
+      console.error('Error Status:', error?.response?.status);
+      console.error('Error Data:', JSON.stringify(errorData, null, 2));
       
       // Check for structured error data first (common in 422 validation errors)
       let emailError: string | undefined;
@@ -603,6 +768,9 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       }
     } finally {
       setIsSubmitting(false);
+      console.log('===============================================================');
+      console.log('=== FORM SUBMISSION FINISHED ===');
+      console.log('===============================================================\n');
     }
   };
 
@@ -641,10 +809,10 @@ const MembershipRegistrationForm: React.FC<Props> = ({
           // Mark fields as touched when API errors occur
           React.useEffect(() => {
             if (apiErrors.email) {
-              setFieldTouched('email', true);
+              setFieldTouched('email_id', true);
             }
             if (apiErrors.phone) {
-              setFieldTouched('phone', true);
+              setFieldTouched('phone_number', true);
             }
           }, [apiErrors.email, apiErrors.phone, setFieldTouched]);
 
@@ -673,37 +841,56 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                 {/** Basic Info Fields */}
                 {[
                   {
-                    label: 'First Name',
-                    field: 'firstName' as keyof typeof initialValues,
+                    label: 'First Name *',
+                    field: 'first_name' as keyof typeof initialValues,
                     placeholder: 'Enter your first name',
                   },
                   {
-                    label: 'Last Name',
-                    field: 'lastName' as keyof typeof initialValues,
+                    label: 'Last Name *',
+                    field: 'last_name' as keyof typeof initialValues,
                     placeholder: 'Enter your last name',
                   },
                   {
-                    label: 'Email',
-                    field: 'email' as keyof typeof initialValues,
+                    label: 'Email *',
+                    field: 'email_id' as keyof typeof initialValues,
                     placeholder: 'Enter your email',
-                    keyboardType: 'email-address' as const,
+                    keyboardType: 'email-address' as const,   
+                    autoCapitalize: 'none' as const,
+                    autoCorrect: false as const,               
                   },
                   {
-                    label: 'Phone',
-                    field: 'phone' as keyof typeof initialValues,
+                    label: 'Phone *',
+                    field: 'phone_number' as keyof typeof initialValues,
                     placeholder: 'Enter your phone number',
                     keyboardType: 'phone-pad' as const,
                   },
                 ].map(({ label, field, placeholder, ...rest }) => {
                   // Check if this is email or phone field for API errors
-                  const isEmail = field === 'email';
-                  const isPhone = field === 'phone';
+                  const isEmail = field === 'email_id';
+                  const isPhone = field === 'phone_number';
                   const apiError = isEmail ? apiErrors.email : isPhone ? apiErrors.phone : undefined;
                   const hasError = (touched[field] && formikErrors[field]) || apiError;
                   
                   return (
+                  
                     <View key={field} style={globalStyles.fieldContainer}>
-                      <Text style={globalStyles.fieldLabel}>{label}</Text>
+                      {/** RequiredAsterisk */}
+                      <View style={{ flexDirection: 'row' }}>
+                        {label.includes('*') ? (
+                          <>
+                            <Text style={globalStyles.fieldLabel}>
+                              {label.replace(/\s*\*$/, '')}
+                            </Text>
+                            <Text style={[globalStyles.fieldLabel, { color: colors.red }]}>
+                              {' *'}
+                            </Text>
+                          </>
+                        ) : (
+                          <Text style={globalStyles.fieldLabel}>{label}</Text>
+                        )}
+                      </View>
+                      {/** RequiredAsterisk */}
+
                       <TextInput
                         style={[
                           globalStyles.fieldInput,
@@ -711,7 +898,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                         ]}
                         placeholder={placeholder}
                         placeholderTextColor={colors.gray}
-                        value={values[field]}
+                        value={values[field] as string}
                         onChangeText={(text) => {
                           handleChange(field)(text);
                           // Clear API error when user starts typing
@@ -743,12 +930,12 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
                 {/** Date of Birth Picker */}
                 <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>Date of Birth</Text>
+                  <Text style={globalStyles.fieldLabel}>Date of Birth <Text style={{ color: colors.red }}> *</Text></Text>
                   <TouchableOpacity
                     style={[
                       globalStyles.dateInput,
-                      touched.dateOfBirth &&
-                        formikErrors.dateOfBirth &&
+                      touched.dob &&
+                        formikErrors.dob &&
                         globalStyles.fieldInputError,
                     ]}
                     onPress={() => setShowPicker(true)}
@@ -756,14 +943,14 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     <Text
                       style={[
                         globalStyles.fieldInput,
-                        !values.dateOfBirth && { color: '#999' },
-                        touched.dateOfBirth &&
-                          formikErrors.dateOfBirth && {
+                        !values.dob && { color: '#000' },
+                        touched.dob &&
+                          formikErrors.dob && {
                             color: colors.red,
                           },
                       ]}
                     >
-                      {values.dateOfBirth ||
+                      {values.dob ||
                         (selectedDate
                           ? selectedDate.toLocaleDateString('en-GB')
                           : 'Select Date of Birth')}
@@ -774,9 +961,11 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     <DateTimePicker
                       value={selectedDate || new Date(2000, 0, 1)}
                       mode="date"
-                      display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-                      onChange={(event, date) => {
-                        setShowPicker(false);
+                      display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                      onChange={(event: DateTimePickerEvent, date?: Date) => {
+                        if (Platform.OS === 'android') {
+                          setShowPicker(false);
+                        }
                         if (date) {
                           setSelectedDate(date);
                           // Format date as DD-MM-YY and update form
@@ -787,44 +976,66 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                           );
                           const year = String(date.getFullYear());
                           const formattedDate = `${day}-${month}-${year}`;
-                          setFieldValue('dateOfBirth', formattedDate);
+                          setFieldValue('dob', formattedDate);
                         }
                       }}
                       maximumDate={new Date()} // prevent selecting future dates
                     />
                   )}
-                  {touched.dateOfBirth && formikErrors.dateOfBirth && (
+                  {touched.dob && formikErrors.dob && (
                     <Text style={globalStyles.fieldErrorText}>
-                      {formikErrors.dateOfBirth}
+                      {formikErrors.dob}
                     </Text>
                   )}
                 </View>
 
-                {/** Address Field */}
-                <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>Address 1</Text>
-                  <TextInput
-                    style={[
-                      globalStyles.fieldInput,
-                      touched.address1 &&
-                        formikErrors.address1 &&
-                        globalStyles.fieldInputError,
-                    ]}
-                    placeholder="Enter your address"
-                    placeholderTextColor={colors.gray}
-                    value={values.address1}
-                    onChangeText={handleChange('address1')}
-                    onBlur={handleBlur('address1')}
-                    multiline
+           
+
+         
+                {/** Country Dropdown */}                
+                <Dropdown
+                  label="Select Country *"
+                  value={values.country.toString()}
+                  options={countryOptions || []}
+                  onSelect={(v) => {
+                    setFieldValue('country', v);
+                    // Clear state when country changes
+                    setFieldValue('state', 0);
+                    // Load states for the selected country
+                    loadStates(v);
+                  }}
+                  error={
+                    touched.country && formikErrors.country
+                      ? formikErrors.country
+                      : undefined
+                  }
+                  placeholder={
+                    countriesLoading ? 'Loading countries...' : 'Select Country'
+                  }
+                  searchable={true}
+                  searchPlaceholder="Search country..."
+                />
+
+                {/** State Dropdown */}
+                {values.country && values.country !== 0 && (
+                  <Dropdown
+                    label="Select State"
+                    value={values.state ? values.state.toString() : ''}
+                    options={stateOptions || []}
+                    onSelect={(v) => setFieldValue('state', v)}
+                    placeholder={
+                      statesLoading
+                        ? 'Loading states...'
+                        : stateOptions.length === 0
+                        ? 'No states available'
+                        : 'Select State'
+                    }
+                    searchable={true}
+                    searchPlaceholder="Search state..."
                   />
-                  {touched.address1 && formikErrors.address1 && (
-                    <Text style={globalStyles.fieldErrorText}>
-                      {formikErrors.address1}
-                    </Text>
-                  )}
-                </View>
+                )}
 
-                {/** City Field */}
+                       {/** City Field */}
                 <View style={globalStyles.fieldContainer}>
                   <Text style={globalStyles.fieldLabel}>City</Text>
                   <TextInput
@@ -847,62 +1058,86 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   )}
                 </View>
 
-                {/** Country Dropdown */}
-                <Dropdown
-                  label="Select Country"
-                  value={values.country}
-                  options={countryOptions || []}
-                  onSelect={(v) => setFieldValue('country', v)}
-                  error={
-                    touched.country && formikErrors.country
-                      ? formikErrors.country
-                      : undefined
-                  }
-                  placeholder={
-                    countriesLoading ? 'Loading countries...' : 'Select Country'
-                  }
-                  searchable={true}
-                  searchPlaceholder="Search country..."
-                />
-
-                {/** How did you hear about EFI? - Text Input */}
-                <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>How did you hear about EFI?</Text>
+                {/** Address Field */}
+               <View style={globalStyles.fieldContainer}>
+                  <Text style={globalStyles.fieldLabel}>Postal Address <Text style={{ color: colors.red }}> *</Text></Text>
                   <TextInput
                     style={[
                       globalStyles.fieldInput,
-                      touched.hearAboutEFI &&
-                        formikErrors.hearAboutEFI &&
+                      touched.address &&
+                        formikErrors.address &&
                         globalStyles.fieldInputError,
                     ]}
-                    placeholder="Enter how you heard about EFI"
+                    placeholder="Enter your postal address"
                     placeholderTextColor={colors.gray}
-                    value={values.hearAboutEFI}
-                    onChangeText={handleChange('hearAboutEFI')}
-                    onBlur={handleBlur('hearAboutEFI')}
+                    value={values.address}
+                    onChangeText={handleChange('address')}
+                    onBlur={handleBlur('address')}
+                    multiline
                   />
-                  {touched.hearAboutEFI && formikErrors.hearAboutEFI && (
+                  {touched.address && formikErrors.address && (
                     <Text style={globalStyles.fieldErrorText}>
-                      {formikErrors.hearAboutEFI}
+                      {formikErrors.address}
                     </Text>
                   )}
                 </View>
+
+                     {/** Pin Code Field */}
+                <View style={globalStyles.fieldContainer}>
+                  <Text style={globalStyles.fieldLabel}>Pin Code <Text style={{ color: colors.red }}> *</Text></Text>
+                  <TextInput
+                    style={[
+                      globalStyles.fieldInput,
+                      touched.pin_code &&
+                        (formikErrors as any).pin_code &&
+                        globalStyles.fieldInputError,
+                    ]}
+                    placeholder="Enter pin code"
+                    placeholderTextColor={colors.gray}
+                    value={values.pin_code || ''}
+                    onChangeText={handleChange('pin_code')}
+                    onBlur={handleBlur('pin_code')}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                  />
+                  {touched.pin_code && (formikErrors as any).pin_code && (
+                    <Text style={globalStyles.fieldErrorText}>
+                      {(formikErrors as any).pin_code}
+                    </Text>
+                  )}
+                </View>
+
+                {/** How did you hear about EFI? - Dropdown */}
+                <Dropdown
+                  label="How did you hear about EFI?"
+                  value={values.hear_about_efi}
+                  options={hearAboutEfiOptions}
+                  onSelect={(v) => setFieldValue('hear_about_efi', v)}
+                  error={
+                    touched.hear_about_efi && formikErrors.hear_about_efi
+                      ? formikErrors.hear_about_efi
+                      : undefined
+                  }
+                  placeholder="Select how you heard about EFI"
+                  // searchable={true}
+                  // searchPlaceholder="Search..."
+                />
 
                 {/** Numeric Fields */}
                 {[
                   {
                     label: 'How many patients with endometriosis do you see per year?',
-                    field: 'patientsPerYear' as keyof typeof initialValues,
+                    field: 'patient_count' as keyof typeof initialValues,
                     placeholder: 'Enter number',
                   },
                   {
                     label: 'How many surgeries do you perform yearly?',
-                    field: 'surgeriesPerYear' as keyof typeof initialValues,
+                    field: 'surgery_count' as keyof typeof initialValues,
                     placeholder: 'Enter number',
                   },
                 ].map(({ label, field, placeholder }) => (
                   <View key={field} style={globalStyles.fieldContainer}>
-                    <Text style={globalStyles.fieldLabel}>{label}</Text>
+                    <Text style={globalStyles.fieldLabel}>{label} </Text>
                     <TextInput
                       style={[
                         globalStyles.fieldInput,
@@ -912,8 +1147,11 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       ]}
                       placeholder={placeholder}
                       placeholderTextColor={colors.gray}
-                      value={values[field]}
-                      onChangeText={handleChange(field)}
+                      value={String(values[field] || '')}
+                      onChangeText={(text) => {
+                        const numValue = text === '' ? 0 : parseInt(text, 10) || 0;
+                        setFieldValue(field, numValue);
+                      }}
                       onBlur={handleBlur(field)}
                       keyboardType="number-pad"
                     />
@@ -950,9 +1188,10 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       style={styles.couponInput}
                       placeholder="Enter Coupon Code"
                       placeholderTextColor={colors.gray}
-                      value={values.couponCode}
+                      value={values.coupon_code}
+                      autoCapitalize="characters"
                       onChangeText={(text) => {
-                        handleChange('couponCode')(text);
+                        handleChange('coupon_code')(text);
                         // Clear coupon state when user types
                         if (couponApplied || couponError) {
                           setCouponApplied(false);
@@ -967,7 +1206,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                         isValidatingCoupon && styles.applyButtonDisabled,
                       ]}
                       onPress={() =>
-                        handleCouponApply(values.couponCode, values.email, setFieldValue)
+                        handleCouponApply(values.coupon_code, values.email_id, setFieldValue)
                       }
                       disabled={isValidatingCoupon}
                     >
@@ -987,60 +1226,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     </Text>
                   )}
                 </View>
-{/* 
-                <View style={[styles.professionalsSection, {marginBottom:spacing.xxl} ]}>
-                  <Text style={styles.professionalsTitle}>Subtotal</Text>
-                  <View style={styles.subtotalContainer}>
-                  <Text style={[styles.professionalsDescription, {fontSize:screenWidth * 0.045,fontFamily:Fonts.SemiBold}]}>
-                 Fee
-                  </Text>
-                  <Text style={styles.professionalsPrice}>11,800.00 ₹</Text>
-                  </View>
-                </View> */}
 
-                {/** CAPTCHA */}
-                {/* <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>CAPTCHA</Text>
-                  <View style={globalStyles.formCaptchaContainer}>
-                    <View style={globalStyles.formCaptchaCodeContainer}>
-                      <Text style={globalStyles.formCaptchaCode}>
-                        {captcha}
-                      </Text>
-                    </View>
-                    <TextInput
-                      style={[
-                        globalStyles.formCaptchaInput,
-                        touched.captcha &&
-                          formikErrors.captcha &&
-                          globalStyles.fieldInputError,
-                      ]}
-                      placeholder="Enter CAPTCHA"
-                      placeholderTextColor={colors.gray}
-                      value={values.captcha}
-                      onChangeText={(v) =>
-                        setFieldValue('captcha', v.toUpperCase())
-                      }
-                      onBlur={handleBlur('captcha')}
-                      maxLength={6}
-                      autoCapitalize="characters"
-                    />
-                    <TouchableOpacity
-                      onPress={() => {
-                        refreshCaptcha();
-                        setFieldValue('captcha', '');
-                      }}
-                      style={globalStyles.formRefreshButton}
-                    >
-                      <RefreshIcon size={20} color={colors.primary} />
-                    </TouchableOpacity>
-                  </View>
-                  {touched.captcha && formikErrors.captcha && (
-                    <Text style={globalStyles.fieldErrorText}>
-                      {formikErrors.captcha}
-                    </Text>
-                  )}
-                </View> */}               
-                {/* General API Error Display */}
                 {apiErrors.general && (
                   <View style={styles.generalErrorContainer}>
                     <Text style={styles.generalErrorText}>
@@ -1298,11 +1484,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginVertical: spacing.md,
-    marginHorizontal: spacing.sm,
+    marginHorizontal:0,
 
   },
   couponLabel: {
-    fontSize: screenWidth * 0.035,
+    fontSize: screenWidth * 0.033,
     fontFamily: Fonts.Medium,
     color: colors.black,
     marginBottom: spacing.sm,
