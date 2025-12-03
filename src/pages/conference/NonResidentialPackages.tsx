@@ -31,13 +31,15 @@ interface NonResidentialPackagesProps {
   onBack: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => void;
   onNavigateToHome: () => void;
   onNavigateToForm?: (tier: 'Regular' | 'Late Registration' | 'On Spot') => void;
+  onMemberClick?: () => void;
 }
 
 type TabType = 'conference' | 'workshops';
 
 const NonResidentialPackages: React.FC<NonResidentialPackagesProps> = ({
   onBack,
-  onNavigateToHome,  
+  onNavigateToHome,
+  onMemberClick,
   onNavigateToForm,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conference');
@@ -195,7 +197,7 @@ const NonResidentialPackages: React.FC<NonResidentialPackagesProps> = ({
           <Text style={globalStyles.footerPrimaryText}>
             Already an EFI Member?
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onMemberClick}>
             <Text style={globalStyles.footerPrimaryLinkText}>
               Click Here to Continue
             </Text>

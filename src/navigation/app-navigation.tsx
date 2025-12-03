@@ -141,11 +141,8 @@ function AppNavigation() {
         onMemberClick={() => {
           console.log('Member click');
           // Navigate to member login or member registration
-        }}
-        onInfoClick={() => {
-          console.log('Info click');
-          // Show information modal
-        }}
+          navigate.login();
+        }}  
       />
     ),
     conference: (
@@ -153,6 +150,11 @@ function AppNavigation() {
         onBack={navigate.chooseConferencePackage}
         onNavigateToHome={navigate.home}
         onNavigateToForm={navigate.conferenceForm}
+        onMemberClick={() => {
+          console.log('Member click');
+          // Navigate to member login or member registration
+          navigate.login();
+        }}
       />
     ),
     conferenceForm: (

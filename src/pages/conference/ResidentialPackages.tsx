@@ -35,7 +35,7 @@ interface ResidentialPackagesProps {
   onNavigateToHome: () => void;
   onPackageSelect?: (packageTitle: string, option: PackageOption) => void;
   onMemberClick?: () => void;
-  onInfoClick?: () => void;
+
 }
 
 const ResidentialPackages: React.FC<ResidentialPackagesProps> = ({
@@ -43,7 +43,7 @@ const ResidentialPackages: React.FC<ResidentialPackagesProps> = ({
   onNavigateToHome,
   onPackageSelect,
   onMemberClick,
-  onInfoClick,
+
 }) => {
   const packages: PackageCard[] = [
     {
@@ -137,7 +137,7 @@ const ResidentialPackages: React.FC<ResidentialPackagesProps> = ({
           <Text style={globalStyles.footerPrimaryText}>
             Already an EFI Member?
           </Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onMemberClick}>
             <Text style={globalStyles.footerPrimaryLinkText}>
               Click Here to Continue
             </Text>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: colors.lightGray,
+    backgroundColor:'#D8E0F3',
     marginVertical: spacing.xs,
   },
   footer: {
