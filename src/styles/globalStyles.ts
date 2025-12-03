@@ -1352,5 +1352,28 @@ tickIconContainer: {
   shadowRadius: 2,
   elevation: 3,
 },
+
+
+conferenceTitleSection:{
+  paddingHorizontal: spacing.sm,
+  paddingBottom: spacing.sm,
+  paddingTop: 0,
+},
+
+conferenceMainTitle: {
+  color: colors.primaryLight,
+  fontSize: screenWidth * 0.043,
+  fontFamily: Fonts.Bold,
+  marginBottom: spacing.xs,
+},
+
+conferenceDateLocation: {
+  color: colors.primaryLight,
+  fontSize: screenWidth * 0.035,
+  fontFamily: Fonts.Regular,
+}, 
+
+
+
 });
 export default globalStyles;

@@ -52,6 +52,7 @@ const Profile: React.FC<ProfileProps> = ({
       : user?.name || 'User',
     email: user?.email_id || user?.email || '',
     phone: user?.mobile_no || user?.phone || '',
+    serialNumber: user?.registration_serial_number || user?.serial_number || user?.serialNumber || '',
   };
 
   return (
@@ -107,6 +108,12 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
+          {userData.serialNumber ? (
+              <View style={styles.contactRow}>
+                <Text style={styles.serialNumberLabel}>Membership ID:</Text>
+                <Text style={styles.serialNumberText}>{userData.serialNumber}</Text>
+              </View>
+            ) : null}
 
           {/* Contact Information */}
           <View style={styles.contactInfo}>
@@ -118,6 +125,7 @@ const Profile: React.FC<ProfileProps> = ({
               <PhoneIcon size={screenWidth * 0.047} color={colors.primary} />
               <Text style={styles.contactText}>{userData.phone}</Text>
             </View>
+    
           </View>
 
           {/* Change Password Button */}
@@ -307,6 +315,17 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Regular,
     color: colors.black,
     marginLeft: spacing.sm,
+  },
+  serialNumberLabel: {
+    fontSize: screenWidth * 0.036,
+    fontFamily: Fonts.Medium,
+    color: colors.primary,
+    marginRight: spacing.xs,
+  },
+  serialNumberText: {
+    fontSize: screenWidth * 0.034,
+    fontFamily: Fonts.SemiBold,
+    color: colors.primary,
   },
   changePasswordButton: {
     borderWidth: 1,

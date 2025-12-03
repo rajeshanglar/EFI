@@ -16,16 +16,12 @@ export interface State {
   [key: string]: any;
 }
 
-
-export const getCountries = async () => {
-  const response = await api.get('v1/countries');
+export const getMembershipPrice = async () => {
+  const response = await api.get('v1/settings?title=membership_price');
   return response.data;
 };
 
-export const getStates = async (countryId: number) => {
-  const response = await api.get(`v1/countries/${countryId}/states`);
-  return response.data;
-};
+
 
 
 export const MembershipRegistration = async (payload: MembershipRegPayload) => {
@@ -61,6 +57,13 @@ export const GetVideos = async (page: number, perPage: number) => {
     throw error;
   }
 };
+
+export const getHearAboutSources = async () => {
+  const response = await api.get(`v1/hear-about-sources`);
+  return response.data;
+};
+
+
 
 // export const getMembershipPrice = async () => {
 //   const response = await api.get('v1/membership-price');

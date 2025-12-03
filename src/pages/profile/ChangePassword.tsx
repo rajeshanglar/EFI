@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -18,19 +18,25 @@ import {
 } from '../../components/icons';
 import { GradientButton } from '../../components/GradientButton';
 import { ChangePassword as ChangePasswordAPI } from '../../services/authService';
+import authService from '../../services/authService';
 import { ToastService } from '../../utils/service-handlers';
+import { useNavigationContext } from '../../contexts/NavigationContext';
 
 const { width: screenWidth } = Dimensions.get('window');
+
 
 interface ChangePasswordProps {
   onBack: () => void;
   onNavigateToHome: () => void;
+  onNavigateToLogin?: () => void;
 }
 
 const ChangePassword: React.FC<ChangePasswordProps> = ({
   onBack,
   onNavigateToHome,
+  onNavigateToLogin,
 }) => {
+  const { navigate } = useNavigationContext();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -69,6 +75,44 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const extractError = (error: any): string => {
+    return Array.isArray(error) ? error[0] : error;
+  };
+
+  const handleApiErrors = (errorData: any) => {
+    const apiErrors: typeof errors = {};
+    if (errorData.current_password) apiErrors.current_password = extractError(errorData.current_password);
+    if (errorData.new_password) apiErrors.new_password = extractError(errorData.new_password);
+    if (errorData.new_password_confirmation) apiErrors.new_password_confirmation = extractError(errorData.new_password_confirmation);
+    return apiErrors;
+  };
+
+  const handleCurrentPasswordChange = useCallback((text: string) => {
+    setCurrentPassword(text);
+    if (errors.current_password) {
+      setErrors((prev) => ({ ...prev, current_password: undefined }));
+    }
+  }, [errors.current_password]);
+
+  const handleNewPasswordChange = useCallback((text: string) => {
+    setNewPassword(text);
+    if (errors.new_password) {
+      setErrors((prev) => ({ ...prev, new_password: undefined }));
+    }
+  }, [errors.new_password]);
+
+  const handleConfirmPasswordChange = useCallback((text: string) => {
+    setConfirmPassword(text);
+    if (errors.new_password_confirmation) {
+      setErrors((prev) => ({ ...prev, new_password_confirmation: undefined }));
+    }
+  }, [errors.new_password_confirmation]);
+
+  const toggleCurrentPassword = useCallback(() => setShowCurrentPassword(prev => !prev), []);
+  const toggleNewPassword = useCallback(() => setShowNewPassword(prev => !prev), []);
+  const toggleConfirmPassword = useCallback(() => setShowConfirmPassword(prev => !prev), []);
+
+
   const handleSubmit = useCallback(async () => {
     if (!validateForm()) {
       return;
@@ -86,78 +130,37 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
 
       const result = await ChangePasswordAPI(payload);
 
-      console.log('Change Password Response:', result);
 
       if (result?.success) {
         ToastService.success('Success', result?.message || 'Password changed successfully!');
         
-        // Clear form
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
         
-        // Navigate back to profile
-        onBack();
-      } else {
-        const errorMessage = result?.message || 'Failed to change password';
-        
-        // Handle field-specific errors
-        if (result?.errors) {
-          const apiErrors: typeof errors = {};
-          if (result.errors.current_password) {
-            apiErrors.current_password = Array.isArray(result.errors.current_password) 
-              ? result.errors.current_password[0] 
-              : result.errors.current_password;
-          }
-          if (result.errors.new_password) {
-            apiErrors.new_password = Array.isArray(result.errors.new_password) 
-              ? result.errors.new_password[0] 
-              : result.errors.new_password;
-          }
-          if (result.errors.new_password_confirmation) {
-            apiErrors.new_password_confirmation = Array.isArray(result.errors.new_password_confirmation) 
-              ? result.errors.new_password_confirmation[0] 
-              : result.errors.new_password_confirmation;
-          }
-          setErrors(apiErrors);
-        } else {
-          setErrors({ current_password: errorMessage });
+        // Clear authentication tokens
+        try {
+          await authService.logout();
+        } catch (clearTokenError) {
+          console.error('Error clearing tokens:', clearTokenError);
         }
         
+        // Navigate to login page
+        (onNavigateToLogin || (() => navigate.to('login')))();
+      } else {
+        const errorMessage = result?.message || 'Failed to change password';
+        setErrors(result?.errors ? handleApiErrors(result.errors) : { current_password: errorMessage });
         ToastService.error('Error', errorMessage);
       }
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to change password. Please try again.';
-      
-      // Handle field-specific errors from API
-      if (error?.response?.data?.errors) {
-        const apiErrors: typeof errors = {};
-        const errorData = error.response.data.errors;
-        if (errorData.current_password) {
-          apiErrors.current_password = Array.isArray(errorData.current_password) 
-            ? errorData.current_password[0] 
-            : errorData.current_password;
-        }
-        if (errorData.new_password) {
-          apiErrors.new_password = Array.isArray(errorData.new_password) 
-            ? errorData.new_password[0] 
-            : errorData.new_password;
-        }
-        if (errorData.new_password_confirmation) {
-          apiErrors.new_password_confirmation = Array.isArray(errorData.new_password_confirmation) 
-            ? errorData.new_password_confirmation[0] 
-            : errorData.new_password_confirmation;
-        }
-        setErrors(apiErrors);
-      } else {
-        setErrors({ current_password: errorMessage });
-      }
-      
+      const errorData = error?.response?.data?.errors;
+      setErrors(errorData ? handleApiErrors(errorData) : { current_password: errorMessage });
       ToastService.error('Error', errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [currentPassword, newPassword, confirmPassword, onBack]);
+  }, [currentPassword, newPassword, confirmPassword, onNavigateToLogin, navigate]);
 
   return (
     <View style={styles.container}>
@@ -179,6 +182,7 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.formContainer}>
           <Text style={styles.title}>Change Password</Text>
@@ -186,109 +190,41 @@ const ChangePassword: React.FC<ChangePasswordProps> = ({
             Enter your current password and your new password.
           </Text>
 
-          {/* Current Password Field */}
-          <View style={globalStyles.fieldContainer}>
-            <Text style={globalStyles.fieldLabel}>Current Password</Text>
-            <View style={styles.inputContainer}>
-              <PasswordIcon size={24} color={colors.primary} />
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Current Password"
-                placeholderTextColor={colors.gray}
-                value={currentPassword}
-                onChangeText={(text) => {
-                  setCurrentPassword(text);
-                  setErrors((prev) => ({ ...prev, current_password: undefined }));
-                }}
-                secureTextEntry={!showCurrentPassword}
-                editable={!isLoading}
-              />
-              <TouchableOpacity
-                onPress={() => setShowCurrentPassword(!showCurrentPassword)}
-                style={styles.eyeIconContainer}
-                activeOpacity={0.7}
-              >
-                {showCurrentPassword ? (
-                  <PasswordViewHideIcon size={20} color={colors.primary} />
-                ) : (
-                  <PasswordViewIcon size={20} color={colors.primary} />
-                )}
-              </TouchableOpacity>
-            </View>
-            {errors.current_password && (
-              <Text style={globalStyles.fieldErrorText}>{errors.current_password}</Text>
-            )}
-          </View>
+          <PasswordField
+            key="current-password"
+            label="Current Password"
+            value={currentPassword}
+            onChangeText={handleCurrentPasswordChange}
+            onToggleVisibility={toggleCurrentPassword}
+            showPassword={showCurrentPassword}
+            error={errors.current_password}
+            placeholder="Enter Current Password"
+            editable={!isLoading}
+          />
 
-          {/* New Password Field */}
-          <View style={globalStyles.fieldContainer}>
-            <Text style={globalStyles.fieldLabel}>New Password</Text>
-            <View style={styles.inputContainer}>
-              <PasswordIcon size={24} color={colors.primary} />
-              <TextInput
-                style={styles.input}
-                placeholder="Enter New Password"
-                placeholderTextColor={colors.gray}
-                value={newPassword}
-                onChangeText={(text) => {
-                  setNewPassword(text);
-                  setErrors((prev) => ({ ...prev, new_password: undefined }));
-                }}
-                secureTextEntry={!showNewPassword}
-                editable={!isLoading}
-              />
-              <TouchableOpacity
-                onPress={() => setShowNewPassword(!showNewPassword)}
-                style={styles.eyeIconContainer}
-                activeOpacity={0.7}
-              >
-                {showNewPassword ? (
-                  <PasswordViewHideIcon size={20} color={colors.primary} />
-                ) : (
-                  <PasswordViewIcon size={20} color={colors.primary} />
-                )}
-              </TouchableOpacity>
-            </View>
-            {errors.new_password && (
-              <Text style={globalStyles.fieldErrorText}>{errors.new_password}</Text>
-            )}
-          </View>
+          <PasswordField
+            key="new-password"
+            label="New Password"
+            value={newPassword}
+            onChangeText={handleNewPasswordChange}
+            onToggleVisibility={toggleNewPassword}
+            showPassword={showNewPassword}
+            error={errors.new_password}
+            placeholder="Enter New Password"
+            editable={!isLoading}
+          />
 
-          {/* Confirm Password Field */}
-          <View style={globalStyles.fieldContainer}>
-            <Text style={globalStyles.fieldLabel}>Confirm New Password</Text>
-            <View style={styles.inputContainer}>
-              <PasswordIcon size={24} color={colors.primary} />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                placeholderTextColor={colors.gray}
-                value={confirmPassword}
-                onChangeText={(text) => {
-                  setConfirmPassword(text);
-                  setErrors((prev) => ({ ...prev, new_password_confirmation: undefined }));
-                }}
-                secureTextEntry={!showConfirmPassword}
-                editable={!isLoading}
-              />
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={styles.eyeIconContainer}
-                activeOpacity={0.7}
-              >
-                {showConfirmPassword ? (
-                  <PasswordViewHideIcon size={20} color={colors.primary} />
-                ) : (
-                  <PasswordViewIcon size={20} color={colors.primary} />
-                )}
-              </TouchableOpacity>
-            </View>
-            {errors.new_password_confirmation && (
-              <Text style={globalStyles.fieldErrorText}>
-                {errors.new_password_confirmation}
-              </Text>
-            )}
-          </View>
+          <PasswordField
+            key="confirm-password"
+            label="Confirm New Password"
+            value={confirmPassword}
+            onChangeText={handleConfirmPasswordChange}
+            onToggleVisibility={toggleConfirmPassword}
+            showPassword={showConfirmPassword}
+            error={errors.new_password_confirmation}
+            placeholder="Confirm New Password"
+            editable={!isLoading}
+          />
 
           {/* Submit Button */}
           <View style={styles.buttonContainer}>
@@ -374,6 +310,52 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
 });
+
+interface PasswordFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  onToggleVisibility: () => void;
+  showPassword: boolean;
+  error?: string;
+  placeholder: string;
+  editable: boolean;
+}
+
+const PasswordField: React.FC<PasswordFieldProps> = React.memo(({
+  label,
+  value,
+  onChangeText,
+  onToggleVisibility,
+  showPassword,
+  error,
+  placeholder,
+  editable,
+}) => (
+  <View style={globalStyles.fieldContainer}>
+    <Text style={globalStyles.fieldLabel}>{label}</Text>
+    <View style={styles.inputContainer}>
+      <PasswordIcon size={24} color={colors.primary} />
+      <TextInput
+        style={styles.input}
+        placeholder={placeholder}
+        placeholderTextColor={colors.gray}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={!showPassword}
+        editable={editable}
+      />
+      <TouchableOpacity onPress={onToggleVisibility} style={styles.eyeIconContainer} activeOpacity={0.7}>
+        {showPassword ? (
+          <PasswordViewHideIcon size={20} color={colors.primary} />
+        ) : (
+          <PasswordViewIcon size={20} color={colors.primary} />
+        )}
+      </TouchableOpacity>
+    </View>
+    {error && <Text style={globalStyles.fieldErrorText}>{error}</Text>}
+  </View>
+));
 
 export default ChangePassword;
 

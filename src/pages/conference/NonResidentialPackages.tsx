@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Modal,
   ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,12 +21,13 @@ import {
   CardRightArrowIcon,
 } from '../../components/icons';
 import Header from '../../components/Header';
+import ConferenceInformationModal from '../../components/ConferenceInformationModal';
 import { ConferenceOnlyContent } from './ConferenceRegistrationContent/ConferenceOnlyContent';
 import { PreCongressWorkshopsContent } from './ConferenceRegistrationContent/PreCongressWorkshopsContent';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-interface ConferenceRegistrationPageProps {
+interface NonResidentialPackagesProps {
   onBack: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => void;
   onNavigateToHome: () => void;
   onNavigateToForm?: (tier: 'Regular' | 'Late Registration' | 'On Spot') => void;
@@ -35,9 +35,9 @@ interface ConferenceRegistrationPageProps {
 
 type TabType = 'conference' | 'workshops';
 
-const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
+const NonResidentialPackages: React.FC<NonResidentialPackagesProps> = ({
   onBack,
-  onNavigateToHome,
+  onNavigateToHome,  
   onNavigateToForm,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>('conference');
@@ -49,42 +49,27 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
 
   return (
     <View style={styles.container}>
-              <Header
-          title="Conference Registration"
-          onBack={onBack}
-          onNavigateToHome={onNavigateToHome}
-          onMenuItemPress={(id: any) => console.log('Menu:', id)}
-        />
+      <Header
+        title="Non-Residential Packages"
+        onBack={onBack}
+        onNavigateToHome={onNavigateToHome}
+        onMenuItemPress={(id: any) => console.log('Menu:', id)}
+      />
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        {/* <View style={globalStyles.header}>
-          <View style={globalStyles.headerBackBtTittle}>
-          <TouchableOpacity onPress={onBack} style={globalStyles.headerIcon}>
-            <BackArrowIcon size={25}  />
-          </TouchableOpacity> 
-          <Text style={globalStyles.headerTitle}>Conference Registration</Text>
-          </View>
-          <TouchableOpacity onPress={onNavigateToHome} style={globalStyles.headerIcon}>
-            <HomeHeaderIcon size={25}  />
-          </TouchableOpacity>
-        </View> */}
-        {/* Header */}
-
-
         {/* Conference Title */}
         <ImageBackground
           source={require('../../assets/images/wave-img.png')}
           style={globalStyles.imgBgContainerWave}
           imageStyle={globalStyles.imgBgWave}
         >
-          <View style={styles.titleSection}>
-            <Text style={styles.mainTitle}>
+          <View style={globalStyles.conferenceTitleSection}>
+            <Text style={globalStyles.conferenceMainTitle}>
               3rd Edition of Endometriosis Congress
             </Text>
-            <Text style={styles.dateLocation}>
+            <Text style={globalStyles.conferenceDateLocation}>
               6, 7 & 8 MARCH 2026, Park Hyatt, Hyderabad
             </Text>
           </View>
@@ -106,7 +91,6 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
               >
                 Conference Only
               </Text>
-              
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -123,7 +107,7 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
                 ]}
               >
                 Pre-Congress Workshops
-              </Text>              
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -230,87 +214,10 @@ const ConferenceRegistrationPage: React.FC<ConferenceRegistrationPageProps> = ({
       </TouchableOpacity>
 
       {/* Information Modal */}
-      <Modal
+      <ConferenceInformationModal
         visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={globalStyles.modalInfoOverlay}>
-          <View style={globalStyles.modalInfoContainer}>
-            <View style={globalStyles.modalInfoHeader}>
-              <Text style={globalStyles.modalInfoTitle}>INFORMATION</Text>
-              <TouchableOpacity
-                style={globalStyles.modalInfoCloseButton}
-                onPress={() => setIsModalVisible(false)}
-              >
-                <Text style={globalStyles.modalInfoCloseText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={globalStyles.modalInfoContent}>
-              {/* Important Section */}
-              <View style={globalStyles.modalInfoSection}>
-                <Text style={globalStyles.modalInfoSectionTitle}>Important</Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Registration fee is exclusive of GST @ 18%.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Membership number is mandatory.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Please mention your mobile number and email ID for better
-                  communication.
-                </Text>
-              </View>
-
-              {/* Registration Guidelines Section */}
-              <View style={globalStyles.modalInfoSection}>
-                <Text style={globalStyles.modalInfoSectionTitle}>
-                  Registration Guidelines
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Online charges will be applicable at 3% of the total amount.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Registration fees include admission to the scientific halls,
-                  trade exhibition, public awareness programme, inaugural
-                  function, lunch, banquet, delegate kit, and participation
-                  certificate.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • No delegate kit for spot registrations.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • The participation certificate will be available to download
-                  once the feedback form is submitted.
-                </Text>
-              </View>
-
-              {/* Cancellation Policy Section */}
-              <View style={globalStyles.modalInfoSection}>
-                <Text style={globalStyles.modalInfoSectionTitle}>
-                  Cancellation & Refund Policy
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • Requests for cancellation refunds must be made in writing
-                  via email or post to the conference secretariat.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • No refund of registration fee will be provided for
-                  cancellation requests received after{' '}
-                  <Text style={globalStyles.modalInfoBoldText}>15.11.2025</Text>.
-                </Text>
-                <Text style={globalStyles.modalInfoListItem}>
-                  • <Text style={globalStyles.modalInfoBoldText}>30%</Text> of the registration
-                  fee will be deducted as processing charges, and the remaining
-                  amount will be refunded.
-                </Text>
-              </View>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setIsModalVisible(false)}
+      />
     </View>
   );
 };
@@ -324,33 +231,16 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-
-  titleSection: {
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.sm,
-    paddingTop: 0,
-  },
-  mainTitle: {
-    color: colors.primaryLight,
-    fontSize: screenWidth * 0.043,
-    fontFamily: Fonts.Bold,
-    marginBottom: spacing.xs,
-  },
-  dateLocation: {
-    color: colors.primaryLight,
-    fontSize: screenWidth * 0.035,
-    fontFamily: Fonts.Regular,
-  },    
   tabButtonsContainer: {
     flexDirection: 'row',
-gap: spacing.sm,
+    gap: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,   
+    paddingBottom: spacing.sm,
   },
   tabButton: {
-    paddingVertical:0,
+    paddingVertical: 0,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.sm,
     backgroundColor: colors.primaryLight,
@@ -358,11 +248,11 @@ gap: spacing.sm,
     justifyContent: 'center',
     position: 'relative',
     minHeight: 50,
-    opacity:0.75,
+    opacity: 0.75,
   },
   tabButtonActive: {
     backgroundColor: colors.primaryLight,
-    opacity:1,
+    opacity: 1,
   },
   tabButtonText: {
     fontSize: screenWidth * 0.037,
@@ -372,12 +262,10 @@ gap: spacing.sm,
   tabButtonTextActive: {
     color: colors.primary,
   },
-  
   membershipSection: {
     flexDirection: 'row',
     paddingHorizontal: spacing.md,
     paddingTop: spacing.sm,
-
   },
   radioOption: {
     flexDirection: 'row',
@@ -412,4 +300,5 @@ gap: spacing.sm,
   },
 });
 
-export default ConferenceRegistrationPage;
+export default NonResidentialPackages;
+

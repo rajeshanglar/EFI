@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 export type PageType =
   | 'login'
   | 'home'
+  | 'chooseConferencePackage'
+  | 'residentialPackages'
   | 'conference'
   | 'conferenceForm'
   | 'conferencePayment'
@@ -73,6 +75,8 @@ export function useNavigationManager() {
     to: setCurrentPage,
     home: () => setCurrentPage('home'),
     login: () => setCurrentPage('login'),
+    chooseConferencePackage: () => setCurrentPage('chooseConferencePackage'),
+    residentialPackages: () => setCurrentPage('residentialPackages'),
     conference: () => setCurrentPage('conference'),
     conferenceForm: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => {
       setSelectedTier(tier || 'Regular');

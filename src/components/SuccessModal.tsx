@@ -30,7 +30,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={() => {}}
     >
       <TouchableOpacity
         style={styles.overlay}

@@ -7,8 +7,9 @@ import { ActivityIndicator, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../styles/globalStyles';
 
-import ConferenceRegistrationPage  from '../pages/conference/ConferenceRegistrationPage';
+import NonResidentialPackages from '../pages/conference/NonResidentialPackages';
 import ConferenceRegistrationForm  from '../pages/conference/ConferenceRegistrationForm';
+import ResidentialPackages from '../pages/conference/ResidentialPackages';
 import ConferencePaymentDetails from '../pages/conference/ConferencePaymentDetails';
 import ConferenceQRCode from '../pages/conference/ConferenceQRCode';
 import ConferenceList from '../pages/conference/ConferenceList';
@@ -47,6 +48,7 @@ const LoginPage = React.lazy(() =>
 );
 const HomePage = React.lazy(() => import('../pages/home/home'));
 const {
+  ChooseConferencePackage,
   // ConferenceRegistrationPage,
   // ConferenceRegistrationForm,
   // ConferencePaymentDetails,
@@ -63,44 +65,8 @@ const {
   // MembershipPaymentDetails,
   // MembershipExclusiveAccess,
 } = {
-  ConferenceRegistrationPage: React.lazy(
-    () => import('../pages/conference/ConferenceRegistrationPage'),
-  ),
-  ConferenceRegistrationForm: React.lazy(
-    () => import('../pages/conference/ConferenceRegistrationForm'),
-  ),
-  ConferencePaymentDetails: React.lazy(
-    () => import('../pages/conference/ConferencePaymentDetails'),
-  ),
-  ConferenceQRCode: React.lazy(
-    () => import('../pages/conference/ConferenceQRCode'),
-  ),
-  ConferenceList: React.lazy(
-    () => import('../pages/conference/ConferenceList'),
-  ),
-  ConferenceSessionDetails: React.lazy(
-    () => import('../pages/conference/ConferenceSessionDetails'),
-  ),
-  MyConference: React.lazy(() => import('../pages/conference/MyConference')),
-  MyConferenceSession: React.lazy(
-    () => import('../pages/conference/MyConferenceSession'),
-  ),
-  LiveQA: React.lazy(() => import('../pages/conference/LiveQA')),
-  MySessionNotes: React.lazy(
-    () => import('../pages/conference/MySessionNotes'),
-  ),
-  Handouts: React.lazy(() => import('../pages/conference/Handouts')),
-  TrainingPrograms: React.lazy(
-    () => import('../pages/training-programs/EFITrainingPrograms'),
-  ),
-  MembershipRegistrationForm: React.lazy(
-    () => import('../pages/membership/MembershipRegistrationForm'),
-  ),
-  MembershipPaymentDetails: React.lazy(
-    () => import('../pages/membership/MembershipPaymentDetails'),
-  ),
-  MembershipExclusiveAccess: React.lazy(
-    () => import('../pages/membership/membershipExclusiveAccess/MembershipExclusiveAccess'),
+  ChooseConferencePackage: React.lazy(
+    () => import('../pages/conference/ChooseConferencePackage'),
   ),
 };
 
@@ -132,7 +98,7 @@ function AppNavigation() {
     ),
     home: (
       <HomePage
-        onNavigateToConference={navigate.conference}
+        onNavigateToConference={navigate.chooseConferencePackage}
         onLogout={handleLogout}
         onNavigateToLogin={navigate.login}
         onNavigateToMyConference={navigate.myConference}
@@ -155,9 +121,36 @@ function AppNavigation() {
         onNavigateToDonationsAndFundraising={navigate.donationsAndFundraising}
       />
     ),
-    conference: (
-      <ConferenceRegistrationPage
+    chooseConferencePackage: (
+      <ChooseConferencePackage
         onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+        onNavigateToNonResidential={navigate.conference}
+        onNavigateToResidential={navigate.residentialPackages}
+      />
+    ),
+    residentialPackages: (
+      <ResidentialPackages
+        onBack={navigate.chooseConferencePackage}
+        onNavigateToHome={navigate.home}
+        onPackageSelect={(packageTitle, option) => {
+          console.log('Package selected:', packageTitle, option);
+          // Navigate to conference form with selected package
+          navigate.conferenceForm();
+        }}
+        onMemberClick={() => {
+          console.log('Member click');
+          // Navigate to member login or member registration
+        }}
+        onInfoClick={() => {
+          console.log('Info click');
+          // Show information modal
+        }}
+      />
+    ),
+    conference: (
+      <NonResidentialPackages
+        onBack={navigate.chooseConferencePackage}
         onNavigateToHome={navigate.home}
         onNavigateToForm={navigate.conferenceForm}
       />
@@ -308,6 +301,7 @@ function AppNavigation() {
       <ChangePassword
         onBack={navigate.profile}
         onNavigateToHome={navigate.home}
+        onNavigateToLogin={navigate.login}
       />
     ),
     myPayments: (

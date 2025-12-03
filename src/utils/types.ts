@@ -23,8 +23,10 @@ export type MembershipRegPayload = {
   phone_number: string;
   dob: string;
   grand_total: number;
-  city: string;
   country: number;
+  state: number;
+  city: string;
+  pin_code: string;
   hear_about_efi: string;
   patient_count: number;
   surgery_count: number;

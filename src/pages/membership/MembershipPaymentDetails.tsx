@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ImageBackground, Alert, Dimensions, Platform, Linking, Modal, ActivityIndicator } from 'react-native';
 import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import globalStyles, { colors, spacing, Fonts, borderRadius } from '../../styles/globalStyles';
@@ -55,6 +55,21 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
   const [registrationId, setRegistrationId] = useState<number | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showRazorpay, setShowRazorpay] = useState(false);
+  const [downloadAlert, setDownloadAlert] = useState<{ visible: boolean; message: string; type: 'success' | 'error' }>({
+    visible: false,
+    message: '',
+    type: 'success',
+  });
+
+  // Auto-dismiss alert after 3 seconds
+  useEffect(() => {
+    if (downloadAlert.visible) {
+      const timer = setTimeout(() => {
+        setDownloadAlert(prev => ({ ...prev, visible: false }));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [downloadAlert.visible]);
   const [paymentInfo, setPaymentInfo] = useState<any>([]);
 
   const getCountryId = (countryValue: string): number => {
@@ -657,10 +672,22 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         // Write file using react-native-blob-util
         await ReactNativeBlobUtil.fs.writeFile(filePath, base64Data, 'base64');
 
+        // Show success alert immediately after file write
+        const successMessage = `Payment receipt Downloaded successfully!`;
+        
+        // Set alert state directly - React will handle the render
+        console.log('Setting download alert - visible: true, message:', successMessage);
+        setDownloadAlert({
+          visible: true,
+          message: successMessage,
+          type: 'success',
+        });
+
+        // Continue with verification and notification in background
         // Verify file was written
         const fileExists = await ReactNativeBlobUtil.fs.exists(filePath);
         if (!fileExists) {
-          throw new Error('File was not saved successfully. Please check permissions.');
+          console.warn('File verification failed, but download may have succeeded');
         }
 
         // Get file stats to verify
@@ -690,31 +717,6 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
             // Continue even if notification fails
           }
         }
-
-        // Show success message with appropriate location info
-        console.log('File saved successfully');
-        
-        let successMessage = `Receipt saved successfully!\n\nFile: ${filename}`;
-        
-        if (Platform.OS === 'android') {
-          if (isPublicDownloads) {
-            // File is in public Downloads - should be visible in Downloads app
-            successMessage += `\n\n✅ Saved to Downloads folder`;
-            successMessage += `\nYou can find it in your Downloads app or Files app.`;
-          } else {
-            // File is in app's private directory (Android 10+ restriction)
-            successMessage += `\n\n📁 File saved to app's Downloads folder`;
-            successMessage += `\n\nTo access:`;
-            successMessage += `\n1. Open Files app`;
-            successMessage += `\n2. Go to: Internal storage > Android > data > com.efi > files > Download`;
-            successMessage += `\n\nOr use any file manager app.`;
-          }
-        } else {
-          // iOS
-          successMessage += `\n\nLocation: Files app > On My iPhone > EFI > Documents`;
-        }
-
-        ToastService.success('Downloaded', successMessage);
         
         // Log the exact path for debugging
         console.log('\n');
@@ -763,7 +765,12 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         errorMessage = `Server error (${error.response.status}). Please try again.`;
       }
 
-      ToastService.error('Download Failed', errorMessage);
+      // Show auto-dismissing error alert
+      setDownloadAlert({
+        visible: true,
+        message: errorMessage,
+        type: 'error',
+      });
     } finally {
       setIsDownloading(false);
     }
@@ -932,6 +939,31 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
           </View>
         </View>
       </Modal>
+
+      {/* Auto-dismissing Download Alert */}
+      <Modal
+        visible={downloadAlert.visible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDownloadAlert(prev => ({ ...prev, visible: false }))}
+        statusBarTranslucent={true}
+      >
+        <View style={styles.alertOverlay}>
+          <View style={[
+            styles.alertContainer,
+            downloadAlert.type === 'success' ? styles.alertSuccess : styles.alertError
+          ]}>
+            <View style={styles.alertIcon}>
+              {downloadAlert.type === 'success' ? (
+                <Text style={styles.alertSuccessIcon}>✓</Text>
+              ) : (
+                <Text style={styles.alertErrorIcon}>✕</Text>
+              )}
+            </View>
+            <Text style={styles.alertMessage}>{downloadAlert.message}</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -1034,6 +1066,60 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.04,
     fontFamily: Fonts.Medium,
     color: colors.black,
+  },
+  alertOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  alertContainer: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    padding: spacing.xl,
+    minWidth: screenWidth * 0.7,
+    maxWidth: screenWidth * 0.9,
+    alignItems: 'center',
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  alertSuccess: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
+  },
+  alertError: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#F44336',
+  },
+  alertIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  alertSuccessIcon: {
+    fontSize: 30,
+    color: '#4CAF50',
+    fontWeight: 'bold',
+  },
+  alertErrorIcon: {
+    fontSize: 30,
+    color: '#F44336',
+    fontWeight: 'bold',
+  },
+  alertMessage: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    textAlign: 'center',
+    lineHeight: screenWidth * 0.06,
   },
 });
 

@@ -29,13 +29,14 @@ import {
 } from '../../schemas/membershipRegistrationSchema';
 
 import {
-  getCountries,
-  getStates,
   CheckMembershipExists,
   CouponValidation,
+  getHearAboutSources,
+  getMembershipPrice,
   Country,
   State,
 } from '../../services/membershipService';
+import { getCountries, getStates } from '../../services/commonService';
 import { ToastService } from '../../utils/service-handlers';
 import { MembershipRegPayload, CouponPayload, CheckMembershipExistsPayload } from '../../utils/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -76,6 +77,8 @@ const MembershipRegistrationForm: React.FC<Props> = ({
   const [countriesLoading, setCountriesLoading] = useState(false);
   const [states, setStates] = useState<State[]>([]);
   const [statesLoading, setStatesLoading] = useState(false);
+  const [hearAboutSources, setHearAboutSources] = useState<Array<{ id: number; name: string; description: string; sort_order: number }>>([]);
+  const [hearAboutSourcesLoading, setHearAboutSourcesLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
@@ -86,7 +89,8 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     phone?: string;
     general?: string;
   }>({});
-  const [membershipPrice] = useState<number>(11800.0); // Default membership price
+  const [membershipPrice, setMembershipPrice] = useState<number>(0);
+  const [membershipPriceLoading, setMembershipPriceLoading] = useState(false);
   const [showCouponSuccessModal, setShowCouponSuccessModal] = useState(false);
   
   // Animation values for coupon success modal
@@ -118,6 +122,49 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       }
     };
     loadCountries();
+  }, []);
+
+  // Load hear about sources on component mount
+  React.useEffect(() => {
+    const loadHearAboutSources = async () => {
+      setHearAboutSourcesLoading(true);
+      try {
+        const response = await getHearAboutSources();
+        if (response?.success && response?.data) {
+          setHearAboutSources(response.data);
+        } else {
+          console.error('Failed to load hear about sources:', response?.message);
+        }
+      } catch (error: any) {
+        console.error('Failed to load hear about sources:', error);
+      } finally {
+        setHearAboutSourcesLoading(false);
+      }
+    };
+    loadHearAboutSources();
+  }, []);
+
+  // Load membership price on component mount
+  React.useEffect(() => {
+    const loadMembershipPrice = async () => {
+      setMembershipPriceLoading(true);
+      try {
+        const response = await getMembershipPrice();
+        if (response?.success && response?.data?.value) {
+          const price = parseFloat(response.data.value);
+          if (!isNaN(price) && price > 0) {
+            setMembershipPrice(price);
+          }
+        } else {
+          console.error('Failed to load membership price:', response?.message);
+        }
+      } catch (error: any) {
+        console.error('Failed to load membership price:', error);
+      } finally {
+        setMembershipPriceLoading(false);
+      }
+    };
+    loadMembershipPrice();
   }, []);
 
   // Function to load states for a given country
@@ -171,16 +218,19 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
   // Format hear about EFI options for dropdown
   const hearAboutEfiOptions = React.useMemo(() => {
-    return [
-      { label: 'Instagram', value: 'Instagram' },
-      { label: 'Facebook', value: 'Facebook' },
-      { label: 'X', value: 'X' },
-      { label: 'LinkedIn', value: 'LinkedIn' },
-      { label: 'Website', value: 'Website' },
-      { label: 'Google', value: 'Google' },
-      { label: 'Reference / Word of mouth', value: 'Reference / Word of mouth' },
-    ];
-  }, []);
+    if (!hearAboutSources || hearAboutSources.length === 0) {
+      return [];
+    }
+    // Sort by sort_order and map to dropdown format
+    return hearAboutSources
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((source) => ({
+        label: source.name,
+        value: source.name,
+      }));
+  }, [hearAboutSources]);
+
+  
   const initialValues: MembershipRegPayload & { state?: number; pin_code?: string } = {
     first_name: '',
     last_name: '',
@@ -268,9 +318,12 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         console.log('Full Coupon Data:', JSON.stringify(couponData, null, 2));
         
         // Get current membership price to calculate discount for percentage type
-        const membershipPriceValue = membershipPrice || 11800.0;
+        if (!membershipPrice || membershipPrice <= 0) {
+          setCouponError('Membership price not available. Please refresh the page.');
+          return;
+        }
         
-        console.log('Membership Price:', membershipPriceValue);
+        console.log('Membership Price:', membershipPrice);
         
         let discountValue = 0;
         
@@ -282,7 +335,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
             : couponAmount;
           console.log('Coupon Percentage:', couponPercentage);
           if (!isNaN(couponPercentage) && couponPercentage > 0) {
-            discountValue = (membershipPriceValue * couponPercentage) / 100;
+            discountValue = (membershipPrice * couponPercentage) / 100;
             console.log('Calculated Discount (Percentage):', discountValue);
           }
         } else {
@@ -460,9 +513,15 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     console.log('Hear About EFI:', values.hear_about_efi);
     console.log('Patient Count:', values.patient_count);
     console.log('Surgery Count:', values.surgery_count);
-    console.log('Coupon Code:', values.coupon_code || 'None');
-    console.log('===========================================');
+      console.log('Coupon Code:', values.coupon_code || 'None');
+      console.log('===========================================');
     try {
+      if (!membershipPrice || membershipPrice <= 0) {
+        ToastService.error('Error', 'Membership price not available. Please refresh the page.');
+        setIsSubmitting(false);
+        return;
+      }
+      
       const SUB_TOTAL = membershipPrice;
       const discount = couponApplied ? couponDiscount : 0;
       const grandTotal = SUB_TOTAL - discount;
@@ -831,11 +890,17 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                 <View style={styles.professionalsSection}>
                   <Text style={styles.professionalsTitle}>Professionals</Text>
                   <Text style={styles.professionalsDescription}>
-                  Get access to exclusive content
+                    Get access to exclusive content
                   </Text>
-                  <Text style={styles.professionalsPrice}>
-                    {`${membershipPrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₹`}
-                  </Text>
+                  {membershipPriceLoading ? (
+                    <Text style={styles.professionalsPrice}>Loading...</Text>
+                  ) : membershipPrice > 0 ? (
+                    <Text style={styles.professionalsPrice}>
+                      {`${membershipPrice.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₹`}
+                    </Text>
+                  ) : (
+                    <Text style={styles.professionalsPrice}>Price not available</Text>
+                  )}
                 </View>
 
                 {/** Basic Info Fields */}
@@ -930,7 +995,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
                 {/** Date of Birth Picker */}
                 <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>Date of Birth <Text style={{ color: colors.red }}> *</Text></Text>
+                  <Text style={globalStyles.fieldLabel}>Date of Birth <Text style={{ color: colors.red }}>*</Text></Text>
                   <TouchableOpacity
                     style={[
                       globalStyles.dateInput,
@@ -1037,7 +1102,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
                        {/** City Field */}
                 <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>City</Text>
+                  <Text style={globalStyles.fieldLabel}>City <Text style={{ color: colors.red }}>*</Text></Text>
                   <TextInput
                     style={[
                       globalStyles.fieldInput,
@@ -1060,7 +1125,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
                 {/** Address Field */}
                <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>Postal Address <Text style={{ color: colors.red }}> *</Text></Text>
+                  <Text style={globalStyles.fieldLabel}>Postal Address <Text style={{ color: colors.red }}>*</Text></Text>
                   <TextInput
                     style={[
                       globalStyles.fieldInput,
@@ -1084,7 +1149,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
                      {/** Pin Code Field */}
                 <View style={globalStyles.fieldContainer}>
-                  <Text style={globalStyles.fieldLabel}>Pin Code <Text style={{ color: colors.red }}> *</Text></Text>
+                  <Text style={globalStyles.fieldLabel}>Pin Code <Text style={{ color: colors.red }}>*</Text></Text>
                   <TextInput
                     style={[
                       globalStyles.fieldInput,
@@ -1118,9 +1183,13 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       ? formikErrors.hear_about_efi
                       : undefined
                   }
-                  placeholder="Select how you heard about EFI"
-                  // searchable={true}
-                  // searchPlaceholder="Search..."
+                  placeholder={
+                    hearAboutSourcesLoading 
+                      ? 'Loading options...' 
+                      : hearAboutEfiOptions.length === 0
+                      ? 'No options available'
+                      : 'Select how you heard about EFI'
+                  }
                 />
 
                 {/** Numeric Fields */}
@@ -1217,7 +1286,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   </View>
                   {couponApplied && (
                     <Text style={styles.couponSuccess}>
-                      Coupon applied successfully!{couponDiscount > 0 ? ` Discount: ₹${couponDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : ''}
+                      Coupon applied successfully!{couponDiscount > 0 ? ` Discount: ₹${couponDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : null}
                     </Text>
                   )}
                   {couponError && (

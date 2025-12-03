@@ -98,7 +98,8 @@ export const membershipRegistrationSchema = (captcha: string) =>
     
     city: yup
       .string()
-      .optional()
+      .required('City is required')
+      .min(2, 'City must be at least 2 characters')
       .trim(),
     
     pin_code: yup
