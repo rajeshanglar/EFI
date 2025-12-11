@@ -15,7 +15,7 @@ import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { getPaymentTransactionById } from '../../services/commonService';
-import { DownloadMembershipInvoice } from '../../services/membershipService';
+import { DownloadMembershipInvoice } from '../../services/staticService';
 import { ToastService } from '../../utils/service-handlers';
 import { DownloadWhiteIcon } from '../../components/icons';
 import ReactNativeBlobUtil from 'react-native-blob-util';

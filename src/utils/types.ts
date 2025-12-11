@@ -61,6 +61,9 @@ export type DownloadMembershipInvoicePayload = {
   registration_id: number;
 };
 
+export type DownloadConferenceQRCodePayload = {
+  registration_id: number;
+};
 
 export type DownloadMembershipInvoiceResponse = {
   success: boolean;
@@ -73,4 +76,43 @@ export type DownloadMembershipInvoiceResponse = {
     mime_type: string;
   };
   status: number;
+};
+
+//Conference
+export type   ConferenceRegPayload = {
+ full_name:string,
+ email:string,
+ mobile:string,
+ institute:string,
+ specialization: string,
+ address: string,
+ city: string,
+state: number,
+pincode:string,
+country: number,
+event_id: number,
+mapping_id: number,
+module_id: number,
+category_id: number,
+ticket_id: number,
+efi_type: string,
+morning_workshop: number,
+afternoon_workshop: number,
+sub_total: number,
+grand_total: number,
+currency: string,
+source_type: string,
+payment_status: string,
+payment_gateway: string;
+payment_method: string;
+gateway_transaction_id: string;
+gateway_order_id: string;
+payment_date: string;
+gateway_response: string;
+
+};
+
+export type CheckConferenceExistsPayload = {
+  email: string;
+  mobile: string;
 };

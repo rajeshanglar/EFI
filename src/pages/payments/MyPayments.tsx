@@ -111,9 +111,23 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
       
       const response = await getPaymentTransactions(pageNum, PER_PAGE);
       
+      console.log('=== GET PAYMENT TRANSACTIONS RESPONSE ===');
+      console.log('Full Response:', JSON.stringify(response, null, 2));
+      console.log('Success:', response?.success);
+      console.log('Message:', response?.message);
+      console.log('Data:', JSON.stringify(response?.data, null, 2));
+      
       if (response?.success && response?.data?.transactions) {
         const transactions: PaymentTransaction[] = response.data.transactions;
+        
+        console.log('=== TRANSACTIONS DATA ===');
+        console.log('Transactions Count:', transactions.length);
+        console.log('Transactions Array:', JSON.stringify(transactions, null, 2));
+        
         const mappedPayments = mapTransactions(transactions);
+        
+        console.log('=== MAPPED PAYMENTS ===');
+        console.log('Mapped Payments:', JSON.stringify(mappedPayments, null, 2));
         
         // Store full transaction data in map
         setTransactionsMap((prevMap) => {
@@ -158,7 +172,23 @@ const MyPayments: React.FC<MyPaymentsProps> = ({
   
 
   const handlePaymentDetails = (paymentId: string) => {
+    console.log('=== PAYMENT DETAILS CLICKED ===');
+    console.log('Payment ID:', paymentId);
+    
     const transaction = transactionsMap.get(paymentId);
+    console.log('Transaction Found:', transaction ? 'Yes' : 'No');
+    
+    if (transaction) {
+      console.log('=== TRANSACTION DATA ===');
+      console.log('Full Transaction:', JSON.stringify(transaction, null, 2));
+      console.log('Transaction ID:', transaction.transaction_id);
+      console.log('Registration Type:', transaction.registration_type);
+      console.log('Amount:', transaction.amount);
+      console.log('Currency:', transaction.currency);
+      console.log('Status:', transaction.status);
+      console.log('Payment Date:', transaction.payment_date);
+    }
+    
     if (transaction && onNavigateToPaymentDetails) {
       onNavigateToPaymentDetails(transaction);
     }

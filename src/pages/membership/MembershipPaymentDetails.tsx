@@ -1,19 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground, Alert, Dimensions, Platform, Linking, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ImageBackground, Alert, Dimensions, Platform, Linking, Modal, ActivityIndicator, InteractionManager } from 'react-native';
 import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import globalStyles, { colors, spacing, Fonts, borderRadius } from '../../styles/globalStyles';
 import Header from '../../components/Header';
 import { GradientButton } from '../../components/GradientButton';
 import { SuccessModal } from '../../components/SuccessModal';
 import { FailureModal } from '../../components/FailureModal';
-import { MembershipRegistration, CouponValidation, DownloadMembershipInvoice } from '../../services/membershipService';
+import {
+  MembershipRegistration,
+  CouponValidation,
+  DownloadMembershipInvoice,
+  CreateOrderPayment
+} from '../../services/staticService';
 import { MembershipRegPayload, CouponPayload } from '../../utils/types';
 import { ToastService } from '../../utils/service-handlers';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 // Razorpay
-import RazorpayCheckout from "../../components/RazorpayCheckout";
-import { CreateOrderPayment } from '../../services/authService';
 
+import RazorpayCheckout from "react-native-razorpay";
 
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -60,6 +64,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
     message: '',
     type: 'success',
   });
+  const isClosingRef = useRef(false);
 
   // Auto-dismiss alert after 3 seconds
   useEffect(() => {
@@ -123,10 +128,10 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
 
   const handleRegisterAfterSuccess = async (response: any) => {
     console.log("Razorpay Success:", response);
-    
+
     // Show loading modal first
     setShowLoadingModal(true);
-    
+
     // Validate email address before sending
     const emailId = formData?.email_id || '';
     if (!emailId || !emailId.trim()) {
@@ -137,7 +142,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       setShowFailureModal(true);
       return;
     }
-    
+
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailId.trim())) {
@@ -147,9 +152,9 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       setShowFailureModal(true);
       return;
     }
-    
+
     console.log('✅ Email validation passed:', emailId);
-    
+
     const payload: any = {
       // Required Registration Fields
       "first_name": formData?.first_name || '',
@@ -157,7 +162,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       "email_id": emailId.trim(), // Use validated and trimmed email
       "phone_number": formData?.phone_number || '',
       "dob": formatDateForAPI(formData?.dob || '') || '',
-      "grand_total": paymentData?.grandTotal || 11800 || 0,
+      "grand_total": paymentData?.grandTotal,
 
       // Optional Registration Fields
       "city": formData?.city || '',
@@ -167,9 +172,9 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       "surgery_count": parseInt(formData?.surgery_count.toString() || '0', 10) || 0,
       "address": formData?.address || '',
       "coupon_code": formData?.coupon_code || '',
-      "sub_total": 11800,
-      "coupon_value": paymentData?.coupon || 0 || 0,
-      "source_type": "Mobile",
+      "sub_total": paymentData?.subTotal,
+      "coupon_value": paymentData?.coupon || 0,
+      "source_type":"Mobile",
 
       // Payment Details (Success)
       "payment_gateway": "Razorpay",
@@ -177,12 +182,12 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       "payment_status": "success",
       "gateway_transaction_id": response.razorpay_payment_id || '',
       "gateway_order_id": response.razorpay_order_id || '',
-      "currency": "INR",
+      "currency": paymentInfo?.currency || "INR",
       "payment_date": new Date().toISOString(),
       // Optional: Full gateway response (JSON string)
       "gateway_response": JSON.stringify(response)
     };
-    
+
     // Call registration API - modals will be shown after API response
     try {
       await handleRegister(payload);
@@ -203,13 +208,13 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
 
   const handleRegisterAfterFailure = async (response: any) => {
     console.log("=== RAZORPAY FAILURE RESPONSE ===");
-       console.log("Response:", JSON.stringify(response, null, 2));
+    console.log("Response:", JSON.stringify(response, null, 2));
     console.log("Payment Info:", JSON.stringify(paymentInfo, null, 2));
     console.log("===================================");
-    
+
     // Show loading modal first
     setShowLoadingModal(true);
-    
+
     // Extract error details from Razorpay failure response
     // Razorpay error structure: { error: { code, description, source, step, reason } }
     const errorObj = response?.error || response;
@@ -218,15 +223,16 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
     const errorSource = errorObj?.source || response?.source || 'gateway';
     const errorStep = errorObj?.step || response?.step || 'payment_authorization';
     const errorReason = errorObj?.reason || response?.reason || 'payment_failed';
-    
-    // Format failure reason
-    const failureReason = errorDescription ? `Payment failed: ${errorDescription}` : 'Payment failed: Card declined';
-    
+
+    // Format failure reason - use error description directly (API will format the message)
+    // Don't add "Payment failed: " prefix here to avoid duplication
+    const failureReason = errorDescription || 'Card declined';
+
     // Get order_id from paymentInfo (stored when order was created)
     // Get payment_id from response metadata or error object
     const gatewayOrderId = paymentInfo?.order_id || '';
     const gatewayTransactionId = response?.metadata?.payment_id || response?.payment_id || errorObj?.metadata?.payment_id || '';
-    
+
     // Build error response object matching the expected format
     const errorResponseObj = {
       error: {
@@ -237,7 +243,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         reason: errorReason
       }
     };
-    
+
     const payload: any = {
       // Required Registration Fields (for form data capture in failed transaction)
       "first_name": formData?.first_name || '',
@@ -257,35 +263,55 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       "coupon_code": formData?.coupon_code || '',
       "sub_total": paymentData?.subTotal || 11800,
       "coupon_value": paymentData?.coupon || 0,
-      "source_type": "Mobile",
+      "source_type":"Mobile",
 
       // Payment Details (Failure) - REQUIRED for failed payments
       "payment_gateway": "Razorpay",
+      "payment_method": "",
       "payment_status": "failed",
       "gateway_order_id": gatewayOrderId,
       "gateway_transaction_id": gatewayTransactionId,
-      "currency": "INR",
+      "currency": paymentInfo?.currency || "INR",
+      "payment_date": new Date().toISOString(),
       "failure_reason": failureReason,
       // Optional: Full error details (JSON string)
       "gateway_response": JSON.stringify(errorResponseObj)
     };
-    
+
     console.log('=== FAILURE REGISTRATION PAYLOAD ===');
     console.log('Payload:', JSON.stringify(payload, null, 2));
     console.log('=====================================');
-    
+
     // Call registration API with failure payload
     // Note: API will return success: false for failed payments, which is expected
     // The handleRegister function will show the failure modal with API response message
     // Loading modal will be hidden in handleRegister before showing result modal
     try {
       await handleRegister(payload);
-    } catch (error) {
-      console.error('Error registering failed payment:', error);
+    } catch (error: any) {
+      console.error('=== ERROR REGISTERING FAILED PAYMENT ===');
+      console.error('Error:', error);
+      console.error('Error Response:', error?.response);
+      console.error('Error Status:', error?.response?.status);
+      console.error('Error Data:', JSON.stringify(error?.response?.data, null, 2));
+
       // Hide loading modal if error occurs
       setShowLoadingModal(false);
-      // If API call fails, show failure modal with error description
-      setFailureMessage(errorDescription || 'Payment failed. Please try again.');
+
+      // Extract error message from API response
+      let errorMessage = errorDescription || 'Payment failed. Please try again.';
+
+      // Try to get error message from API response
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      // Show failure modal with extracted error message
+      setFailureMessage(errorMessage);
       setShowFailureModal(true);
     }
   };
@@ -300,9 +326,9 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       console.log('Email ID Type:', typeof payload?.email_id);
       console.log('Email ID Length:', payload?.email_id?.length);
       console.log('======================================');
-      
+
       const result = await MembershipRegistration(payload);
-      
+
       console.log('=== MEMBERSHIP REGISTRATION RESPONSE ===');
       console.log(JSON.stringify(result, null, 2));
       console.log('========================================');
@@ -314,7 +340,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       console.log('Result Message:', result?.message);
       console.log('Result Data:', JSON.stringify(result?.data, null, 2));
       console.log('Payment Status:', payload?.payment_status);
-      
+
       // Check for email-related information in response
       console.log('\n=== EMAIL STATUS CHECK ===');
       console.log('Email Sent Flag:', result?.data?.email_sent);
@@ -324,7 +350,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       console.log('==============================');
 
       const paymentStatus = payload?.payment_status;
-      
+
       // Check if registration was successful
       // If payment was successful, check if API response indicates success or failure
       // API can return: success: true OR status: 200/201 OR has registration_id in data
@@ -333,12 +359,12 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       const hasSuccessFlag = result?.success === true;
       const hasExplicitFailure = result?.success === false || result?.status === 400;
       const hasRegistrationId = !!(result?.data?.registration_id || result?.data?.id || result?.registration_id);
-      
+
       // If payment succeeded, treat as success unless explicitly failed
       // Success if: payment was successful AND not explicitly failed by API
       // Default to success if payment succeeded unless API says otherwise
       const isSuccess = paymentStatus === 'success' && !hasExplicitFailure;
-      
+
       console.log('=== SUCCESS CHECK ===');
       console.log('Payment Status:', paymentStatus);
       console.log('Has Success Flag:', hasSuccessFlag);
@@ -347,7 +373,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       console.log('Has Explicit Failure:', hasExplicitFailure);
       console.log('Is Success:', isSuccess);
       console.log('=======================');
-      
+
       // If payment was successful and API call was successful, show success modal
       if (isSuccess) {
         // Store registration_id from response for receipt download
@@ -364,10 +390,10 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
 
         // Hide loading modal before showing success modal
         setShowLoadingModal(false);
-        
+
         // Build success message with email information
         let successMsg = result?.message || 'Membership registration successful!';
-        
+
         // Add email information if available
         const emailAddress = payload?.email_id || formData?.email_id || userData?.email;
         if (emailAddress) {
@@ -375,11 +401,11 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
           console.log('Email Address:', emailAddress);
           console.log('Email will be sent to:', emailAddress);
           console.log('==========================');
-          
+
           // Check if API response indicates email status
           const emailSent = result?.data?.email_sent;
           const emailStatus = result?.data?.email_status;
-          
+
           if (emailSent === false || emailStatus === 'failed') {
             console.warn('⚠️ Email sending may have failed according to API response');
             successMsg += `\n\n⚠️ Note: Email may not have been sent. Please contact support if you don't receive it.`;
@@ -391,7 +417,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         } else {
           console.warn('⚠️ No email address found in payload or form data');
         }
-        
+
         // Store success message for display
         setSuccessMessage(successMsg);
         setShowSuccessModal(true);
@@ -399,7 +425,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         // Registration failed or payment failed
         // Hide loading modal before showing failure modal
         setShowLoadingModal(false);
-        
+
         // Show failure modal with API response message
         if (paymentStatus === 'failed') {
           setFailureMessage(result?.message || 'Payment failed. Please try again.');
@@ -477,7 +503,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
     try {
       const result = await CreateOrderPayment({
         amount: grandTotal,
-        currency: "INR",
+        currency:formData?.currency,
         first_name: formData.first_name,
         last_name: formData.last_name,
         email_id: formData.email_id,
@@ -488,8 +514,32 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
       if (result?.success === true) {
         console.log("CREATE ORDER SUCCESS:", result);
         const orderData = result.data;
+        console.log("ORDER DATA:", orderData);
         setPaymentInfo(orderData);
-        setShowRazorpay(true);
+        const options = {
+          description: "Membership Payment",
+          image: require("../../assets/images/logo-efi.png"),
+          currency: orderData.currency,
+          key: orderData.key, // Replace with Razorpay Key
+          amount: orderData.amount, // From backend
+          order_id: orderData.order_id,   // From backend
+          name: "EFI",
+          prefill: {
+            email: formData.email_id,
+            contact: formData.phone_number,
+            name: formData.first_name + " " + formData.last_name,
+          },
+          theme: { color: "#0086ff" },
+        };
+
+        RazorpayCheckout.open(options)
+          .then((data) => {
+            handleRegisterAfterSuccess(data);
+          })
+          .catch((error) => {
+            handleRegisterAfterFailure(error);
+          });
+        //setShowRazorpay(true);
       } else {
         ToastService.error("Error", result?.message || "Order creation failed");
         return;
@@ -614,26 +664,26 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
         // Determine file path based on platform
         let filePath: string;
         let isPublicDownloads = false;
-        
+
         if (Platform.OS === 'android') {
           // For Android 10+ (API 29+), try to use the public Downloads directory
           if (Platform.Version >= 29) {
             // Android 10+ - Try to use public Downloads folder
             // Public Downloads is at /storage/emulated/0/Download (note: capital D)
             const publicDownloadsPath = '/storage/emulated/0/Download';
-            
+
             try {
               // Check if we can write to public Downloads
               // First check if directory exists
               const publicDownloadsExists = await ReactNativeBlobUtil.fs.exists(publicDownloadsPath);
-              
+
               if (publicDownloadsExists) {
                 // Try to write a test to see if we have write permission
                 const testFilePath = `${publicDownloadsPath}/.test_write_${Date.now()}`;
                 try {
                   await ReactNativeBlobUtil.fs.writeFile(testFilePath, 'test', 'utf8');
                   await ReactNativeBlobUtil.fs.unlink(testFilePath); // Clean up test file
-                  
+
                   // We can write to public Downloads!
                   filePath = `${publicDownloadsPath}/${filename}`;
                   isPublicDownloads = true;
@@ -674,7 +724,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
 
         // Show success alert immediately after file write
         const successMessage = `Payment receipt Downloaded successfully!`;
-        
+
         // Set alert state directly - React will handle the render
         console.log('Setting download alert - visible: true, message:', successMessage);
         setDownloadAlert({
@@ -717,7 +767,7 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
             // Continue even if notification fails
           }
         }
-        
+
         // Log the exact path for debugging
         console.log('\n');
         console.log('=== FILE SAVED SUCCESSFULLY ===');
@@ -902,35 +952,15 @@ const MembershipPaymentDetails: React.FC<MembershipPaymentDetailsProps> = ({
           setFailureMessage('');
         }}
       />
-      
-      <Modal visible={showRazorpay} animationType="slide" transparent={false}>
-        <View style={{ flex: 1 }}>
-          <RazorpayCheckout
-            amount={paymentInfo.amount_rupees}
-            name={paymentInfo.name}
-            email={paymentInfo.email}
-            phone={paymentInfo.phone}
-            order_id={paymentInfo.order_id}
-            razorpayKey={paymentInfo.key}
-            onSuccess={(res: any) => {
-              setShowRazorpay(false);
-              handleRegisterAfterSuccess(res);
-            }}
-            onFailure={(res: any) => {
-              setShowRazorpay(false);
-              console.log("Payment Failed");
-              handleRegisterAfterFailure(res);
-            }}
-          />
-        </View>
-      </Modal>
+
+
 
       {/* Loading Modal */}
       <Modal
         visible={showLoadingModal}
         transparent={true}
         animationType="fade"
-        onRequestClose={() => {}} // Prevent closing during loading
+        onRequestClose={() => { }} // Prevent closing during loading
       >
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingContainer}>

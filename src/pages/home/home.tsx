@@ -44,6 +44,7 @@ import GradientButton from '../../components/GradientButton';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 interface HomePageProps {
   onNavigateToConference?: () => void;
+  onNavigateToConferenceList?: () => void;
   onLogout?: () => void;
   onNavigateToLogin?: () => void;
   onNavigateToMyConference?: () => void;
@@ -94,6 +95,7 @@ const conferenceBanners: ConferenceBanner[] = [
 
 const HomePage: React.FC<HomePageProps> = ({
   onNavigateToConference,
+  onNavigateToConferenceList,
   onLogout,
   onNavigateToLogin,
   onNavigateToMyConference,
@@ -123,12 +125,23 @@ const HomePage: React.FC<HomePageProps> = ({
   // Get registration_type from user data
   const registrationType = user?.registration_type || '';
 
-  // Determine button titles and styles based on registration_type
-  const membershipTitle = isAuthenticated && registrationType === 'membership' 
+  // Check linked_registrations to determine if user has membership and/or conference
+  const hasMembership = isAuthenticated && user?.linked_registrations?.membership && 
+    Array.isArray(user.linked_registrations.membership) && 
+    user.linked_registrations.membership.length > 0;
+  
+  const hasConference = isAuthenticated && user?.linked_registrations?.conference && 
+    Array.isArray(user.linked_registrations.conference) && 
+    user.linked_registrations.conference.length > 0;
+
+  // Determine button titles and styles based on linked_registrations
+  // If user has membership registration, show "Membership Exclusive Access"
+  const membershipTitle = hasMembership 
     ? 'Membership\nExclusive Access' 
     : 'Membership Registration';
   
-  const conferenceTitle = isAuthenticated && (registrationType === 'conference' || registrationType === 'Conference')
+  // If user has conference registration, show "Conference"
+  const conferenceTitle = hasConference
     ? 'Conference'
     : 'Conference Registration';
 
@@ -138,15 +151,15 @@ const HomePage: React.FC<HomePageProps> = ({
       icon: MembershipIcon,
       // onPress: () => console.log('Membership'),
       onPress: () => {
-        // If user has membership registration_type, navigate to Exclusive Access page
-        if (isAuthenticated && registrationType === 'membership') {
+        // If user has membership registration, navigate to Exclusive Access page
+        if (hasMembership) {
           onNavigateToMembershipExclusiveAccess?.() || console.log('Membership Exclusive Access');
         } else {
           // Otherwise, navigate to membership registration form
           onNavigateToMembership?.() || console.log('Membership Registration');
         }
       },
-      isSpecial: isAuthenticated && registrationType === 'membership', // Special styling only for membership users
+      isSpecial: hasMembership, // Special styling for users with membership registration
     },
     {
       title: 'Training\nSession',
@@ -157,8 +170,16 @@ const HomePage: React.FC<HomePageProps> = ({
     {
       title: conferenceTitle,
       icon: CongressIcon,
-      onPress: () => onNavigateToConference?.() || console.log('Conference'),
-      isSpecial: isAuthenticated && (registrationType === 'conference' || registrationType === 'Conference'), // Special styling only for conference users
+      onPress: () => {
+        // If user has conference registration, navigate to ConferenceList page
+        if (hasConference) {
+          onNavigateToConferenceList?.() || console.log('Conference List');
+        } else {
+          // Otherwise, navigate to conference registration
+          onNavigateToConference?.() || console.log('Conference Registration');
+        }
+      },
+      isSpecial: hasConference, // Special styling for users with conference registration
     },
     {
       title: 'Donations And Fundraising',
@@ -217,7 +238,7 @@ const HomePage: React.FC<HomePageProps> = ({
         </View>
       </View>
       <ScrollView
-        style={globalStyles.scrollViewContent}
+        style={[globalStyles.scrollViewContent, {backgroundColor:colors.white}] }
         showsVerticalScrollIndicator={true}
       >
         <View style={globalStyles.spaceBottom}>
@@ -349,19 +370,23 @@ const HomePage: React.FC<HomePageProps> = ({
           </View>
         </View>
       </ScrollView>
-      <View style={globalStyles.footerBtContainer}>
-        <GradientButton
-          title="MY CARDS"
-          onPress={() => onNavigateToMyCards?.() || console.log('My Cards')}
-          icon={
-            <WhiteMyCardsIcon
-              size={26}
-              color={colors.white}
-              style={globalStyles.footerBtIcon}
-            />
-          }
-        />
-      </View>
+
+      {hasConference && (
+        <TouchableOpacity style={globalStyles.footerBtContainer}>
+          <GradientButton
+            title="MY CARDS"
+            onPress={() => onNavigateToMyCards?.() || console.log('My Cards')}
+            icon={
+              <WhiteMyCardsIcon
+                size={26}
+                color={colors.white}
+                style={globalStyles.footerBtIcon}
+              />
+            }
+          />
+        </TouchableOpacity>
+      )} 
+
       <SharedMenu
         onLogout={onLogout}
         onLoginPress={onNavigateToLogin}
@@ -697,33 +722,8 @@ const styles = StyleSheet.create({
     fontSize: Dimensions.get('window').width * 0.032,
     fontFamily: Fonts.Medium,
   },
-  trainingDecorations: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-  },
-  topDecoration: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    width: 30,
-    height: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 15,
-  },
-  bottomDecoration: {
-    position: 'absolute',
-    bottom: -10,
-    right: -20,
-    width: 80,
-    height: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 40,
-    transform: [{ rotate: '15deg' }],
-  },
+  
+  
 
 
 });

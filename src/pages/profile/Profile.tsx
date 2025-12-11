@@ -20,6 +20,8 @@ import {
   MyCertificatesIcon,
   EditProfileIcon,
   PhoneIcon,
+  MembershipIcon,
+  CongressIcon,
   } from '../../components/icons';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -31,6 +33,7 @@ interface ProfileProps {
   onNavigateToMyPayments?: () => void;
   onNavigateToEditProfile?: () => void;
   onNavigateToChangePassword?: () => void;
+  onNavigateToMyCertificates?: () => void;
 }
 
 const Profile: React.FC<ProfileProps> = ({
@@ -39,6 +42,7 @@ const Profile: React.FC<ProfileProps> = ({
   onNavigateToMyPayments,
   onNavigateToEditProfile,
   onNavigateToChangePassword,
+  onNavigateToMyCertificates,
 }) => {
   // Get user data from AuthContext
   const { user } = useAuth();
@@ -54,6 +58,13 @@ const Profile: React.FC<ProfileProps> = ({
     phone: user?.mobile_no || user?.phone || '',
     serialNumber: user?.registration_serial_number || user?.serial_number || user?.serialNumber || '',
   };
+
+  // Get membership and conference registrations from linked_registrations
+  const membershipRegistrations = user?.linked_registrations?.membership || [];
+  const conferenceRegistrations = user?.linked_registrations?.conference || [];
+  
+  const hasMembership = Array.isArray(membershipRegistrations) && membershipRegistrations.length > 0;
+  const hasConference = Array.isArray(conferenceRegistrations) && conferenceRegistrations.length > 0;
 
   return (
     <View style={styles.container}>
@@ -108,7 +119,7 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
-          {userData.serialNumber ? (
+          {hasMembership && userData.serialNumber ? (
               <View style={styles.contactRow}>
                 <Text style={styles.serialNumberLabel}>Membership ID:</Text>
                 <Text style={styles.serialNumberText}>{userData.serialNumber}</Text>
@@ -153,11 +164,72 @@ const Profile: React.FC<ProfileProps> = ({
     
         </View>
 
+  
+
+        {/* Conference Details Section */}
+        {hasConference && (
+          <View style={styles.registrationSection}>
+            
+            {conferenceRegistrations.map((conference: any, index: number) => (
+              <View key={index} style={styles.registrationCard}>
+                <View style={styles.sectionHeader}>
+              <CongressIcon size={24} color={colors.primary} />
+              <Text style={styles.sectionTitle}>Conference Details</Text>
+            </View>
+
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Serial Number:</Text>
+                  <Text style={styles.registrationValue}>{conference.serial_number || 'N/A'}</Text>
+                </View>
+               
+               
+               
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Event:</Text>
+                  <Text style={styles.registrationValue}>{conference.event_name || 'N/A'}</Text>
+                </View>
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Module:</Text>
+                  <Text style={styles.registrationValue}>{conference.module_name || 'N/A'}</Text>
+                </View>
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Category:</Text>
+                  <Text style={styles.registrationValue}>{conference.category_name || 'N/A'}</Text>
+                </View>
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Ticket:</Text>
+                  <Text style={styles.registrationValue}>{conference.ticket_name || 'N/A'}</Text>
+                </View>
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Member Type:</Text>
+                  <Text style={styles.registrationValue}>{conference.member_type || conference.efi_type || 'N/A'}</Text>
+                </View>
+               
+               
+            
+                <View style={styles.registrationRow}>
+                  <Text style={styles.registrationLabel}>Status:</Text>
+                  <Text style={[styles.registrationValue, styles.statusText, conference.status === 1 ? styles.statusActive : styles.statusInactive]}>
+                    {conference.status_name || (conference.status === 1 ? 'Active' : 'Inactive')}
+                  </Text>
+                </View>
+                {conference.created_on && (
+                  <View style={styles.registrationRow}>
+                    <Text style={styles.registrationLabel}>Created On:</Text>
+                    <Text style={styles.registrationValue}>{conference.created_on}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+
         {/* Navigation Items */}
         <View style={styles.navigationItems}>
-          {/* My Cards */}
+          {/* My Certificates */}
           <TouchableOpacity
-            style={styles.navItem}          
+            style={styles.navItem}
+            onPress={onNavigateToMyCertificates}
             activeOpacity={0.7}
           >
             <View style={styles.navItemLeft}>
@@ -371,6 +443,66 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Medium,
     color: colors.black,
     marginLeft: spacing.md,
+  },
+  registrationSection: {
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+    gap: spacing.sm,
+  },
+  sectionTitle: {
+    fontSize: screenWidth * 0.042,
+    fontFamily: Fonts.Bold,
+    color: colors.primary,
+  },
+  registrationCard: {
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  registrationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.lightGray,
+  },
+  registrationLabel: {
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Medium,
+    color: colors.black,
+    flex: 1,
+  },
+  registrationValue: {
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Regular,
+    color: colors.primary,
+    flex: 1,
+    textAlign: 'right',
+  },
+  statusText: {
+    fontFamily: Fonts.SemiBold,
+  },
+  statusActive: {
+    color: '#4CAF50',
+  },
+  statusInactive: {
+    color: '#F44336',
   },
 });
 

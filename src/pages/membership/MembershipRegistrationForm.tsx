@@ -25,18 +25,18 @@ import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/dat
 import {
   membershipRegistrationSchema,
   generateCaptcha,
-
 } from '../../schemas/membershipRegistrationSchema';
 
-import {
-  CheckMembershipExists,
-  CouponValidation,
-  getHearAboutSources,
-  getMembershipPrice,
+import { 
   Country,
   State,
-} from '../../services/membershipService';
-import { getCountries, getStates } from '../../services/commonService';
+  getCountries,
+   getStates,
+   getHearAboutSources,
+   CheckMembershipExists,
+   CouponValidation,
+   getMembershipPrice,
+  } from '../../services/staticService';
 import { ToastService } from '../../utils/service-handlers';
 import { MembershipRegPayload, CouponPayload, CheckMembershipExistsPayload } from '../../utils/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -98,8 +98,9 @@ const MembershipRegistrationForm: React.FC<Props> = ({
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  // Load countries on component mount
+
   React.useEffect(() => {
+    // Load countries on component mount
     const loadCountries = async () => {
       setCountriesLoading(true);
       try {
@@ -122,10 +123,8 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       }
     };
     loadCountries();
-  }, []);
 
-  // Load hear about sources on component mount
-  React.useEffect(() => {
+   // Load hear about sources on component mount
     const loadHearAboutSources = async () => {
       setHearAboutSourcesLoading(true);
       try {
@@ -140,32 +139,31 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       } finally {
         setHearAboutSourcesLoading(false);
       }
-    };
-    loadHearAboutSources();
+      };
+     loadHearAboutSources();
+
+       // Load membership price on component mount
+       const loadMembershipPrice = async () => {
+        setMembershipPriceLoading(true);
+        try {
+          const response = await getMembershipPrice();
+          if (response?.success && response?.data?.value) {
+            const price = parseFloat(response.data.value);
+            if (!isNaN(price) && price > 0) {
+              setMembershipPrice(price);
+            }
+          } else {
+            console.error('Failed to load membership price:', response?.message);
+          }
+        } catch (error: any) {
+          console.error('Failed to load membership price:', error);
+        } finally {
+          setMembershipPriceLoading(false);
+        }
+      };
+      loadMembershipPrice();
   }, []);
 
-  // Load membership price on component mount
-  React.useEffect(() => {
-    const loadMembershipPrice = async () => {
-      setMembershipPriceLoading(true);
-      try {
-        const response = await getMembershipPrice();
-        if (response?.success && response?.data?.value) {
-          const price = parseFloat(response.data.value);
-          if (!isNaN(price) && price > 0) {
-            setMembershipPrice(price);
-          }
-        } else {
-          console.error('Failed to load membership price:', response?.message);
-        }
-      } catch (error: any) {
-        console.error('Failed to load membership price:', error);
-      } finally {
-        setMembershipPriceLoading(false);
-      }
-    };
-    loadMembershipPrice();
-  }, []);
 
   // Function to load states for a given country
   const loadStates = React.useCallback(async (countryId: number | string) => {
@@ -426,7 +424,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
       }
     } catch (error: any) {
       // Handle network/request errors
-      console.error('Coupon validation error:', error);
       const errorMessage =
         error?.response?.data?.message ||
         error?.response?.data?.error ||
@@ -439,47 +436,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
     } finally {
       setIsValidatingCoupon(false);
     }
-  };
-
-  // Convert date to DD-MM-YY format
-  const formatDateForAPI = (dateString: string): string => {
-    if (!dateString) return '';
-    // If date is already in DD-MM-YY format, return as is
-    if (dateString.includes('-') && dateString.length <= 8) {
-      return dateString;
-    }
-    // If date is from DatePicker (selectedDate), format it
-    if (selectedDate) {
-      const day = String(selectedDate.getDate()).padStart(2, '0');
-      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-      const year = String(selectedDate.getFullYear()).slice(-2);
-      return `${day}-${month}-${year}`;
-    }
-    // Try to parse other date formats
-    try {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = String(date.getFullYear()).slice(-2);
-      return `${day}-${month}-${year}`;
-    } catch {
-      return dateString;
-    }
-  };
-
-  // Get country ID from country value
-  const getCountryId = (countryValue: string): number => {
-    if (!countryValue) return 0;
-    // If countryValue is already a number (string), convert it
-    const numValue = parseInt(countryValue, 10);
-    if (!isNaN(numValue)) {
-      return numValue;
-    }
-    // Find country by name or value
-    const country = countries.find(
-      c => c.id.toString() === countryValue || c.country_name === countryValue,
-    );
-    return country?.id || 0;
   };
 
   const handleSubmit = async (values: MembershipRegPayload) => {
@@ -855,7 +811,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {(        {
+        {({
           values,
           errors: formikErrors,
           touched,
@@ -877,8 +833,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 
           return (
             <>
-           
-           
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={
@@ -936,8 +890,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   const apiError = isEmail ? apiErrors.email : isPhone ? apiErrors.phone : undefined;
                   const hasError = (touched[field] && formikErrors[field]) || apiError;
                   
-                  return (
-                  
+                  return (                  
                     <View key={field} style={globalStyles.fieldContainer}>
                       {/** RequiredAsterisk */}
                       <View style={{ flexDirection: 'row' }}>
@@ -1053,8 +1006,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     </Text>
                   )}
                 </View>
-
-           
 
          
                 {/** Country Dropdown */}                
@@ -1232,20 +1183,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   </View>
                 ))}
 
-                {/** Payment Mode Dropdown 
-                <Dropdown
-                  label="Payment Mode"
-                  value={values.paymentMode}
-                  options={membershipFormOptions.paymentModes}
-                  onSelect={(v) => setFieldValue('paymentMode', v)}
-                  error={
-                    touched.paymentMode && formikErrors.paymentMode
-                      ? formikErrors.paymentMode
-                      : undefined
-                  }
-                />*/}
-
-      
+    
 
                 {/** Coupon Code Section */}
                 <View style={styles.couponSection}>
@@ -1286,7 +1224,10 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                   </View>
                   {couponApplied && (
                     <Text style={styles.couponSuccess}>
-                      Coupon applied successfully!{couponDiscount > 0 ? ` Discount: ₹${couponDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : null}
+                      Coupon applied successfully!
+                      {couponDiscount > 0 && (
+                        <Text> Discount: ₹{couponDiscount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</Text>
+                      )}
                     </Text>
                   )}
                   {couponError && (
@@ -1303,9 +1244,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     </Text>
                   </View>
                 )}
-
-
-
 
               </ScrollView>
 
@@ -1336,11 +1274,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
         </View>
       </TouchableOpacity>
 
-
-
-
-
-         {/* Information Modal */}
+      {/* Information Modal */}
          <Modal
         visible={isModalVisible}
         transparent={true}
@@ -1439,7 +1373,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
             </ScrollView>
           </View>
         </View>
-      </Modal>
+         </Modal>
 
     </View>
 
@@ -1517,9 +1451,6 @@ const MembershipRegistrationForm: React.FC<Props> = ({
 };
 
 const styles = StyleSheet.create({
-
-
-
   container: {
     flex: 1,
     backgroundColor: colors.white,

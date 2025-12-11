@@ -24,15 +24,7 @@ export const getPaymentTransactionById = async (id: number | string) => {
 };
 
 
-export const getCountries = async () => {
-  const response = await api.get('v1/countries');
-  return response.data;
-};
 
-export const getStates = async (countryId: number) => {
-  const response = await api.get(`v1/countries/${countryId}/states`);
-  return response.data;
-};
 
   
 

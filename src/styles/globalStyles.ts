@@ -4,6 +4,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 export const colors = {
   primary: '#08265D', // Dark blue
   primaryLight: '#FFE610', // Slightly lighter blue
+  lightBlue: '#E1EBFF', // Light blue
   accent: '#ffeb3b', // Yellow
   white: '#ffffff',
   black: '#000000',
@@ -237,7 +238,7 @@ export const globalStyles = StyleSheet.create({
     paddingVertical:5,
     alignItems: 'flex-start',
     borderBottomWidth: 5,
-    borderBottomColor: 'transparent',
+    borderBottomColor: colors.primaryLight,
     borderRadius: 2,
   },
   tierTabActive: {

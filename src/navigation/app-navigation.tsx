@@ -29,6 +29,7 @@ import Profile from '../pages/profile/Profile';
 import ChangePassword from '../pages/profile/ChangePassword';
 import MyPayments from '../pages/payments/MyPayments';
 import MyPaymentsDetails from '../pages/payments/MyPaymentsDetails';
+import MyCertificates from '../pages/certificates/MyCertificates';
 import MyCards from '../pages/cards/MyCards';
 import ConferenceDetails from '../pages/conference/ConferenceDetails';
 import ConferenceVenue from '../pages/conference/ConferenceVenue';
@@ -75,8 +76,11 @@ function AppNavigation() {
   const {
     currentPage,
     selectedTier,
+    selectedTicket,
     selectedSession,
     selectedPayment,
+    conferencePaymentData,
+    conferenceRegistrationId,
     myConferenceSessions,
     membershipFormData,
     navigate,
@@ -99,6 +103,7 @@ function AppNavigation() {
     home: (
       <HomePage
         onNavigateToConference={navigate.chooseConferencePackage}
+        onNavigateToConferenceList={navigate.conferenceList}
         onLogout={handleLogout}
         onNavigateToLogin={navigate.login}
         onNavigateToMyConference={navigate.myConference}
@@ -133,10 +138,10 @@ function AppNavigation() {
       <ResidentialPackages
         onBack={navigate.chooseConferencePackage}
         onNavigateToHome={navigate.home}
-        onPackageSelect={(packageTitle, option) => {
+        onPackageSelect={(packageTitle, option, module_name, categoryId, event_id, module_id) => {
           console.log('Package selected:', packageTitle, option);
           // Navigate to conference form with selected package
-          navigate.conferenceForm();
+          navigate.conferenceForm(packageTitle, option.ticket, module_name, 1, 'member', event_id, module_id, categoryId);
         }}
         onMemberClick={() => {
           console.log('Member click');
@@ -160,9 +165,19 @@ function AppNavigation() {
     conferenceForm: (
       <ConferenceRegistrationForm
         registrationTier={selectedTier}
-        onBack={navigate.conference}
+        selectedTicket={selectedTicket}
+        onBack={() => {
+          // Navigate back based on is_residential value
+          if (selectedTicket?.is_residential === 1) {
+            navigate.residentialPackages();
+          } else {
+            navigate.conference();
+          }
+        }}
         onNavigateToHome={navigate.home}
-        onNavigateToConferencePayment={navigate.conferencePayment}
+        onNavigateToConferencePayment={(formData, paymentDetails) => {
+          navigate.conferencePayment(paymentDetails);
+        }}
       />
     ),
     conferencePayment: (
@@ -170,6 +185,10 @@ function AppNavigation() {
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
         onNavigateToQRCode={navigate.conferenceQrCode}
+        ticketInfo={conferencePaymentData?.ticketInfo}
+        userData={conferencePaymentData?.userData}
+        paymentData={conferencePaymentData?.paymentData}
+        registrationPayload={conferencePaymentData?.registrationPayload}
       />
     ),
     conferenceQrCode: (
@@ -177,6 +196,7 @@ function AppNavigation() {
         onBack={navigate.conferencePayment}
         onNavigateToHome={navigate.home}
         onNavigateToLogin={navigate.login}
+        registrationId={conferenceRegistrationId || undefined}
       />
     ),
     conferenceList: (
@@ -297,6 +317,7 @@ function AppNavigation() {
         onNavigateToHome={navigate.home}    
         onNavigateToMyPayments={navigate.myPayments}
         onNavigateToChangePassword={navigate.changePassword}
+        onNavigateToMyCertificates={navigate.myCertificates}
       />
     ),
     changePassword: (
@@ -318,6 +339,12 @@ function AppNavigation() {
         onBack={navigate.myPayments}
         onNavigateToHome={navigate.home}
         paymentData={selectedPayment}
+      />
+    ),
+    myCertificates: (
+      <MyCertificates
+        onBack={navigate.profile}
+        onNavigateToHome={navigate.home}
       />
     ),
     myCards: (

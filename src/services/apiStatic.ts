@@ -6,6 +6,36 @@ import {API_BASE_URL, ENABLE_API_LOGGING, STATIC_API_TOKEN} from '../utils/enums
 import {ToastService} from '../utils/service-handlers';
 
 
+/* ----------------------------------------------------------
+  STATIC TOKEN ENDPOINT LIST
+   All endpoints in this list will ALWAYS use STATIC_API_TOKEN
+----------------------------------------------------------- */
+const STATIC_TOKEN_ENDPOINTS = [
+  'v1/countries',
+  'v1/countries/{countryId}/states',
+  'v1/validate-coupon',
+  'v1/download-membership-invoice',
+  'v1/hear-about-sources',
+  'v1/check-membership-exists',
+  'v1/settings?title=membership_price',
+  'v1/membership-registration',
+  'v1/membership/create-order',
+  'v1/check-conference-exists',
+  'v1/workshops?type=morning',
+  'v1/workshops?type=afternoon',
+  'v1/categories',
+  'v1/tickets',
+  'v1/event-mappings',
+  'v1/conference-registration',
+  'v1/conference/create-order',
+ 'v1/download-conference-invoice',
+ 'v1/download-conference-qrcode'
+
+  // Add more API paths here as needed
+];
+
+
+
 const downloadApiLog = async (msg: string) => {
   if (!ENABLE_API_LOGGING) return;
   try {
@@ -68,7 +98,19 @@ api.interceptors.request.use(async config => {
     config.headers['Content-Type'] = 'application/json';
   }
 
- // Check if this is a login, forgot password, or reset password endpoint
+  /* 🔥 1️⃣ STATIC TOKEN ENDPOINTS: Force static token always */
+  const useStaticToken = STATIC_TOKEN_ENDPOINTS.some(path =>
+    config.url?.includes(path)
+  );
+
+  if (useStaticToken) {
+    config.headers.Authorization = `Bearer ${STATIC_API_TOKEN}`;
+    console.log('=== STATIC TOKEN ENDPOINT → Using STATIC token ===');
+    return config;
+  }
+    /* 🔥 1️⃣ STATIC TOKEN ENDPOINTS: Force static token always END */
+  
+  // Check if this is a login, forgot password, or reset password endpoint
   const isLoginEndpoint = config.url?.includes('v1/login') || config.url?.includes('/login');
   const isForgotPasswordEndpoint = config.url?.includes('v1/forgot-password') || config.url?.includes('/forgot-password');
   const isResetPasswordEndpoint = config.url?.includes('v1/reset-password') || config.url?.includes('/reset-password');

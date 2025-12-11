@@ -26,6 +26,7 @@ export type PageType =
   | 'changePassword'
   | 'myPayments'
   | 'myPaymentsDetails'
+  | 'myCertificates'
   | 'myCards'
   | 'conferenceDetails'
   | 'conferenceVenue'
@@ -44,11 +45,39 @@ export type PageType =
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>('home');
-  const [selectedTier, setSelectedTier] = useState<
-    'Regular' | 'Late Registration' | 'On Spot'
-  >('Regular');
+  const [selectedTier, setSelectedTier] = useState<string>('');
+  const [selectedTicket, setSelectedTicket] = useState<{
+    module_name?: string;
+    categoryName?: string;
+    ticket?: any;
+    is_residential?: number;
+    membershipType?: string;
+    event_id?: number;
+    module_id?: number;
+    category_id?: number;
+  } | null>(null);
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [conferencePaymentData, setConferencePaymentData] = useState<{
+    ticketInfo?: {
+      module_name?: string;
+      categoryName?: string;
+      ticketName?: string;
+    };
+    userData?: {
+      full_name?: string;
+      email?: string;
+      mobile?: string;
+    };
+    paymentData?: {
+      sub_total?: number;
+      grand_total?: number;
+      currency?: string;
+    };
+    registrationPayload?: any;
+    registrationId?: number;
+  } | null>(null);
+  const [conferenceRegistrationId, setConferenceRegistrationId] = useState<number | null>(null);
   const [myConferenceSessions, setMyConferenceSessions] = useState<string[]>(
     [],
   );
@@ -78,12 +107,50 @@ export function useNavigationManager() {
     chooseConferencePackage: () => setCurrentPage('chooseConferencePackage'),
     residentialPackages: () => setCurrentPage('residentialPackages'),
     conference: () => setCurrentPage('conference'),
-    conferenceForm: (tier?: 'Regular' | 'Late Registration' | 'On Spot') => {
-      setSelectedTier(tier || 'Regular');
+    conferenceForm: (categoryName?: string, ticket?: any, module_name?: string, is_residential?: number, membershipType?: string, event_id?: number, module_id?: number, category_id?: number) => {
+      // Accept dynamic category name - fully dynamic, no hardcoded values
+      setSelectedTier(categoryName || '');
+      setSelectedTicket({
+        module_name,
+        categoryName,
+        ticket,
+        is_residential,
+        membershipType,
+        event_id,
+        module_id,
+        category_id,
+      });
       setCurrentPage('conferenceForm');
     },
-    conferencePayment: () => setCurrentPage('conferencePayment'),
-    conferenceQrCode: () => setCurrentPage('conferenceQrCode'),
+    conferencePayment: (data?: {
+      ticketInfo?: {
+        module_name?: string;
+        categoryName?: string;
+        ticketName?: string;
+      };
+      userData?: {
+        full_name?: string;
+        email?: string;
+        mobile?: string;
+      };
+      paymentData?: {
+        sub_total?: number;
+        grand_total?: number;
+        currency?: string;
+      };
+      registrationPayload?: any;
+    }) => {
+      if (data) {
+        setConferencePaymentData(data);
+      }
+      setCurrentPage('conferencePayment');
+    },
+    conferenceQrCode: (registrationId?: number) => {
+      if (registrationId) {
+        setConferenceRegistrationId(registrationId);
+      }
+      setCurrentPage('conferenceQrCode');
+    },
     conferenceList: () => setCurrentPage('conferenceList'),
     sessionDetails: (eventData: any) => {
       const workshopFromTitle = eventData.title.match(/Workshop\s*\d+/)?.[0];
@@ -159,6 +226,7 @@ export function useNavigationManager() {
       if (paymentData) setSelectedPayment(paymentData);
       setCurrentPage('myPaymentsDetails');
     },
+    myCertificates: () => setCurrentPage('myCertificates'),
     myCards: () => setCurrentPage('myCards'),
     conferenceDetails: () => setCurrentPage('conferenceDetails'),
     conferenceVenue: () => setCurrentPage('conferenceVenue'),
@@ -191,8 +259,11 @@ export function useNavigationManager() {
   return {
     currentPage,
     selectedTier,
+    selectedTicket,
     selectedSession,
     selectedPayment,
+    conferencePaymentData,
+    conferenceRegistrationId,
     myConferenceSessions,
     membershipFormData,
     navigate,

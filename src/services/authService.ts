@@ -473,16 +473,6 @@ export const ChangePassword = async (payload: {
   return response.data;
 };
 
-export const CreateOrderPayment = async (payload: {
-  amount: number;
-  currency: string;
-  first_name: string;
-  last_name: string;
-  email_id: string;
-  phone_number: string;
-}) => {
-  const response = await api.post('v1/membership/create-order', payload);
-  return response.data;
-};
+
 
 export default new AuthService();

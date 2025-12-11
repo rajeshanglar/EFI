@@ -182,12 +182,12 @@ export const PreCongressWorkshopsContent: React.FC<PreCongressWorkshopsContentPr
 
   return (
     <>
-
+ <View style={styles.container}>
       {/* Registration Tier Tabs */}
       <View style={globalStyles.tierTabs}>
-        <TouchableOpacity
+      <TouchableOpacity
           style={[
-            globalStyles.tierTab,
+            globalStyles.tierTab,{backgroundColor: colors.primaryLight},
             registrationTier === 'regular' && globalStyles.tierTabActive,
           ]}
           onPress={() => onRegistrationTierChange('regular')}
@@ -268,7 +268,7 @@ export const PreCongressWorkshopsContent: React.FC<PreCongressWorkshopsContentPr
 
 
       <ScrollView
-      style={styles.container}
+    
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
@@ -312,7 +312,7 @@ export const PreCongressWorkshopsContent: React.FC<PreCongressWorkshopsContentPr
   <Text style={styles.noteText}>
     <Text style={styles.noteTextBold}>Note:</Text> Participants can select only one workshop per session (one in the morning and one in the afternoon).
   </Text>
-</View>
+      </View>
 
         <Text style={styles.sectionTitle}>Pre-Congress Workshops - Morning session</Text>
         <ScrollView
@@ -341,6 +341,7 @@ export const PreCongressWorkshopsContent: React.FC<PreCongressWorkshopsContentPr
         </ScrollView>
       </View>
     </ScrollView>
+    </View>
     </>
   );
 };
@@ -363,13 +364,7 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.04,
     fontFamily: Fonts.Bold,
     color: colors.black,
-  },
-  tierTabs: {
-    flexDirection: 'row',
-    backgroundColor: colors.primaryLight,
-    paddingHorizontal: spacing.md,
-    paddingTop: 0,
-  },
+  },  
 
   container: {
     flex: 1,

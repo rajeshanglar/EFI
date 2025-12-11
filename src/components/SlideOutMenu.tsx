@@ -45,6 +45,7 @@ import {
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
 import { Screen } from 'react-native-screens';
+import { useAuth } from '../contexts/AuthContext';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -134,7 +135,13 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   isAuthenticated = false, // Default to false if not provided
   socialIcons = defaultSocialIcons, // Use provided social icons or default
 }) => {
+  const { user } = useAuth();
   const translateX = useRef(new Animated.Value(screenWidth)).current; // start off-screen right
+
+  // Check if user has conference registrations
+  const hasConference = isAuthenticated && user?.linked_registrations?.conference && 
+    Array.isArray(user.linked_registrations.conference) && 
+    user.linked_registrations.conference.length > 0;
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -177,7 +184,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
       >
         <View style={styles.menuIconContainer}>
           <View style={styles.menuIconStyle}>
-            <IconComponent size={26} color={colors.primary} />
+            <IconComponent size={28} color={colors.primary} />
           </View>
         </View>
         <Text style={styles.menuItemText}>{item.title}</Text>
@@ -195,7 +202,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
       >
         <View style={styles.conferenceIconStyle}>
           <View style={styles.conferenceIconContainer}>
-            <IconComponent size={20} color={colors.primaryLight} />
+            <IconComponent size={25} color={colors.primaryLight} />
           </View>
         </View>
         <Text style={styles.conferenceItemText}>{item.title}</Text>
@@ -220,7 +227,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
                 onClose();
               }}>
               <View style={styles.leftIcon}>
-                <WhiteUserIcon size={20} color={colors.white} />
+                <WhiteUserIcon size={22} color={colors.white} />
               </View>
               <Text style={styles.leftIconText}>PROFILE</Text>
             </TouchableOpacity>
@@ -281,11 +288,13 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
             style={styles.menuContainer}
             showsVerticalScrollIndicator={false}
           >
-            {/* <ConferenceAccess
-              styles={styles}
-              conferenceAccessItems={conferenceAccessItems}
-              renderConferenceItem={renderConferenceItem}
-            /> */}
+           {hasConference && (
+             <ConferenceAccess
+                styles={styles}
+                conferenceAccessItems={conferenceAccessItems}
+                renderConferenceItem={renderConferenceItem}
+              />
+           )}
             <View style={styles.menuGrid}>{menuItems.map(renderMenuItem)}</View>
           </ScrollView>
         </ImageBackground>
@@ -394,8 +403,8 @@ const styles = StyleSheet.create({
 
   conferenceIconStyle: {
     backgroundColor: 'rgba(93, 92, 91, 0.36)',
-    width: screenWidth * 0.14,
-    height: screenWidth * 0.14,
+    width: screenWidth * 0.15,
+    height: screenWidth * 0.15,
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',

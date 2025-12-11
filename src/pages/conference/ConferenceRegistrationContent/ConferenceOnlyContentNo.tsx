@@ -16,7 +16,6 @@ interface ConferenceOnlyContentProps {
 
 export const ConferenceOnlyContent: React.FC<ConferenceOnlyContentProps> = ({
   membershipType,
-  onMembershipTypeChange,
   registrationTier,
   onRegistrationTierChange,
   onCategorySelect,

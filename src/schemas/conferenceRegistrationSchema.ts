@@ -12,11 +12,11 @@ export const generateCaptcha = () => {
 // Yup validation schema for conference registration
 export const conferenceRegistrationSchema = (captcha: string) =>
   yup.object().shape({
-    fullName: yup
+    full_name: yup
       .string()
       .required('Full name is required')
-      .min(3, 'Full name must be at least 3 characters')
-      .max(100, 'Full name must not exceed 100 characters')
+      .min(2, 'Full name must be at least 2 characters')
+      .max(50, 'Full name must not exceed 50 characters')
       .trim(),
     
     email: yup
@@ -26,10 +26,10 @@ export const conferenceRegistrationSchema = (captcha: string) =>
       .trim()
       .lowercase(),
     
-    mobileNo: yup
+    mobile: yup
       .string()
       .required('Mobile number is required')
-      .matches(/^\d{10}$/, 'Mobile number must be exactly 10 digits')
+      .matches(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/, 'Invalid phone number format')
       .trim(),
     
     institute: yup
@@ -47,7 +47,7 @@ export const conferenceRegistrationSchema = (captcha: string) =>
     address: yup
       .string()
       .required('Address is required')
-      .min(10, 'Address must be at least 10 characters')
+      .min(10, 'Address must be at least 4 characters')
       .trim(),
     
     city: yup
@@ -56,85 +56,51 @@ export const conferenceRegistrationSchema = (captcha: string) =>
       .min(2, 'City must be at least 2 characters')
       .trim(),
     
-    pinCode: yup
+    pincode: yup
       .string()
       .required('Pin code is required')
       .matches(/^\d{6}$/, 'Pin code must be exactly 6 digits')
       .trim(),
     
     state: yup
-      .string()
-      .required('State is required'),
+      .mixed()
+      .optional()
+      .nullable(),
     
-    country: yup
-      .string()
-      .required('Country is required'),
+      country: yup
+      .mixed()
+      .required('Country is required')
+      .test('is-valid-country', 'Please select a country', function(value) {
+        return value !== 0 && value !== '' && value != null;
+      }),
     
+   
     category: yup
-      .string()
-      .required('Category is required'),
+      .mixed()
+      .test('is-valid-category', 'Please select a category', function(value) {
+        return value !== 0 && value !== '' && value != null && value !== '0';
+      }),
     
-    morningWorkshop: yup
-      .string()
-      .optional(),
+    morning_workshop: yup
+      .mixed()
+      .required('Morning Workshop is required')
+      .test('is-valid-workshop', 'Please select a morning workshop', function(value) {
+        return value !== 0 && value !== '' && value != null && value !== '0';
+      }),
     
-    afternoonWorkshop: yup
-      .string()
-      .optional(),
-    
-    paymentMode: yup
-      .string()
-      .required('Payment mode is required'),
-    
-    // captcha: yup
-    //   .string()
-    //   .required('CAPTCHA is required')
-    //   .test('captcha-match', 'Invalid CAPTCHA', function(value) {
-    //     return value?.toUpperCase().trim() === captcha.toUpperCase();
-    //   }),
+    afternoon_workshop: yup
+      .mixed()
+      .required('Afternoon Workshop is required')
+      .test('is-valid-workshop', 'Please select a afternoon workshop', function(value) {
+        return value !== 0 && value !== '' && value != null && value !== '0';
+      }),
+        
+    captcha: yup
+      .string()     
+      .test('captcha-match', 'Invalid CAPTCHA', function(value) {
+        return value?.toUpperCase().trim() === captcha.toUpperCase();
+      }),
   });
 
-// Export dropdown options
-export const conferenceFormOptions = {
-  countries: [
-    { label: 'India', value: 'india' },
-    { label: 'USA', value: 'usa' },
-    { label: 'UK', value: 'uk' },
-    { label: 'Canada', value: 'canada' },
-  ],
-  states: [
-    { label: 'Maharashtra', value: 'maharashtra' },
-    { label: 'Delhi', value: 'delhi' },
-    { label: 'Karnataka', value: 'karnataka' },
-    { label: 'Tamil Nadu', value: 'tamil_nadu' },
-    { label: 'Gujarat', value: 'gujarat' },
-  ],
-  categories: [
-    { label: 'EFI Member - Standard (National)', value: 'efi_member_national' },
-    {
-      label: 'EFI Member - PGs/Fellows (National)',
-      value: 'efi_member_pg_national',
-    },
-    {
-      label: 'Non-EFI Member - Standard (National)',
-      value: 'non_efi_national',
-    },
-    {
-      label: 'Non-EFI Member - PGs/Fellows (National)',
-      value: 'non_efi_pg_national',
-    },
-    { label: 'International - Standard', value: 'international_standard' },
-    { label: 'International - PGs/Fellows', value: 'international_pg' },
-  ],
-  workshops: [
-    { label: 'Workshop 1: Advanced Techniques', value: 'workshop_1' },
-    { label: 'Workshop 2: Case Studies', value: 'workshop_2' },
-    { label: 'Workshop 3: Hands-on Training', value: 'workshop_3' },
-    { label: 'None', value: 'none' },
-  ],
-  paymentModes: [
-    { label: 'Online Payment', value: 'online' },
-    { label: 'UPI', value: 'upi' },
-  ],
-};
+
 
