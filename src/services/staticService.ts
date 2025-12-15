@@ -110,6 +110,8 @@ export const GetConferenceCategories = async () => {
     return response.data;
   };
 
+
+  // Conference Registration Details Used in Profile.tsx
   export const ConferenceRegistration = async (payload: ConferenceRegPayload) => {
     const response = await apiStatic.post('v1/conference-registration', payload);
     return response.data;

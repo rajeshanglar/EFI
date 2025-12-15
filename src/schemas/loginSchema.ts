@@ -24,7 +24,7 @@ export const loginSchema = (captcha: string) =>
       .required('CAPTCHA is required')
       .length(6, 'CAPTCHA must be exactly 6 characters')
       .test('captcha-match', 'Invalid CAPTCHA. Please try again.', function(value) {
-        return value?.toUpperCase().trim() === captcha.toUpperCase();
+        return value?.trim() === captcha;
       }),
     
     device_id: yup.string().optional(),

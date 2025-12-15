@@ -32,6 +32,7 @@ import MyPaymentsDetails from '../pages/payments/MyPaymentsDetails';
 import MyCertificates from '../pages/certificates/MyCertificates';
 import MyCards from '../pages/cards/MyCards';
 import ConferenceDetails from '../pages/conference/ConferenceDetails';
+import ProfileConferenceDetails from '../pages/profile/ConferenceDetails';
 import ConferenceVenue from '../pages/conference/ConferenceVenue';
 import EFIOutreachPrograms from '../pages/outreach-programs/EFIOutreachPrograms';
 import AboutUs from '../pages/about-us/AboutUs';
@@ -318,6 +319,13 @@ function AppNavigation() {
         onNavigateToMyPayments={navigate.myPayments}
         onNavigateToChangePassword={navigate.changePassword}
         onNavigateToMyCertificates={navigate.myCertificates}
+        onNavigateToConferenceDetails={navigate.profileConferenceDetails}
+      />
+    ),
+    profileConferenceDetails: (
+      <ProfileConferenceDetails
+        onBack={navigate.profile}
+        onNavigateToHome={navigate.home}
       />
     ),
     changePassword: (

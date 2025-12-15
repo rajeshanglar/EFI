@@ -7,7 +7,13 @@ import { formatPrice } from '../../../utils/currencyFormatter';
 import { formatDate, DATE_PREFIXES } from '../../../utils/dateFormatter';
 import { MEMBERSHIP_TYPES, Ticket, Category, Module } from '../../../utils/conferenceTypes';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Category IDs for Pre-Congress / Pre-Conference Workshops (view-only)
+// TODO: Populate with actual category IDs from the API response
+// const PRE_CONGRESS_CATEGORY_IDS: number[] = [
+
+// ];
 
 interface DynamicModuleContentProps {
   module: Module | null;
@@ -106,41 +112,55 @@ export const DynamicModuleContent: React.FC<DynamicModuleContentProps> = ({
       {/* Registration Options Cards */}
       <View style={styles.cardContainer}>
         {tickets.map((ticket) => {
+          console.log('activeCategory', module);
           const price = membershipType === MEMBERSHIP_TYPES.MEMBER 
             ? ticket.member_price 
             : ticket.non_member_price;
 
+          // Check if this category is a Pre-Congress/Pre-Conference Workshop (view-only)
+          // Priority: ID-based (recommended). Fallback: name contains "pre-conference"/"pre congress".
+          const categoryNameLower = activeCategory?.name?.toLowerCase() || '';
+          const isPreConferenceWorkshop = module?.id == 2 ? true : false;
+
+          // Use View for Pre-Conference Workshop tickets, TouchableOpacity for others
+          const CardComponent = isPreConferenceWorkshop ? View : TouchableOpacity;
+
           return (
-            <TouchableOpacity
+            <CardComponent
               key={ticket.id}
               style={[styles.card, styles.cardBottom]}
-              onPress={() => {
-                console.log('NonResidentialPackages - Ticket Details:', {
-                  ticketId: ticket.id,
-                  ticketName: ticket.name,
-                  categoryName: activeCategory?.name || '',
-                  memberPrice: ticket.member_price,
-                  nonMemberPrice: ticket.non_member_price,
-                  currency: ticket.currency,
-                  categoryTillDate: ticket.category_till_date,
-                  categoryAfterDate: ticket.category_after_date,
-                  mappingId: ticket.mapping_id,
-                  sortOrder: ticket.sort_order,
-                  selectedPrice: price,
-                  membershipType: membershipType,
-                  fullTicket: ticket,
-                });
-                onCategorySelect(activeCategory?.name || '', ticket);
-              }}
+              {...(isPreConferenceWorkshop ? {} : {
+                onPress: () => {
+                  console.log('NonResidentialPackages - Ticket Details:', {
+                    ticketId: ticket.id,
+                    ticketName: ticket.name,
+                    categoryName: activeCategory?.name || '',
+                    memberPrice: ticket.member_price,
+                    nonMemberPrice: ticket.non_member_price,
+                    currency: ticket.currency,
+                    categoryTillDate: ticket.category_till_date,
+                    categoryAfterDate: ticket.category_after_date,
+                    mappingId: ticket.mapping_id,
+                    sortOrder: ticket.sort_order,
+                    selectedPrice: price,
+                    membershipType: membershipType,
+                    fullTicket: ticket,
+                  });
+                  onCategorySelect(activeCategory?.name || '', ticket);
+                }
+              })}
             >
               <View style={styles.optionCard}>
                 <Text style={styles.optionText}>{ticket.name}</Text>
                 <View style={styles.priceArrowContainer}>
                   <Text style={styles.priceText}>{formatPrice(price, ticket.currency)}</Text>
-                  <CardRightArrowIcon size={16} color={colors.darkGray} />
+                  {/* Hide arrow for Pre-Conference Workshop tickets (view-only) */}
+                  {!isPreConferenceWorkshop && (
+                    <CardRightArrowIcon size={16} color={colors.darkGray} />
+                  )}
                 </View>
               </View>
-            </TouchableOpacity>
+            </CardComponent>
           );
         })}
       </View>
@@ -168,7 +188,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   optionCard: {
-    padding: spacing.md,
+    paddingVertical:screenHeight * 0.015,
+    paddingHorizontal:screenWidth * 0.03,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     justifyContent: 'space-between',

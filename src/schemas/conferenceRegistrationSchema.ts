@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 // Generate CAPTCHA helper
 export const generateCaptcha = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = '0123456789';
   return Array.from(
     { length: 6 },
     () => chars[Math.floor(Math.random() * chars.length)],
@@ -98,7 +98,7 @@ export const conferenceRegistrationSchema = (captcha: string) =>
     captcha: yup
       .string()     
       .test('captcha-match', 'Invalid CAPTCHA', function(value) {
-        return value?.toUpperCase().trim() === captcha.toUpperCase();
+        return value?.trim() === captcha;
       }),
   });
 

@@ -37,6 +37,15 @@ const MEMBERSHIP_LABELS = {
   [MEMBERSHIP_TYPES.NON_MEMBER]: 'Non EFI Members',
 };
 
+// Module IDs for Conference Only and Pre-Congress Workshop
+// These should be configured based on your API data
+// TODO: Update these IDs based on actual module IDs from API
+const ALLOWED_MODULE_IDS: number[] = [
+  // Conference Only module ID
+  // Pre-Congress Workshop module ID
+  // Add specific module IDs here
+];
+
 // UI text constants - can be made configurable or fetched from API if needed
 const UI_TEXTS = {
   PAGE_TITLE: 'Non-Residential Packages',
@@ -96,8 +105,13 @@ const NonResidentialPackages: React.FC<NonResidentialPackagesProps> = ({
         });
         setEventId(eventData.id);
 
-        // Filter and transform modules for non-residential packages
-        const nonResidentialModules = eventData.modules
+        // Filter modules by allowed module IDs (Conference Only and Pre-Congress Workshop)
+        // Then filter for non-residential categories only
+        const filteredModules = ALLOWED_MODULE_IDS.length > 0
+          ? eventData.modules.filter((module) => ALLOWED_MODULE_IDS.includes(module.id))
+          : eventData.modules;
+
+        const nonResidentialModules = filteredModules
           .map((module) => ({
             ...module,
             categories: module.categories.filter((cat) => cat.is_residential === 0),
@@ -292,7 +306,7 @@ const NonResidentialPackages: React.FC<NonResidentialPackagesProps> = ({
         onPress={() => setIsModalVisible(true)}
       >
         <View style={globalStyles.floatingInfoButtonInner}>
-          <InformationIcon size={50} />
+          <InformationIcon size={45} />
         </View>
       </TouchableOpacity>
 

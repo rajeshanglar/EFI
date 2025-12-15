@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <clipPath id="clip-workshop-w-icon">
+      <rect width="48" height="48"/>
+    </clipPath>
+  </defs>
+  <g id="workshop-w-icon" clip-path="url(#clip-workshop-w-icon)">
+    <g id="noun-next-8119075" transform="translate(0 6.447)">
+      <path id="Path_29642" data-name="Path 29642" d="M5.649,48.418c3.228-7.151,9.248-11.325,16.61-11.325h7.266a1.23,1.23,0,0,1,1.23,1.23v8.423l.114.06,17.848-15.4-.2-.212,0,0L30.866,16l-.112.126v8.355a1.23,1.23,0,0,1-1.23,1.23l-6.617,0c-12.094,0-17.235,12.541-17.259,22.7Zm8.065-6.27a17.144,17.144,0,0,0-5.854,7.336,2.445,2.445,0,0,1-4.672-1c0-11.269,5.868-25.232,19.721-25.232h5.385V16.133a2.564,2.564,0,0,1,4.081-2.075L50.116,29.331a2.546,2.546,0,0,1,0,4.152L32.374,48.755l0,0a2.564,2.564,0,0,1-4.081-2.075l0-7.124H22.258a14.979,14.979,0,0,0-8.545,2.593Z" transform="translate(-3.187 -13.541)" fill="#fff" fill-rule="evenodd"/>
+    </g>
+  </g>
+</svg>

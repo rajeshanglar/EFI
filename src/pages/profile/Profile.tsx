@@ -34,6 +34,7 @@ interface ProfileProps {
   onNavigateToEditProfile?: () => void;
   onNavigateToChangePassword?: () => void;
   onNavigateToMyCertificates?: () => void;
+  onNavigateToConferenceDetails?: () => void;
 }
 
 const Profile: React.FC<ProfileProps> = ({
@@ -43,6 +44,7 @@ const Profile: React.FC<ProfileProps> = ({
   onNavigateToEditProfile,
   onNavigateToChangePassword,
   onNavigateToMyCertificates,
+  onNavigateToConferenceDetails,
 }) => {
   // Get user data from AuthContext
   const { user } = useAuth();
@@ -163,70 +165,25 @@ const Profile: React.FC<ProfileProps> = ({
           </View>
     
         </View>
-
-  
-
-        {/* Conference Details Section */}
-        {hasConference && (
-          <View style={styles.registrationSection}>
-            
-            {conferenceRegistrations.map((conference: any, index: number) => (
-              <View key={index} style={styles.registrationCard}>
-                <View style={styles.sectionHeader}>
-              <CongressIcon size={24} color={colors.primary} />
-              <Text style={styles.sectionTitle}>Conference Details</Text>
-            </View>
-
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Serial Number:</Text>
-                  <Text style={styles.registrationValue}>{conference.serial_number || 'N/A'}</Text>
-                </View>
-               
-               
-               
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Event:</Text>
-                  <Text style={styles.registrationValue}>{conference.event_name || 'N/A'}</Text>
-                </View>
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Module:</Text>
-                  <Text style={styles.registrationValue}>{conference.module_name || 'N/A'}</Text>
-                </View>
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Category:</Text>
-                  <Text style={styles.registrationValue}>{conference.category_name || 'N/A'}</Text>
-                </View>
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Ticket:</Text>
-                  <Text style={styles.registrationValue}>{conference.ticket_name || 'N/A'}</Text>
-                </View>
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Member Type:</Text>
-                  <Text style={styles.registrationValue}>{conference.member_type || conference.efi_type || 'N/A'}</Text>
-                </View>
-               
-               
-            
-                <View style={styles.registrationRow}>
-                  <Text style={styles.registrationLabel}>Status:</Text>
-                  <Text style={[styles.registrationValue, styles.statusText, conference.status === 1 ? styles.statusActive : styles.statusInactive]}>
-                    {conference.status_name || (conference.status === 1 ? 'Active' : 'Inactive')}
-                  </Text>
-                </View>
-                {conference.created_on && (
-                  <View style={styles.registrationRow}>
-                    <Text style={styles.registrationLabel}>Created On:</Text>
-                    <Text style={styles.registrationValue}>{conference.created_on}</Text>
-                  </View>
-                )}
-              </View>
-            ))}
-          </View>
-        )}
-
+   
         {/* Navigation Items */}
         <View style={styles.navigationItems}>
           {/* My Certificates */}
+
+          {hasConference && (
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={onNavigateToConferenceDetails}
+            activeOpacity={0.7}
+          >
+            <View style={styles.navItemLeft}>
+              <CongressIcon size={24} color={colors.primary} />
+              <Text style={styles.navItemText}>Conference Details</Text>
+            </View>
+            <CardRightArrowIcon size={20} color={colors.primary} />
+          </TouchableOpacity>
+          )}
+          
           <TouchableOpacity
             style={styles.navItem}
             onPress={onNavigateToMyCertificates}
@@ -305,7 +262,7 @@ const styles = StyleSheet.create({
 
   profileCard: {
     backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.sm,
     padding: spacing.lg,
     marginHorizontal: spacing.md,
     marginTop:70,
@@ -422,7 +379,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.sm,
     padding: spacing.md,
     marginBottom: spacing.md,
     shadowColor: colors.black,

@@ -1640,7 +1640,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                       placeholderTextColor={colors.gray}
                       value={values.captcha}
                       onChangeText={v => {
-                        setFieldValue('captcha', v.toUpperCase());
+                        setFieldValue('captcha', v);
                         // Clear error when user starts typing
                         if (formikErrors.captcha) {
                           setFieldError('captcha', undefined);
@@ -1648,7 +1648,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                       }}
                       onBlur={handleBlur('captcha')}
                       maxLength={6}
-                      autoCapitalize="characters"
+                      keyboardType="numeric"
                     />
                     <TouchableOpacity
                       onPress={() => {

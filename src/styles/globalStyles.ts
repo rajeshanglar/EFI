@@ -889,7 +889,7 @@ modalInfoBoldText: {
 
 floatingInfoButton: {
   position: 'absolute',
-  bottom: 100,
+  bottom: 70,
   right: 20,
   zIndex: 10,
 },

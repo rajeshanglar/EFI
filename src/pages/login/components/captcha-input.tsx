@@ -25,8 +25,9 @@ const CaptchaInput: React.FC<Props> = React.memo(
           placeholderTextColor={colors.gray}
           value={captcha}
           onChangeText={setCaptcha}
-          autoCapitalize="characters"
+          keyboardType="numeric"
           maxLength={6}
+          
         />
          <TouchableOpacity style={styles.captchaRefresh} onPress={onRefresh}>
           <RefreshIcon size={screenWidth * 0.043} color={colors.primary} />

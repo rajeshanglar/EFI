@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     marginBottom: 0,
     position: 'relative',
-    borderBottomLeftRadius: borderRadius.xl,
-    borderBottomRightRadius: borderRadius.xl,
+    borderBottomLeftRadius: borderRadius.sm,
+    borderBottomRightRadius: borderRadius.sm,
   },
   LoginLogoContainer: {
     alignItems: 'center',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 
   loginCard: {
     backgroundColor: colors.white,
-    borderRadius: borderRadius.xl,
+    borderRadius: borderRadius.sm,
 
     padding: spacing.md,
     marginTop: spacing.md,

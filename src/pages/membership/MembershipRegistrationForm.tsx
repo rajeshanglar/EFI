@@ -831,6 +831,19 @@ const MembershipRegistrationForm: React.FC<Props> = ({
             }
           }, [apiErrors.email, apiErrors.phone, setFieldTouched]);
 
+          // Set India as default country when countries are loaded
+          React.useEffect(() => {
+            if (countries.length > 0 && values.country === 0) {
+              const india = countries.find(
+                country => country.country_name.toLowerCase() === 'india'
+              );
+              if (india) {
+                setFieldValue('country', india.id.toString());
+                loadStates(india.id);
+              }
+            }
+          }, [countries, values.country, setFieldValue, loadStates]);
+
           return (
             <>
               <ScrollView
