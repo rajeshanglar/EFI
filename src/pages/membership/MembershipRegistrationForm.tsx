@@ -1113,8 +1113,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     value={values.pin_code || ''}
                     onChangeText={handleChange('pin_code')}
                     onBlur={handleBlur('pin_code')}
-                    keyboardType="number-pad"
-                    maxLength={6}
+                    keyboardType="number-pad"                   
                   />
                   {touched.pin_code && (formikErrors as any).pin_code && (
                     <Text style={globalStyles.fieldErrorText}>

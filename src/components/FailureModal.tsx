@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Dimensions, Platform } from 'react-native';
 import { colors, spacing, borderRadius, Fonts } from '../styles/globalStyles';
 import { GradientButton } from './GradientButton';
 
@@ -11,6 +11,7 @@ interface FailureModalProps {
   onClose: () => void;
   icon?: React.ReactNode;
   instructionText?: string;
+  disableOverlayClose?: boolean;
 }
 
 export const FailureModal: React.FC<FailureModalProps> = ({
@@ -19,18 +20,24 @@ export const FailureModal: React.FC<FailureModalProps> = ({
   onClose,
   icon,
   instructionText,
+  disableOverlayClose = false,
 }) => {
+  const OverlayComponent = disableOverlayClose ? View : TouchableOpacity;
+  const overlayProps = disableOverlayClose 
+    ? {} 
+    : { activeOpacity: 1, onPress: onClose };
+
   return (
     <Modal
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={disableOverlayClose ? () => {} : onClose}
+      hardwareAccelerated={true}
     >
-      <TouchableOpacity
+      <OverlayComponent
         style={styles.overlay}
-        activeOpacity={1}
-        onPress={onClose}
+        {...overlayProps}
       >
         <View
           style={styles.container}
@@ -62,7 +69,7 @@ export const FailureModal: React.FC<FailureModalProps> = ({
             style={styles.buttonContainer}
           />
         </View>
-      </TouchableOpacity>
+      </OverlayComponent>
     </Modal>
   );
 };

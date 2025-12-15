@@ -22,6 +22,7 @@ interface ConferencePaymentDetailsProps {
     module_name?: string;
     categoryName?: string;
     ticketName?: string;
+    membershipType?: string;
   };
   userData?: {
     full_name?: string;
@@ -29,9 +30,13 @@ interface ConferencePaymentDetailsProps {
     mobile?: string;
   };
   paymentData?: {
+    ticket_amount?: number;
+    workshop_amount?: number;
     sub_total?: number;
+    gst_amount?: number;
     grand_total?: number;
     currency?: string;
+    tax?: number;
   };
   registrationPayload?: ConferenceRegPayload;
 }
@@ -557,6 +562,13 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
       >
         <View style={styles.userInfoContainer}>
           {/* Ticket Information */}
+          {ticketInfo?.membershipType && (
+            <View style={styles.userInfoRow}>
+              <Text style={styles.userLabel}>Membership</Text>
+              <Text style={styles.userValue}>{ticketInfo.membershipType}</Text>
+            </View>
+          )}
+
           {ticketInfo?.module_name && (
             <View style={styles.userInfoRow}>
               <Text style={styles.userLabel}>Module</Text>
@@ -611,18 +623,25 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
         <View style={styles.paymentSection}>
           <Text style={styles.paymentTitle}>Payment Information</Text>
 
-          {/* Total Amount */}
-          {paymentData?.sub_total !== undefined && (
+          {/* Ticket Price */}
+          {paymentData?.ticket_amount !== undefined && (
             <View style={styles.paymentRow}>
-              <Text style={styles.paymentLabel}>Total Amount</Text>
+              <Text style={styles.paymentLabel}>Ticket Price</Text>
               <Text style={styles.paymentValue}>
-                {formatPrice(paymentData.sub_total, paymentData.currency || '')}
+                {formatPrice(paymentData.ticket_amount, paymentData.currency || '')}
               </Text>
             </View>
           )}
 
-          {/* Divider */}
-          <View style={styles.divider} />
+          {/* Workshop Price */}
+          {paymentData?.workshop_amount !== undefined && paymentData.workshop_amount > 0 && (
+            <View style={styles.paymentRow}>
+              <Text style={styles.paymentLabel}>Workshop Price</Text>
+              <Text style={styles.paymentValue}>
+                {formatPrice(paymentData.workshop_amount, paymentData.currency || '')}
+              </Text>
+            </View>
+          )}
 
           {/* Sub Total */}
           {paymentData?.sub_total !== undefined && (
@@ -633,6 +652,21 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
               </Text>
             </View>
           )}
+
+          {/* GST Amount */}
+          {paymentData?.gst_amount !== undefined && paymentData.gst_amount > 0 && (
+            <View style={styles.paymentRow}>
+              <Text style={styles.paymentLabel}>
+                GST{paymentData?.tax !== undefined && paymentData.tax > 0 ? ` ${paymentData.tax}%` : ''}
+              </Text>
+              <Text style={styles.paymentValue}>
+                {formatPrice(paymentData.gst_amount, paymentData.currency || '')}
+              </Text>
+            </View>
+          )}
+
+          {/* Divider */}
+          <View style={styles.divider} />
 
           {/* Grand Total */}
           {paymentData?.grand_total !== undefined && (
@@ -734,20 +768,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-
-    paddingBottom: spacing.sm,
+    paddingBottom:0,
   },
   userLabel: {
     fontSize: screenWidth * 0.036,
     fontFamily: Fonts.Medium,
     color: colors.primaryLight,
-    width:Dimensions.get('window').width * 0.25,
+    width:Dimensions.get('window').width * 0.28,
     
   },
   userValue: {
     fontSize: screenWidth * 0.036,
     fontFamily: Fonts.SemiBold,
     color: colors.primaryLight,
+    textTransform: 'capitalize',
    
     textAlign: 'left',
   },

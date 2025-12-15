@@ -59,7 +59,7 @@ export const conferenceRegistrationSchema = (captcha: string) =>
     pincode: yup
       .string()
       .required('Pin code is required')
-      .matches(/^\d{6}$/, 'Pin code must be exactly 6 digits')
+      // .matches(/^\d{6}$/, 'Pin code must be exactly 6 digits')
       .trim(),
     
     state: yup

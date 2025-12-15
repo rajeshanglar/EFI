@@ -182,7 +182,7 @@ function AppNavigation() {
     ),
     conferencePayment: (
       <ConferencePaymentDetails
-        onBack={navigate.home}
+        onBack={navigate.chooseConferencePackage}
         onNavigateToHome={navigate.home}
         onNavigateToQRCode={navigate.conferenceQrCode}
         ticketInfo={conferencePaymentData?.ticketInfo}

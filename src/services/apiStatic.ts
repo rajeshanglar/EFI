@@ -29,7 +29,11 @@ const STATIC_TOKEN_ENDPOINTS = [
   'v1/conference-registration',
   'v1/conference/create-order',
  'v1/download-conference-invoice',
- 'v1/download-conference-qrcode'
+ 'v1/download-conference-qrcode',
+ 'v1/conference/send-efi-member-verification-otp',
+ 'v1/conference/verify-efi-member-otp',
+' v1/calculate-conference-price'
+
 
   // Add more API paths here as needed
 ];

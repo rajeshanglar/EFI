@@ -15,7 +15,7 @@ import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { getPaymentTransactionById } from '../../services/commonService';
-import { DownloadMembershipInvoice } from '../../services/staticService';
+import { DownloadMembershipInvoice, DownloadConferenceInvoice } from '../../services/staticService';
 import { ToastService } from '../../utils/service-handlers';
 import { DownloadWhiteIcon } from '../../components/icons';
 import ReactNativeBlobUtil from 'react-native-blob-util';
@@ -277,7 +277,13 @@ const MyPaymentsDetails: React.FC<MyPaymentsDetailsProps> = ({
         registration_id: paymentDetails.reference_id,
       };
 
-      const result = await DownloadMembershipInvoice(payload);
+      // Determine which API to call based on registration_type
+      const registrationType = paymentDetails.registration_type?.toLowerCase() || '';
+      const isConference = registrationType.includes('conference');
+      
+      const result = isConference 
+        ? await DownloadConferenceInvoice(payload)
+        : await DownloadMembershipInvoice(payload);
 
       if (result?.success === true) {
         if (!result?.data?.pdf_base64) {

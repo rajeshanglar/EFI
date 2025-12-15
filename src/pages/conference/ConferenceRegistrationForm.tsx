@@ -18,7 +18,7 @@ import globalStyles, {Fonts, colors, spacing } from '../../styles/globalStyles';
 import Header from '../../components/Header';
 import { Dropdown } from '../../components/Dropdown';
 import { GradientButton } from '../../components/GradientButton';
-import { RefreshIcon } from '../../components/icons';
+import { InformationIcon, RefreshIcon } from '../../components/icons';
 import {
   conferenceRegistrationSchema,
   generateCaptcha,
@@ -33,13 +33,18 @@ import {
    CheckMembershipExists,
    GetMorningWorkshops,
    GetAfternoonWorkshops,
-   GetConferenceCategories
+   GetConferenceCategories,
+   SendEfiMemberVerificationOtp,
+   VerifyEfiMemberOtp,
+   CalculateConferencePrice,
   } from '../../services/staticService';
 
   import { ToastService } from '../../utils/service-handlers';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConferenceRegPayload, CheckConferenceExistsPayload, CheckMembershipExistsPayload, CouponPayload } from '../../utils/types';
 import { formatPrice } from '../../utils/currencyFormatter';
+import { FailureModal } from '../../components/FailureModal';
+import { EfiMemberOtpModal } from '../../components/EfiMemberOtpModal';
 const { width: screenWidth } = Dimensions.get('window');
 
 // Form values type that includes UI-only fields (captcha, coupon_code, category for validation)
@@ -70,6 +75,7 @@ interface Props {
         module_name?: string;
         categoryName?: string;
         ticketName?: string;
+        membershipType?: string;
       };
       userData?: {
         full_name?: string;
@@ -77,7 +83,12 @@ interface Props {
         mobile?: string;
       };
       paymentData?: {
+        ticket_amount?: number;
+        workshop_amount?: number;
         sub_total?: number;
+        gst_amount?: number;
+        tax?: number;
+        tax_amount?: number;
         grand_total?: number;
         currency?: string;
       };
@@ -116,25 +127,102 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
   const [couponError, setCouponError] = useState<string | undefined>(undefined);
   const [conferencePrice, setConferencePrice] = useState<number>(0); // Will be updated from selectedTicket
   const [actualMembershipType, setActualMembershipType] = useState<string | undefined>(selectedTicket?.membershipType); // Track actual membership type (may change if user is not a member)
+  const [calculatedPrice, setCalculatedPrice] = useState<{
+    grand_total: number;
+    currency: string;
+    sub_total?: number;
+    gst_amount?: number;
+    gst_percentage?: number;
+    ticket_amount?: number;
+    workshop_amount?: number;
+  } | null>(null);
+  const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
   const [showCouponSuccessModal, setShowCouponSuccessModal] = useState(false);
+  const [showMembershipAlert, setShowMembershipAlert] = useState(false);
+  const [showEfiMemberOtpModal, setShowEfiMemberOtpModal] = useState(false);
+  const [otpExpiryMinutes, setOtpExpiryMinutes] = useState<number>(15);
+  const pendingFormValuesRef = useRef<ConferenceFormValues | null>(null);
+  const skipMembershipCheckRef = useRef<boolean>(false);
+  const efiMemberEmailRef = useRef<string>('');
   
   // Animation values for coupon success modal
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   
+  // Function to calculate conference price
+  const calculatePrice = React.useCallback(async (
+    mappingId: number,
+    memberType: string,
+    morningWorkshopId: number = 0,
+    afternoonWorkshopId: number = 0
+  ) => {
+    if (!mappingId || mappingId === 0) {
+      console.log('Cannot calculate price: mapping_id is missing or 0');
+      return;
+    }
 
-  // Update conferencePrice and actualMembershipType when selectedTicket changes
+    setIsCalculatingPrice(true);
+    try {
+      const payload = {
+        mapping_id: mappingId,
+        member_type: memberType,
+        morning_workshop_id: morningWorkshopId,
+        afternoon_workshop_id: afternoonWorkshopId,
+      };
+
+      console.log('=== CALCULATE CONFERENCE PRICE API CALL ===');
+      console.log('Payload:', JSON.stringify(payload, null, 2));
+
+      const response = await CalculateConferencePrice(payload);
+
+      console.log('=== CALCULATE CONFERENCE PRICE RESPONSE ===');
+      console.log('Response:', JSON.stringify(response, null, 2));
+
+      if (response?.success && response?.grand_total !== undefined) {
+        setCalculatedPrice({
+          grand_total: response.grand_total,
+          currency: response.currency || 'INR',
+          sub_total: response.sub_total,
+          gst_amount: response.gst_amount,
+          gst_percentage: response.gst_percentage,
+          ticket_amount: response.ticket_amount,
+          workshop_amount: response.workshop_amount,
+        });
+        setConferencePrice(response.grand_total);
+        console.log('Price calculated successfully:', response.grand_total);
+      } else {
+        console.error('Failed to calculate price:', response?.message);
+        ToastService.error('Error', response?.message || 'Failed to calculate price');
+      }
+    } catch (error: any) {
+      console.error('Failed to calculate price:', error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to calculate price';
+      ToastService.error('Error', errorMessage);
+    } finally {
+      setIsCalculatingPrice(false);
+    }
+  }, []);
+
+  // Update actualMembershipType when selectedTicket changes
   React.useEffect(() => {
     if (selectedTicket?.ticket) {
       setActualMembershipType(selectedTicket.membershipType);
-      const ticketPrice = selectedTicket.membershipType === 'member' 
-        ? selectedTicket.ticket.member_price 
-        : selectedTicket.ticket.non_member_price;
-      
-      if (ticketPrice && ticketPrice > 0) {
-        console.log('Updating conferencePrice from selectedTicket:', ticketPrice);
-        setConferencePrice(ticketPrice);
+      // Price calculation will be handled by the workshops useEffect
+      // Fallback to ticket price if mapping_id is not available
+      const mappingId = selectedTicket.ticket?.mapping_id;
+      if (!mappingId || mappingId === 0) {
+        const ticketPrice = selectedTicket.membershipType === 'member' 
+          ? selectedTicket.ticket.member_price 
+          : selectedTicket.ticket.non_member_price;
+        
+        if (ticketPrice && ticketPrice > 0) {
+          console.log('Updating conferencePrice from selectedTicket (fallback):', ticketPrice);
+          setConferencePrice(ticketPrice);
+        }
       }
     }
   }, [selectedTicket]);
@@ -338,10 +426,14 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
       efi_type: getInitialEfiType(),
       morning_workshop: 0,
       afternoon_workshop: 0,
-      sub_total: 0,
-      grand_total: 0,
       currency: '',
       source_type: '',
+      ticket_amount: 0,
+      workshop_amount: 0,
+      sub_total: 0,
+      tax: 0,
+      tax_amount: 0,
+      grand_total: 0,
       payment_status: '',
       gateway_transaction_id: '',
       gateway_order_id: '',
@@ -389,13 +481,8 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
         email_id: email.trim(),
         coupon_code: couponCode.trim(),
       };
-
-      console.log('=== COUPON VALIDATION REQUEST ===');
-      console.log('Payload:', JSON.stringify(payload, null, 2));
-
       // Call coupon validation API
       const result = await CouponValidation(payload);
-
       console.log('=== COUPON VALIDATION RESPONSE ===');
       console.log('Response:', JSON.stringify(result, null, 2));
       console.log('==================================');
@@ -551,6 +638,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
     console.log('Conference Price:', conferencePrice);
     console.log('Coupon Applied:', couponApplied);
     console.log('Coupon Discount:', couponDiscount);
+    console.log('Skip Membership Check:', skipMembershipCheckRef.current);
     
     // Validate selectedTicket exists
     if (!selectedTicket || !selectedTicket.ticket) {
@@ -582,46 +670,95 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
 
     try {
       // Check membership if EFI Member is selected (only for Non-Residential Packages)
+      // Skip check if we're continuing after user acknowledged the membership alert
+      // or if membership type is already set to non-member
       let currentMembershipType = actualMembershipType || selectedTicket.membershipType;
-      if (selectedTicket.is_residential === 0 && currentMembershipType === 'member') {
+      const shouldSkipCheck = skipMembershipCheckRef.current;
+      skipMembershipCheckRef.current = false; // Reset flag after use
+      
+      // Skip membership check if:
+      // 1. Flag is set (continuing after OK click)
+      // 2. Membership type is already non-member (user already changed it)
+      const isAlreadyNonMember = actualMembershipType === 'non-member' || currentMembershipType === 'non-member';
+      
+      if (!shouldSkipCheck && !isAlreadyNonMember && selectedTicket.is_residential === 0 && currentMembershipType === 'member') {
         console.log('=== CHECK MEMBERSHIP EXISTS API CALL ===');
+        // Only check email, not phone number for conference registration
         const membershipPayload: CheckMembershipExistsPayload = {
           email_id: values.email,
-          phone_number: values.mobile,
+          phone_number: '', // Not used for conference registration check
         };
         console.log('Membership Check Payload:', JSON.stringify(membershipPayload, null, 2));
 
-        const membershipResult = await CheckMembershipExists(membershipPayload);
-        
-        console.log('=== CHECK MEMBERSHIP EXISTS RESPONSE ===');
-        console.log('Full Response:', JSON.stringify(membershipResult, null, 2));
-        console.log('Email Exists:', membershipResult?.data?.email_exists);
-        console.log('Phone Exists:', membershipResult?.data?.phone_exists);
+        let isMember = false;
+        try {
+          const membershipResult = await CheckMembershipExists(membershipPayload);
+          
+          console.log('=== CHECK MEMBERSHIP EXISTS RESPONSE ===');
+          console.log('Full Response:', JSON.stringify(membershipResult, null, 2));
+          console.log('Email Exists:', membershipResult?.data?.email_exists);
+          console.log('Status:', membershipResult?.status);
+          console.log('Success:', membershipResult?.success);
+          console.log('Message:', membershipResult?.message);
 
-        // Check if user IS a member (email_exists or phone_exists is true)
-        const isMember = membershipResult?.data?.email_exists === true || 
-                        membershipResult?.data?.phone_exists === true ||
-                        membershipResult?.data?.email_exists === 1 ||
-                        membershipResult?.data?.phone_exists === 1;
+          // Check if user IS a member (only check email_exists, not phone_exists)
+          // First check explicit flag in response data
+          isMember = membershipResult?.data?.email_exists === true || 
+                          membershipResult?.data?.email_exists === 1;
+          
+          // If no explicit flag, check for 409 status with "email already exists" message
+          // This indicates the user IS a member (their email exists in membership system)
+          if (!isMember && membershipResult?.status === 409) {
+            const message = (membershipResult?.message || '').toLowerCase();
+            if (message.includes('email already exists')) {
+              isMember = true;
+              console.log('=== MEMBERSHIP DETECTED FROM 409 STATUS WITH "EMAIL ALREADY EXISTS" MESSAGE ===');
+            }
+          }
+          
+          console.log('Is Member (from success response):', isMember);
+        } catch (error: any) {
+          // Handle error response
+          console.log('=== CHECK MEMBERSHIP EXISTS ERROR RESPONSE ===');
+          console.log('Error Status:', error?.response?.status);
+          console.log('Error Response Data:', JSON.stringify(error?.response?.data, null, 2));
+          
+          const errorResponse = error?.response?.data || {};
+          const errorStatus = error?.response?.status || errorResponse?.status;
+          const errorMessage = (errorResponse?.message || error?.message || '').toLowerCase();
+          
+          // First check for explicit email_exists flag in error response (only email, not phone)
+          isMember = errorResponse?.data?.email_exists === true || 
+                      errorResponse?.data?.email_exists === 1 ||
+                      errorResponse?.email_exists === true ||
+                      errorResponse?.email_exists === 1;
+          
+          // If no explicit flag, check for 409 status with "email already exists" message
+          // This indicates the user IS a member (their email exists in membership system)
+          if (!isMember && errorStatus === 409) {
+            if (errorMessage.includes('email already exists')) {
+              isMember = true;
+              console.log('=== MEMBERSHIP DETECTED FROM 409 ERROR WITH "EMAIL ALREADY EXISTS" MESSAGE ===');
+            }
+          }
+                
+        }
 
         if (!isMember) {
-          // User is not an EFI Member, show toast and change to Non EFI Member
-          ToastService.error('Membership Error', 'You are not an EFI Member. Continuing with Non EFI Member.');
-          
-          // Change to Non EFI Member
-          const newMembershipType = 'non-member';
-          setActualMembershipType(newMembershipType);
-          currentMembershipType = newMembershipType;
-          
-          // Update conference price to non-member price
-          const nonMemberPrice = selectedTicket.ticket?.non_member_price || 0;
-          setConferencePrice(nonMemberPrice);
-          
-          console.log('=== MEMBERSHIP CHECK FAILED - CHANGED TO NON MEMBER ===');
-          console.log('Updated Membership Type:', newMembershipType);
-          console.log('Updated Price:', nonMemberPrice);
+          // User is not an EFI Member, show alert and stop submission
+          pendingFormValuesRef.current = values; // Store form values to continue later
+          setShowMembershipAlert(true);
+          setIsSubmitting(false);
+          console.log('=== NON EFI MEMBER - STOPPING SUBMISSION ===');
+          return; // Stop form submission
         } else {
-          console.log('=== USER IS EFI MEMBER - CONTINUING ===');
+          // User IS an EFI Member, show OTP verification screen
+          console.log('=== EFI MEMBER - SHOWING OTP VERIFICATION ===');
+          efiMemberEmailRef.current = values.email;
+          pendingFormValuesRef.current = values; // Store form values to continue after OTP verification
+          setShowEfiMemberOtpModal(true);
+          setIsSubmitting(false);
+          return; // Stop form submission until OTP is verified
         }
       }
 
@@ -629,25 +766,103 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
       const checkPayload: CheckConferenceExistsPayload = {
         email: values.email,
         mobile: values.mobile,
+        event_id: selectedTicket?.event_id,
+        mapping_id: selectedTicket?.ticket?.mapping_id,
       };
 
-      console.log('=== CHECK CONFERENCE EXISTS API CALL ===');
+      console.log('=== CHECK CONFERENCE EXISTS API CALL (Second Call) ===');
       console.log('Check Payload:', JSON.stringify(checkPayload, null, 2));
 
       // Call CheckConferenceExists API
-      const result = await CheckConferenceExists(checkPayload);
-
-      // Check for email_exists and mobile_exists flags (check both possible response formats)
-      const emailExists = result?.data?.email_exists === true || result?.data?.emailExists === true || result?.data?.email_exists === 1;
-      const mobileExists = result?.data?.mobile_exists === true || result?.data?.mobileExists === true || result?.data?.mobile_exists === 1;
+      let result: any;
+      let emailExists = false;
+      let mobileExists = false;
+      
+      try {
+        result = await CheckConferenceExists(checkPayload);
+        
+        console.log('=== CHECK CONFERENCE EXISTS RESPONSE (Second Call) ===');
+        console.log('Full Response:', JSON.stringify(result, null, 2));
+        console.log('Success:', result?.success);
+        console.log('Status:', result?.status);
+        console.log('Message:', result?.message);
+        
+        // Check if response indicates failure (success: false with status 409)
+        if (result?.success === false && result?.status === 409) {
+          const responseMessage = result?.message || '';
+          // Check if message indicates email exists
+          if (responseMessage.toLowerCase().includes('email already exists')) {
+            emailExists = true;
+          }
+          if (responseMessage.toLowerCase().includes('mobile number already exists') || 
+              responseMessage.toLowerCase().includes('mobile already exists')) {
+            mobileExists = true;
+          }
+        }
+        
+        // Check for email_exists and mobile_exists flags (check both possible response formats)
+        if (!emailExists) {
+          emailExists = result?.data?.email_exists === true || result?.data?.emailExists === true || result?.data?.email_exists === 1;
+        }
+        if (!mobileExists) {
+          mobileExists = result?.data?.mobile_exists === true || result?.data?.mobileExists === true || result?.data?.mobile_exists === 1;
+        }
+        
+        console.log('Email Exists:', emailExists);
+        console.log('Mobile Exists:', mobileExists);
+        console.log('Response Data:', JSON.stringify(result?.data, null, 2));
+      } catch (error: any) {
+        // Handle error response (409 status, etc.)
+        console.log('=== CHECK CONFERENCE EXISTS ERROR RESPONSE (Second Call) ===');
+        console.log('Error Status:', error?.response?.status);
+        console.log('Error Response Data:', JSON.stringify(error?.response?.data, null, 2));
+        
+        const errorResponse = error?.response?.data || {};
+        const errorMessage = errorResponse?.message || error?.message || '';
+        const errorStatus = error?.response?.status || errorResponse?.status;
+        
+        console.log('Error Message:', errorMessage);
+        console.log('Error Status:', errorStatus);
+        
+        // Check if status is 409
+        if (errorStatus === 409) {
+          // Check message for email/mobile exists
+          const lowerMessage = errorMessage.toLowerCase();
+          if (lowerMessage.includes('email already exists')) {
+            emailExists = true;
+            console.log('Email exists detected from 409 error message');
+          }
+          if (lowerMessage.includes('mobile number already exists') || 
+              lowerMessage.includes('mobile already exists')) {
+            mobileExists = true;
+            console.log('Mobile exists detected from 409 error message');
+          }
+        }
+        
+        // Also check response data structure
+        if (!emailExists) {
+          emailExists = errorResponse?.data?.email_exists === true || 
+                       errorResponse?.data?.emailExists === true || 
+                       errorResponse?.data?.email_exists === 1 ||
+                       errorResponse?.email_exists === true ||
+                       errorResponse?.email_exists === 1;
+        }
+        if (!mobileExists) {
+          mobileExists = errorResponse?.data?.mobile_exists === true || 
+                        errorResponse?.data?.mobileExists === true || 
+                        errorResponse?.data?.mobile_exists === 1 ||
+                        errorResponse?.mobile_exists === true ||
+                        errorResponse?.mobile_exists === 1;
+        }
+        
+        // Set result to error response for further processing
+        result = errorResponse;
+        console.log('Final Email Exists (from error):', emailExists);
+        console.log('Final Mobile Exists (from error):', mobileExists);
+      }
+      
       const hasExistsError = emailExists || mobileExists;
-
-      console.log('=== CHECK CONFERENCE EXISTS RESPONSE ===');
-      console.log('Full Response:', JSON.stringify(result, null, 2));
-      console.log('Email Exists:', emailExists);
-      console.log('Mobile Exists:', mobileExists);
       console.log('Has Exists Error:', hasExistsError);
-      console.log('Response Data:', JSON.stringify(result?.data, null, 2));
 
       // Always check for email_exists/mobile_exists first, regardless of success flag
       if (hasExistsError) {
@@ -694,22 +909,50 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
         // Clear API errors on success
         setApiErrors({});
         
-        // Calculate totals with coupon discount
-        // Get ticket price based on current membership type (may have been changed if user is not a member)
-        const ticketPrice = currentMembershipType === 'member' 
-          ? selectedTicket.ticket?.member_price 
-          : selectedTicket.ticket?.non_member_price;
-        // Use ticketPrice if available, otherwise fallback to conferencePrice
-        const SUB_TOTAL = (ticketPrice && ticketPrice > 0) ? ticketPrice : (conferencePrice > 0 ? conferencePrice : 0);
-        const discount = couponApplied ? couponDiscount : 0;
-        const grandTotal = SUB_TOTAL - discount;
-
-        console.log('=== PRICE CALCULATION ===');
-        console.log('Conference Price:', conferencePrice);
-        console.log('Ticket Price:', ticketPrice);
-        console.log('Sub Total:', SUB_TOTAL);
-        console.log('Discount:', discount);
-        console.log('Grand Total:', grandTotal);
+        // Use calculated price from API if available, otherwise calculate locally
+        let TICKET_AMOUNT = 0;
+        let WORKSHOP_AMOUNT = 0;
+        let SUB_TOTAL = 0;
+        let TAX_PERCENTAGE = 0;
+        let TAX_AMOUNT = 0;
+        let GRAND_TOTAL = 0;
+        
+        if (calculatedPrice && calculatedPrice.sub_total !== undefined) {
+          // Use API calculated values
+          TICKET_AMOUNT = calculatedPrice.ticket_amount || 0;
+          WORKSHOP_AMOUNT = calculatedPrice.workshop_amount || 0;
+          SUB_TOTAL = calculatedPrice.sub_total || 0;
+          TAX_PERCENTAGE = calculatedPrice.gst_percentage || 0;
+          TAX_AMOUNT = calculatedPrice.gst_amount || 0;
+          GRAND_TOTAL = calculatedPrice.grand_total || 0;
+          
+          console.log('=== USING API CALCULATED PRICE ===');
+          console.log('Ticket Amount (API):', TICKET_AMOUNT);
+          console.log('Workshop Amount (API):', WORKSHOP_AMOUNT);
+          console.log('Sub Total (API):', SUB_TOTAL);
+          console.log('Tax Percentage (API):', TAX_PERCENTAGE);
+          console.log('Tax Amount (API):', TAX_AMOUNT);
+          console.log('Grand Total (API):', GRAND_TOTAL);
+        } else {
+          // Fallback to local calculation
+          const ticketPrice = currentMembershipType === 'member' 
+            ? selectedTicket.ticket?.member_price 
+            : selectedTicket.ticket?.non_member_price;
+          TICKET_AMOUNT = (ticketPrice && ticketPrice > 0) ? ticketPrice : 0;
+          WORKSHOP_AMOUNT = 0;
+          SUB_TOTAL = TICKET_AMOUNT;
+          TAX_PERCENTAGE = 0;
+          TAX_AMOUNT = 0;
+          const discount = couponApplied ? couponDiscount : 0;
+          GRAND_TOTAL = SUB_TOTAL - discount;
+          
+          console.log('=== USING LOCAL CALCULATED PRICE ===');
+          console.log('Conference Price:', conferencePrice);
+          console.log('Ticket Price:', ticketPrice);
+          console.log('Sub Total:', SUB_TOTAL);
+          console.log('Discount:', discount);
+          console.log('Grand Total:', GRAND_TOTAL);
+        }
 
         // Prepare ConferenceRegistration API payload - Updated structure
         const registrationPayload: ConferenceRegPayload = {
@@ -731,10 +974,14 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
           efi_type: currentMembershipType === 'member' ? 'member' : 'non-member',
           morning_workshop: typeof values.morning_workshop === 'string' ? parseInt(values.morning_workshop, 10) : (values.morning_workshop || 0),
           afternoon_workshop: typeof values.afternoon_workshop === 'string' ? parseInt(values.afternoon_workshop, 10) : (values.afternoon_workshop || 0),
-          sub_total: SUB_TOTAL,
-          grand_total: grandTotal,
-          currency: selectedTicket?.ticket?.currency,
+          currency: calculatedPrice?.currency || selectedTicket?.ticket?.currency || 'INR',
           source_type: '',
+          ticket_amount: TICKET_AMOUNT,
+          workshop_amount: WORKSHOP_AMOUNT,
+          sub_total: SUB_TOTAL,
+          tax: TAX_PERCENTAGE,
+          tax_amount: TAX_AMOUNT,
+          grand_total: GRAND_TOTAL,
           payment_status: '',
           payment_gateway: '',
           payment_method: '',
@@ -747,9 +994,9 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
         console.log('=== NAVIGATING TO PAYMENT PAGE ===');
         console.log('Calculated Values:');
         console.log('  - Sub Total:', SUB_TOTAL);
-        console.log('  - Discount:', discount);
-        console.log('  - Grand Total:', grandTotal);
-        console.log('  - Currency:', selectedTicket?.ticket?.currency);
+        console.log('  - Tax Amount:', TAX_AMOUNT);
+        console.log('  - Grand Total:', GRAND_TOTAL);
+        console.log('  - Currency:', calculatedPrice?.currency || selectedTicket?.ticket?.currency);
         console.log('Registration Payload:', JSON.stringify(registrationPayload, null, 2));
         console.log('Payload Breakdown:');
         console.log('  - Event ID:', registrationPayload.event_id);
@@ -765,9 +1012,10 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
         console.log('Navigating to payment page...');
         onNavigateToConferencePayment?.(registrationPayload, {
           ticketInfo: {
+            membershipType: currentMembershipType,
             module_name: selectedTicket?.module_name,
             categoryName: selectedTicket?.categoryName,
-            ticketName: selectedTicket?.ticket?.name,
+            ticketName: selectedTicket?.ticket?.name,                 
           },
           userData: {
             full_name: values.full_name,
@@ -775,9 +1023,13 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
             mobile: values.mobile,
           },
           paymentData: {
+            ticket_amount: TICKET_AMOUNT,
+            workshop_amount: WORKSHOP_AMOUNT,
             sub_total: SUB_TOTAL,
-            grand_total: grandTotal,
-            currency: selectedTicket?.ticket?.currency,
+            gst_amount: TAX_AMOUNT,
+            tax: TAX_PERCENTAGE,
+            grand_total: GRAND_TOTAL,
+            currency: calculatedPrice?.currency || selectedTicket?.ticket?.currency || 'INR',
           },
           registrationPayload: registrationPayload,
         });
@@ -890,14 +1142,22 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                 </>
               )}              
             </View>
+            <View style={styles.conferenHeaderPriceContainer}>
             <Text style={styles.conferenHeaderPrice}>
-            {formatPrice(
-                      actualMembershipType === 'member' 
-                        ? selectedTicket.ticket.member_price 
-                        : selectedTicket.ticket.non_member_price,
-                      selectedTicket.ticket.currency
-                    )}
+            {isCalculatingPrice 
+              ? 'Calculating...' 
+              : calculatedPrice 
+                ? formatPrice(calculatedPrice.grand_total, calculatedPrice.currency)
+                : formatPrice(
+                    actualMembershipType === 'member' 
+                      ? selectedTicket.ticket.member_price 
+                      : selectedTicket.ticket.non_member_price,
+                    selectedTicket.ticket.currency
+                  )
+            }                
             </Text>
+            <Text style={styles.withGSTText}> (With GST)</Text>
+            </View>
           </View>
         </View>
       )}
@@ -953,6 +1213,37 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
               setFieldTouched('mobile', true);
             }
           }, [apiErrors.email, apiErrors.phone, setFieldTouched]);
+
+          // Set India as default country when countries are loaded
+          React.useEffect(() => {
+            if (countries.length > 0 && values.country === 0) {
+              const india = countries.find(
+                country => country.country_name.toLowerCase() === 'india'
+              );
+              if (india) {
+                setFieldValue('country', india.id.toString());
+                // Load states for India
+                loadStates(india.id);
+              }
+            }
+          }, [countries, values.country, setFieldValue]);
+
+          // Recalculate price when workshops change
+          React.useEffect(() => {
+            if (selectedTicket?.ticket?.mapping_id && actualMembershipType) {
+              const mappingId = selectedTicket.ticket.mapping_id;
+              const memberType = actualMembershipType === 'member' ? 'member' : 'non-member';
+              const morningWorkshopId = typeof values.morning_workshop === 'string' 
+                ? parseInt(values.morning_workshop, 10) 
+                : (values.morning_workshop || 0);
+              const afternoonWorkshopId = typeof values.afternoon_workshop === 'string' 
+                ? parseInt(values.afternoon_workshop, 10) 
+                : (values.afternoon_workshop || 0);
+              
+              // Only calculate if at least one workshop is selected (or both are 0 for initial load)
+              calculatePrice(mappingId, memberType, morningWorkshopId, afternoonWorkshopId);
+            }
+          }, [values.morning_workshop, values.afternoon_workshop, selectedTicket?.ticket?.mapping_id, actualMembershipType, calculatePrice]);
 
           return (
           <>
@@ -1462,6 +1753,139 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
           </Animated.View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Membership Error Alert Modal */}
+      <FailureModal
+        visible={showMembershipAlert}
+        message="You're not an EFI member. Continuing as a non-EFI member."
+        onClose={() => {
+          setShowMembershipAlert(false);
+          // Change to Non EFI Member and update price
+          if (selectedTicket?.ticket) {
+            const newMembershipType = 'non-member';
+            setActualMembershipType(newMembershipType);
+            
+            // Update conference price to non-member price
+            const nonMemberPrice = selectedTicket.ticket?.non_member_price || 0;
+            setConferencePrice(nonMemberPrice);
+            
+            console.log('=== MEMBERSHIP CHANGED TO NON MEMBER AFTER OK ===');
+            console.log('Updated Membership Type:', newMembershipType);
+            console.log('Updated Price:', nonMemberPrice);
+            
+            // Clear pending form values - user will need to click Submit again
+            pendingFormValuesRef.current = null;
+          }
+        }}
+        instructionText="Please note that you will not be eligible for any EFI member benefits."
+        icon={<InformationIcon size={50} />}
+        disableOverlayClose={true}
+      />
+
+      {/* EFI Member OTP Verification Modal */}
+      <EfiMemberOtpModal
+        visible={showEfiMemberOtpModal}
+        email={efiMemberEmailRef.current}
+        otpExpiryMinutes={otpExpiryMinutes}
+        onSendOtp={async () => {
+          try {
+            const payload = { email: efiMemberEmailRef.current };
+            console.log('Send OTP Payload:', JSON.stringify(payload, null, 2));
+            
+            const result = await SendEfiMemberVerificationOtp(payload);
+            console.log('Send OTP Response:', JSON.stringify(result, null, 2));
+            
+            if (result?.success) {
+              const expiry = result?.data?.otp_expiry_minutes || 15;
+              setOtpExpiryMinutes(expiry);
+              ToastService.success('Success', result?.message || 'OTP sent successfully to your email');
+            } else {
+              throw new Error(result?.message || 'Failed to send OTP');
+            }
+          } catch (error: any) {
+            console.log('Send OTP Error Response:', JSON.stringify(error?.response?.data || error?.message, null, 2));
+            
+            // Handle different error scenarios
+            let errorMessage = 'Failed to send OTP. Please try again.';
+            const errorStatus = error?.response?.status || error?.response?.data?.status;
+            const errorResponse = error?.response?.data || {};
+            
+            if (errorStatus === 401 || errorResponse?.status === 401) {
+              errorMessage = 'Authentication failed. Please refresh the page and try again.';
+            } else if (errorStatus === 403 || errorResponse?.status === 403) {
+              errorMessage = 'Access denied. Please contact support if this issue persists.';
+            } else if (errorStatus === 404 || errorResponse?.status === 404) {
+              errorMessage = 'OTP service not found. Please try again later.';
+            } else if (errorStatus === 500 || errorResponse?.status === 500) {
+              errorMessage = 'Server error occurred. Please try again later.';
+            } else if (errorResponse?.message) {
+              errorMessage = errorResponse.message;
+            } else if (error?.message) {
+              errorMessage = error.message;
+            }
+            
+            ToastService.error('Error', errorMessage);
+            throw error;
+          }
+        }}
+        onVerify={async (otp: string) => {
+          try {
+            const payload = {
+              email: efiMemberEmailRef.current,
+              otp_code: otp,
+            };
+            console.log('Verify OTP Payload:', JSON.stringify(payload, null, 2));
+            
+            // Validate OTP format before sending
+            if (!payload.otp_code || payload.otp_code.length !== 6 || !/^\d{6}$/.test(payload.otp_code)) {
+              throw new Error('Invalid OTP format. Please enter a 6-digit number.');
+            }
+            
+            const result = await VerifyEfiMemberOtp(payload);
+            console.log('Verify OTP Response:', JSON.stringify(result, null, 2));
+            
+            // Check if verification was successful (handle different response structures)
+            const isVerified = result?.success === true && (
+              result?.data?.verified === true ||
+              result?.data?.verified === 1 ||
+              result?.verified === true ||
+              result?.verified === 1
+            );
+            
+            if (isVerified) {
+              ToastService.success('Success', result?.message || 'EFI membership verified successfully');
+              setShowEfiMemberOtpModal(false);
+              
+              // Continue with form submission after OTP verification
+              if (pendingFormValuesRef.current) {
+                const formValues = pendingFormValuesRef.current;
+                pendingFormValuesRef.current = null;
+                skipMembershipCheckRef.current = true; // Skip membership check since already verified
+                setTimeout(() => {
+                  handleSubmit(formValues);
+                }, 100);
+              } else {
+                throw new Error('Form data not available. Please try again.');
+              }
+            } else {
+              const errorMsg = result?.message || result?.data?.message || 'OTP verification failed';
+              throw new Error(errorMsg);
+            }
+          } catch (error: any) {
+            console.log('Verify OTP Error Response:', JSON.stringify(error?.response?.data || error?.message, null, 2));
+            
+            // Handle different error scenarios
+            let errorMessage = 'Invalid OTP. Please try again.';
+            throw new Error(errorMessage);
+          }
+        }}
+        onClose={() => {
+          setShowEfiMemberOtpModal(false);
+          pendingFormValuesRef.current = null;
+          setIsSubmitting(false);
+        }}
+        isLoading={isSubmitting}
+      />
     </View>
   );
 };
@@ -1661,14 +2085,7 @@ const styles = StyleSheet.create({
   
 
    },
-   conferenHeaderPrice:{
-    fontSize: screenWidth * 0.05,
-    fontFamily: Fonts.Bold,   
-    color: colors.primaryLight,
-    marginBottom:0,
-    lineHeight: screenWidth * 0.06,
-    marginTop: spacing.sm,   
-   },
+
    membershipTypeContainer:{
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1681,6 +2098,28 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     marginTop:0,  
     marginRight: spacing.sm,  
+   },
+   conferenHeaderPriceContainer:{
+    flexDirection: 'row',  
+    alignItems: 'center', 
+    justifyContent: 'flex-start',
+   },
+
+   conferenHeaderPrice:{
+    fontSize: screenWidth * 0.05,
+    fontFamily: Fonts.Bold,   
+    color: colors.primaryLight,
+    marginBottom:0,
+   },
+
+   withGSTText:{
+    fontSize: screenWidth * 0.033,
+    fontFamily: Fonts.Medium,
+    color: colors.primaryLight,
+    marginLeft:5,
+  
+  
+   
    }
 });
 

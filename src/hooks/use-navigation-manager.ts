@@ -63,6 +63,7 @@ export function useNavigationManager() {
       module_name?: string;
       categoryName?: string;
       ticketName?: string;
+      membershipType?: string;
     };
     userData?: {
       full_name?: string;
@@ -127,6 +128,7 @@ export function useNavigationManager() {
         module_name?: string;
         categoryName?: string;
         ticketName?: string;
+        membershipType?: string;
       };
       userData?: {
         full_name?: string;

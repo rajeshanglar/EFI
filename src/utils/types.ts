@@ -59,6 +59,7 @@ export type CheckMembershipExistsPayload = {
 
 export type DownloadMembershipInvoicePayload = {
   registration_id: number;
+  
 };
 
 export type DownloadConferenceQRCodePayload = {
@@ -76,6 +77,10 @@ export type DownloadMembershipInvoiceResponse = {
     mime_type: string;
   };
   status: number;
+};
+
+export type DownloadConferenceInvoicePayload = {
+  registration_id: number;
 };
 
 //Conference
@@ -98,10 +103,14 @@ ticket_id: number,
 efi_type: string,
 morning_workshop: number,
 afternoon_workshop: number,
-sub_total: number,
-grand_total: number,
 currency: string,
 source_type: string,
+ticket_amount:number,
+workshop_amount: number,
+sub_total: number,
+tax: number,               
+tax_amount: number,      
+grand_total: number,
 payment_status: string,
 payment_gateway: string;
 payment_method: string;
@@ -115,4 +124,7 @@ gateway_response: string;
 export type CheckConferenceExistsPayload = {
   email: string;
   mobile: string;
+  event_id:number,
+  mapping_id:string,
+
 };

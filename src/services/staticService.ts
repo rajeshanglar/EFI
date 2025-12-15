@@ -1,7 +1,7 @@
 import apiStatic from './apiStatic';
 import { MembershipRegPayload, CouponPayload,CheckMembershipExistsPayload, DownloadMembershipInvoicePayload, DownloadConferenceQRCodePayload } from '../utils/types';
 import { LoginFormValues } from '../types/login';
-import {CheckConferenceExistsPayload, ConferenceRegPayload } from '../utils/types';
+import {CheckConferenceExistsPayload, ConferenceRegPayload, DownloadConferenceInvoicePayload } from '../utils/types';
 
 export interface Country {
   id: number;
@@ -75,6 +75,11 @@ export const CreateOrderPayment = async (payload: {
 
 // Conference
 
+export const DownloadConferenceInvoice = async (payload: DownloadConferenceInvoicePayload) => {
+  const response = await apiStatic.post('v1/download-conference-invoice', payload);
+  return response.data;
+};
+
 export const CheckConferenceExists = async (payload: CheckConferenceExistsPayload) => {
   const response = await apiStatic.post('v1/check-conference-exists', payload);
   return response.data;
@@ -123,10 +128,7 @@ export const GetConferenceCategories = async () => {
     return response.data;
   };
 
-  export const DownloadConferenceInvoice = async (payload: DownloadMembershipInvoicePayload) => {
-    const response = await apiStatic.post('v1/download-conference-invoice', payload);
-    return response.data;
-  };
+
 
   
 
@@ -134,4 +136,32 @@ export const GetConferenceCategories = async () => {
     const response = await apiStatic.post('v1/download-conference-qrcode', payload);
     return response.data;
   };
+
+  export const SendEfiMemberVerificationOtp = async ( payload: {
+    email: string;   
+  }) => {
+    const response = await apiStatic.post('v1/conference/send-efi-member-verification-otp', payload);
+    return response.data;
+  };
+
+  export const VerifyEfiMemberOtp = async ( payload: {
+    email: string;
+    otp_code: string;
+  }) => {
+    const response = await apiStatic.post('v1/conference/verify-efi-member-otp', payload);
+    return response.data;
+  };
+
+  export const CalculateConferencePrice = async ( payload: {
+   mapping_id: number,
+    member_type: string,
+    morning_workshop_id: number,
+    afternoon_workshop_id: number
+  }) => {
+    const response = await apiStatic.post('v1/calculate-conference-price', payload);
+    return response.data;
+  };
+  
+
+
 
