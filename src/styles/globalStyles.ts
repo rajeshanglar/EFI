@@ -1374,7 +1374,90 @@ conferenceDateLocation: {
   fontFamily: Fonts.Regular,
 }, 
 
+// Search Container Styles
+searchContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: colors.lightBlue,
+  borderRadius: borderRadius.sm,
+  borderWidth: 1,
+  borderColor:'#D8E3F9',
+  marginHorizontal: spacing.md,
+  marginTop: spacing.md,
+  marginBottom: spacing.sm,
+  paddingHorizontal: spacing.md,
+  height: 48,
+},
+searchIconContainer: {
+  marginRight: spacing.sm,
+},
+searchInput: {
+  flex: 1,
+  fontSize: screenWidth * 0.039,
+  fontFamily: Fonts.Medium,
+  color: colors.black,
+  paddingVertical: 0,
+},
 
+// Contact Styles
+contactHeaderLetter: {
+  fontSize: screenWidth * 0.045,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+  paddingHorizontal:screenWidth * 0.075,   
+  backgroundColor: colors.white,
+},
+contactItem: {
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  paddingHorizontal: spacing.md,
+  paddingVertical: screenHeight * 0.013,
+  backgroundColor: colors.white,
+  borderBottomWidth: 1,
+  borderBottomColor: colors.lightGray,
+},
+contactlastItem: {
+  borderBottomWidth: 0,
+},
+contactProfileImageContainer: {
+  marginRight: spacing.md,
+},
+contactProfileImage: {
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+},
+contactProfilePlaceholder: {
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+  backgroundColor: colors.primaryLight,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+contactProfilePlaceholderText: {
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+},
+contactInfo: {
+  flex: 1,
+},
+conatctName: {
+  fontSize: screenWidth * 0.038,
+  fontFamily: Fonts.SemiBold,
+  color: colors.black,
+  flexWrap: 'wrap',
+  width:screenWidth * 0.65,
+},
+conatctAffiliation: {
+  fontSize: screenWidth * 0.032,
+  fontFamily: Fonts.Regular,
+  color: colors.gray,
+},
+conatctArrowIcon: {
+  marginLeft: spacing.sm,
+},
 
 });
 export default globalStyles;

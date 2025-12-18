@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, ScrollView, Platform, KeyboardAvoidingView, ImageBackground } from 'react-native';
 import { Formik } from 'formik';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService, { LoginCredentials } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
 import { ToastService } from '../../utils/service-handlers';
-import { colors } from '../../styles/globalStyles';
+import globalStyles, { colors } from '../../styles/globalStyles';
 import styles from './styles';
 import LoginHeader from './components/login-header';
 import LoginForm from './components/login-form';
@@ -351,7 +351,13 @@ const LoginPage: React.FC<LoginPageProps> = ({
               keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 30}
               style={{ flex: 1 }}
             >
-      <ScrollView showsVerticalScrollIndicator={false}>
+                  <ImageBackground
+          source={require('../../assets/images/ribbon-color-img.png')}
+          style={globalStyles.bgBottomRibbon}
+          imageStyle={globalStyles.bgBottomRibbonImage}
+        />
+        
+      <ScrollView showsVerticalScrollIndicator={false}>  
         <LoginHeader onBackToHome={onBackToHome} />
         <View style={styles.loginCardContainer}>
           <View style={styles.loginCard}>
@@ -459,7 +465,10 @@ const LoginPage: React.FC<LoginPageProps> = ({
            
           </View>
         </View>
+
+  
       </ScrollView>
+  
       </KeyboardAvoidingView>
     </View>
   );

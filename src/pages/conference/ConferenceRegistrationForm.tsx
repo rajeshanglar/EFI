@@ -367,24 +367,32 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
 
     // Format morning workshops for dropdown
     const morningWorkshopOptions = React.useMemo(() => {
+      const defaultOption = { label: 'None', value: '0' };
       if (!morningWorkshops || morningWorkshops.length === 0) {
-        return [];
+        return [defaultOption];
       }
-      return morningWorkshops.map(workshop => ({
-        label: workshop.name,
-        value: workshop.id.toString(),
-      }));
+      return [
+        defaultOption,
+        ...morningWorkshops.map(workshop => ({
+          label: workshop.name,
+          value: workshop.id.toString(),
+        }))
+      ];
     }, [morningWorkshops]);
 
     // Format afternoon workshops for dropdown
     const afternoonWorkshopOptions = React.useMemo(() => {
+      const defaultOption = { label: 'None', value: '0' };
       if (!afternoonWorkshops || afternoonWorkshops.length === 0) {
-        return [];
+        return [defaultOption];
       }
-      return afternoonWorkshops.map(workshop => ({
-        label: workshop.name,
-        value: workshop.id.toString(),
-      }));
+      return [
+        defaultOption,
+        ...afternoonWorkshops.map(workshop => ({
+          label: workshop.name,
+          value: workshop.id.toString(),
+        }))
+      ];
     }, [afternoonWorkshops]);
 
     // Format categories for dropdown
@@ -424,8 +432,8 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
       category_id: 0,
       ticket_id: 0,
       efi_type: getInitialEfiType(),
-      morning_workshop: 0,
-      afternoon_workshop: 0,
+      morning_workshop: null as any,
+      afternoon_workshop: null as any,
       currency: '',
       source_type: '',
       ticket_amount: 0,
@@ -1228,22 +1236,45 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
             }
           }, [countries, values.country, setFieldValue]);
 
+          // Reset workshop selections when category changes
+          React.useEffect(() => {
+            const categoryId = selectedTicket?.category_id;
+            
+            // If category_id = 4 (Only Conference), reset both workshops
+            if (categoryId === 4) {
+              if (values.morning_workshop !== null && values.morning_workshop !== 0) {
+                setFieldValue('morning_workshop', null);
+              }
+              if (values.afternoon_workshop !== null && values.afternoon_workshop !== 0) {
+                setFieldValue('afternoon_workshop', null);
+              }
+            }
+          }, [selectedTicket?.category_id, setFieldValue]);
+
           // Recalculate price when workshops change
           React.useEffect(() => {
             if (selectedTicket?.ticket?.mapping_id && actualMembershipType) {
               const mappingId = selectedTicket.ticket.mapping_id;
               const memberType = actualMembershipType === 'member' ? 'member' : 'non-member';
-              const morningWorkshopId = typeof values.morning_workshop === 'string' 
-                ? parseInt(values.morning_workshop, 10) 
-                : (values.morning_workshop || 0);
-              const afternoonWorkshopId = typeof values.afternoon_workshop === 'string' 
-                ? parseInt(values.afternoon_workshop, 10) 
-                : (values.afternoon_workshop || 0);
+              const categoryId = selectedTicket?.category_id;
               
-              // Only calculate if at least one workshop is selected (or both are 0 for initial load)
+              // If category_id = 4 (Only Conference), both workshops should be 0
+              let morningWorkshopId = 0;
+              let afternoonWorkshopId = 0;
+              
+              if (categoryId !== 4) {
+                morningWorkshopId = typeof values.morning_workshop === 'string' 
+                  ? parseInt(values.morning_workshop, 10) 
+                  : (values.morning_workshop || 0);
+                afternoonWorkshopId = typeof values.afternoon_workshop === 'string' 
+                  ? parseInt(values.afternoon_workshop, 10) 
+                  : (values.afternoon_workshop || 0);
+              }
+              
+              // Calculate price with appropriate workshop IDs
               calculatePrice(mappingId, memberType, morningWorkshopId, afternoonWorkshopId);
             }
-          }, [values.morning_workshop, values.afternoon_workshop, selectedTicket?.ticket?.mapping_id, actualMembershipType, calculatePrice]);
+          }, [values.morning_workshop, values.afternoon_workshop, selectedTicket?.ticket?.mapping_id, selectedTicket?.category_id, actualMembershipType, calculatePrice]);
 
           return (
           <>
@@ -1487,63 +1518,98 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                   searchPlaceholder="Search category..."
                 /> */}
 
-                {/** Morning Workshop Dropdown */}
-                  <Dropdown
-                  label="Morning Workshop *"
-                  value={String(values.morning_workshop || '')}
-                  options={morningWorkshopOptions}
-                  onSelect={v => {
-                    setFieldValue('morning_workshop', v);
-                    setFieldTouched('morning_workshop', true);
-                    // Clear error when user selects
-                    if (formikErrors.morning_workshop) {
-                      setFieldError('morning_workshop', undefined);
-                    }
-                  }}
-                    error={
-                    touched.morning_workshop && formikErrors.morning_workshop
-                      ? formikErrors.morning_workshop
-                        : undefined
-                    }
-                  placeholder={
-                    morningWorkshopsLoading
-                      ? 'Loading morning workshops...'
-                      : morningWorkshopOptions.length === 0
-                      ? 'No workshops available'
-                      : 'Select Morning Workshop'
+                {/** Workshop Dropdowns - Conditional based on category_id */}
+                {(() => {
+                  const categoryId = selectedTicket?.category_id;
+                  
+                  // Category ID 4 (Only Conference): Hide both dropdowns
+                  if (categoryId === 4) {
+                    return null;
                   }
-                  searchable={true}
-                  searchPlaceholder="Search morning workshop..."
-                />
+                  
+                  // Category ID 5 (Conference + 1 Workshop): Show both, but mutually exclusive
+                  // Category ID 6 (Conference + 2 Workshops): Show both, allow both selections
+                  
+                  return (
+                    <>
+                      {/** Morning Workshop Dropdown */}
+                      <Dropdown
+                        label="Morning Workshop"
+                        value={values.morning_workshop !== undefined && values.morning_workshop !== null ? String(values.morning_workshop) : ''}
+                        options={morningWorkshopOptions}
+                        onSelect={v => {
+                          // Convert string value to number
+                          const selectedValue = v === '0' || v === '' ? 0 : (typeof v === 'string' ? parseInt(v, 10) : v);
+                          setFieldValue('morning_workshop', selectedValue);
+                          setFieldTouched('morning_workshop', true);
+                          
+                          // If category_id = 5 (Conference + 1 Workshop), make mutually exclusive
+                          if (categoryId === 5 && selectedValue !== 0) {
+                            // If morning workshop is selected, reset afternoon workshop
+                            setFieldValue('afternoon_workshop', 0);
+                          }
+                          
+                          // Clear error when user selects
+                          if (formikErrors.morning_workshop) {
+                            setFieldError('morning_workshop', undefined);
+                          }
+                        }}
+                        error={
+                          touched.morning_workshop && formikErrors.morning_workshop
+                            ? formikErrors.morning_workshop
+                            : undefined
+                        }
+                        placeholder={
+                          morningWorkshopsLoading
+                            ? 'Loading morning workshops...'
+                            : morningWorkshopOptions.length === 0
+                            ? 'No workshops available'
+                            : 'Select Workshop'
+                        }
+                        searchable={false} 
+                        searchPlaceholder="Search morning workshop..."
+                      />
 
-                {/** Afternoon Workshop Dropdown */}
-                <Dropdown
-                  label="Afternoon Workshop *"
-                  value={String(values.afternoon_workshop || '')}
-                  options={afternoonWorkshopOptions}
-                  onSelect={v => {
-                    setFieldValue('afternoon_workshop', v);
-                    setFieldTouched('afternoon_workshop', true);
-                    // Clear error when user selects
-                    if (formikErrors.afternoon_workshop) {
-                      setFieldError('afternoon_workshop', undefined);
-                    }
-                  }}
-                  error={
-                    touched.afternoon_workshop && formikErrors.afternoon_workshop
-                      ? formikErrors.afternoon_workshop
-                      : undefined
-                  }
-                  placeholder={
-                    afternoonWorkshopsLoading
-                      ? 'Loading afternoon workshops...'
-                      : afternoonWorkshopOptions.length === 0
-                      ? 'No workshops available'
-                      : 'Select Afternoon Workshop'
-                  }
-                  searchable={true}
-                  searchPlaceholder="Search afternoon workshop..."
-                />
+                      {/** Afternoon Workshop Dropdown */}
+                      <Dropdown
+                        label="Afternoon Workshop"
+                        value={values.afternoon_workshop !== undefined && values.afternoon_workshop !== null ? String(values.afternoon_workshop) : ''}
+                        options={afternoonWorkshopOptions}
+                        onSelect={v => {
+                          // Convert string value to number
+                          const selectedValue = v === '0' || v === '' ? 0 : (typeof v === 'string' ? parseInt(v, 10) : v);
+                          setFieldValue('afternoon_workshop', selectedValue);
+                          setFieldTouched('afternoon_workshop', true);
+                          
+                          // If category_id = 5 (Conference + 1 Workshop), make mutually exclusive
+                          if (categoryId === 5 && selectedValue !== 0) {
+                            // If afternoon workshop is selected, reset morning workshop
+                            setFieldValue('morning_workshop', 0);
+                          }
+                          
+                          // Clear error when user selects
+                          if (formikErrors.afternoon_workshop) {
+                            setFieldError('afternoon_workshop', undefined);
+                          }
+                        }}
+                        error={
+                          touched.afternoon_workshop && formikErrors.afternoon_workshop
+                            ? formikErrors.afternoon_workshop
+                            : undefined
+                        }
+                        placeholder={
+                          afternoonWorkshopsLoading
+                            ? 'Loading afternoon workshops...'
+                            : afternoonWorkshopOptions.length === 0
+                            ? 'No workshops available'
+                            : 'Select Workshop'
+                        }
+                        searchable={false}
+                        searchPlaceholder="Search afternoon workshop..."
+                      />
+                    </>
+                  );
+                })()}
 
                 {/** Amount Display */}
                 {/* <View style={globalStyles.fieldContainer}>

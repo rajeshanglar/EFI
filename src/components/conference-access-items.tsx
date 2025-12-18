@@ -14,9 +14,9 @@ export const ConferenceAccess = ({
   conferenceAccessItems,
   renderConferenceItem,
 }: any) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [contentHeight, setContentHeight] = useState(0);
-  const animation = useRef(new Animated.Value(0)).current;
+  const animation = useRef(new Animated.Value(1)).current;
 
   // Animate expand / collapse
   useEffect(() => {

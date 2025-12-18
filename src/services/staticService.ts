@@ -100,10 +100,6 @@ export const GetConferenceCategories = async () => {
   return response.data;
 };
 
-  export const GetConferenceTickets = async () => {
-    const response = await apiStatic.get('v1/tickets',);
-    return response.data;  
-  };
 
   export const GetEventMappings = async () => {
     const response = await apiStatic.get('v1/event-mappings');
@@ -163,6 +159,24 @@ export const GetConferenceCategories = async () => {
     const response = await apiStatic.post('v1/calculate-conference-price', payload);
     return response.data;
   };
+
+
+  export const GetSpeakers = async (page: number, perPage: number) => {
+    try {
+      const response = await apiStatic.get(`v1/speakers`, {
+        params: {
+          page,
+          per_page: perPage
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+
+
   
 
 

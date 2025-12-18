@@ -83,17 +83,13 @@ export const conferenceRegistrationSchema = (captcha: string) =>
     
     morning_workshop: yup
       .mixed()
-      .required('Morning Workshop is required')
-      .test('is-valid-workshop', 'Please select a morning workshop', function(value) {
-        return value !== 0 && value !== '' && value != null && value !== '0';
-      }),
+      .optional()
+      .nullable(),
     
     afternoon_workshop: yup
       .mixed()
-      .required('Afternoon Workshop is required')
-      .test('is-valid-workshop', 'Please select a afternoon workshop', function(value) {
-        return value !== 0 && value !== '' && value != null && value !== '0';
-      }),
+      .optional()
+      .nullable(),
         
     captcha: yup
       .string()     

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../../components/Header';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
@@ -22,10 +24,12 @@ import {
   PhoneIcon,
   MembershipIcon,
   CongressIcon,
+
   } from '../../components/icons';
 import { useAuth } from '../../contexts/AuthContext';
-
-const { width: screenWidth } = Dimensions.get('window');
+import ImagePickerCropper, { Image as PickerImage } from 'react-native-image-crop-picker';
+import { getProfilePicture, updateProfilePicture } from '../../services/commonService';
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface ProfileProps {
   onBack: () => void;
@@ -37,7 +41,7 @@ interface ProfileProps {
   onNavigateToConferenceDetails?: () => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({
+const Profile: React.FC<ProfileProps> = ({  
   onBack,
   onNavigateToHome,
   onNavigateToMyPayments,
@@ -46,7 +50,8 @@ const Profile: React.FC<ProfileProps> = ({
   onNavigateToMyCertificates,
   onNavigateToConferenceDetails,
 }) => {
-  // Get user data from AuthContext
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [loadingImage, setLoadingImage] = useState(false);
   const { user } = useAuth();
   
   // Get user data from context or use fallback values
@@ -68,13 +73,106 @@ const Profile: React.FC<ProfileProps> = ({
   const hasMembership = Array.isArray(membershipRegistrations) && membershipRegistrations.length > 0;
   const hasConference = Array.isArray(conferenceRegistrations) && conferenceRegistrations.length > 0;
 
+  const userId = user?.id || user?.user_id;
+
+  // Load profile image when component mounts or user changes
+  useEffect(() => {
+    if (userId) {
+      loadProfileImage();
+    }
+  }, [userId]);
+
+  const loadProfileImage = async () => {
+    if (!userId) {
+      setProfileImage(null);
+      return;
+    }
+    
+    setLoadingImage(true);
+    try {
+      const payload = { user_id: userId };
+      console.log('loadProfileImage - Payload:', JSON.stringify(payload, null, 2));
+      const res = await getProfilePicture(userId);
+      console.log('loadProfileImage - Response:', JSON.stringify(res, null, 2));
+      
+      // Check if profile image exists and is not null
+      const profileBase64 = res?.data?.profile_base64;
+      const mimeType = res?.data?.mime_type;
+      
+      if (profileBase64 && mimeType && profileBase64 !== null && mimeType !== null) {
+        // Check if message indicates it's auto-generated (not uploaded)
+        const message = res?.message || '';
+        const lowerMessage = message.toLowerCase();
+        
+        // If message says "generated" but not "uploaded" or "updated", it's a default placeholder
+        if (lowerMessage.includes('generated') && 
+            !lowerMessage.includes('uploaded') && 
+            !lowerMessage.includes('updated')) {
+          // Auto-generated placeholder - show UserIcon
+          setProfileImage(null);
+        } else {
+          // Real uploaded image
+          setProfileImage(`data:${mimeType};base64,${profileBase64}`);
+        }
+      } else {
+        // No image (null values) - show UserIcon
+        setProfileImage(null);
+      }
+    } catch (e: any) {
+      setProfileImage(null);
+    } finally {
+      setLoadingImage(false);
+    }
+  };
+
+  const onEditProfileImage = async () => {
+    try {
+      const image = await ImagePickerCropper.openPicker({
+        width: 400,
+        height: 400,
+        cropping: true,
+        includeBase64: true,
+        compressImageQuality: 0.8,
+      }) as PickerImage;
+
+      const base64WithPrefix = `data:${image.mime};base64,${image.data}`;
+      setProfileImage(base64WithPrefix);
+      setLoadingImage(true);
+
+      const payload = { user_id: userId, profile_image: base64WithPrefix };
+      console.log('updateProfilePicture - Payload:', JSON.stringify(payload, null, 2));
+      const res = await updateProfilePicture(userId, base64WithPrefix);
+      console.log('updateProfilePicture - Response:', JSON.stringify(res, null, 2));
+
+      if (res?.success && res?.data?.profile_base64 && res?.data?.mime_type) {
+        setProfileImage(`data:${res.data.mime_type};base64,${res.data.profile_base64}`);
+      } else {
+        await loadProfileImage();
+      }
+    } catch (e: any) {
+      const errorMessage = e?.message || '';
+      const isCancelled = 
+        errorMessage.includes('cancel') || 
+        errorMessage.includes('User cancelled') ||
+        errorMessage.includes('cancelled image selection') ||
+        errorMessage === 'User cancelled image picker';
+      
+      if (!isCancelled) {
+        await loadProfileImage();
+      }
+    } finally {
+      setLoadingImage(false);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       <Header
         title="Profile"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
-        onMenuItemPress={(id: string) => console.log('Menu:', id)}
+        onMenuItemPress={(id: string) => {}}
       />
 
       
@@ -95,13 +193,21 @@ const Profile: React.FC<ProfileProps> = ({
         {/* Profile Card */}
         <View style={styles.profileCard}>
           {/* Profile Picture Section */}
-          <View style={styles.profilePictureContainer}>
+          <View style={styles.profilePictureContainer}>        
+
             <View style={styles.profileIconContainer}>
-              <UserIcon size={screenWidth * 0.12} color={colors.primary} />
-            </View>
+                {loadingImage ? (
+                  <ActivityIndicator size="large" color={colors.primary} />
+                ) : profileImage ? (
+                  <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                ) : (
+                  <UserIcon size={screenWidth * 0.12} color={colors.primary} />
+                )}
+              </View>
+
             <TouchableOpacity
               style={styles.editProfileIconButton}
-              onPress={onNavigateToEditProfile}
+              onPress={onEditProfileImage}
             >
               <View style={styles.editProfileIconCircle}>
                 <ProfileEditIcon size={screenWidth * 0.08} color={colors.primaryLight} />
@@ -144,14 +250,13 @@ const Profile: React.FC<ProfileProps> = ({
           {/* Change Password Button */}
           <View style={styles.changeEditButtonContainer}>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.changePasswordButton, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs}]}
             onPress={onNavigateToEditProfile}
             activeOpacity={0.7}
           >
-            {/* <EditProfileIcon size={screenWidth * 0.055} color={colors.primary} /> */}
             <Text style={styles.changePasswordText}>Edit Profile</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
 
           <TouchableOpacity
@@ -231,8 +336,12 @@ const Profile: React.FC<ProfileProps> = ({
 };
 
 const styles = StyleSheet.create({
-
-
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: screenWidth * 0.21 / 2,
+    resizeMode: 'cover',
+  },
   
   containerFullWidth:{
     width: '100%',
@@ -253,11 +362,12 @@ const styles = StyleSheet.create({
   },
 
   changeEditButtonContainer:{
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // alignItems: 'center',
+    // marginBottom: spacing.md,
     gap: spacing.sm,
+    width: '100%',
   },
 
   profileCard: {
@@ -295,16 +405,15 @@ const styles = StyleSheet.create({
   editProfileIconButton: {
     position: 'absolute',
     top: 0,
-    right: 0,
+    right:0,
   },
   editProfileIconCircle: {  
-    width:32,
-    height: 32,
-    borderRadius: 14,
+    width:screenWidth * 0.058,
+    height: screenWidth * 0.058,
+    borderRadius: screenWidth * 0.078 / 2,
     backgroundColor: colors.primary,
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
+    alignItems: 'center',    
     borderColor: colors.white,
   },
   editProfileLink: {
@@ -312,8 +421,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.md,
     position: 'absolute',
-    top:10,
-    left:10, 
+    top:screenHeight * 0.010,
+    left:screenWidth * 0.010, 
     padding: spacing.sm,
   },
   editProfileText: {
@@ -361,12 +470,11 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderRadius: borderRadius.round,
     paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    width:screenWidth * 0.40,
+    paddingHorizontal: spacing.sm,   
     backgroundColor: colors.primary,
   },
   changePasswordText: {
-    fontSize: screenWidth * 0.035,
+    fontSize: screenWidth * 0.037,
     fontFamily: Fonts.Medium,
     color: colors.white,
     textAlign: 'center',

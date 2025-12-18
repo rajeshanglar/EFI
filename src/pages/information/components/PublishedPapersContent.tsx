@@ -26,17 +26,17 @@ const PublishedPapersContent: React.FC = () => {
     <View style={styles.section}>
       <Text style={globalStyles.headingH1}>Published Papers</Text>
       <Text style={globalStyles.paragraphP}>
-        Curated research highlights to support evidence-based endometriosis care.
+        
       </Text>
 
-      <View style={styles.paperList}>
+      {/* <View style={styles.paperList}>
         {papers.map(paper => (
           <View key={paper.title} style={styles.paperCard}>
             <Text style={styles.paperTitle}>{paper.title}</Text>
             <Text style={styles.paperDescription}>{paper.description}</Text>
           </View>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 };

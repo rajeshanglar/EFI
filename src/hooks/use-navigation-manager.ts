@@ -18,6 +18,13 @@ export type PageType =
   | 'liveQA'
   | 'sessionNotes'
   | 'handouts'
+  | 'digitalPosters'
+  | 'myAbstracts'
+  | 'keynoteSpeakers'
+  | 'keynoteSpeakersDetails'
+  | 'delegateList'
+  | 'delegateListDetails'
+  | 'privacySettings'
   | 'membershipForm'
   | 'membershipPaymentDetails'
   | 'membershipExclusiveAccess'
@@ -59,6 +66,8 @@ export function useNavigationManager() {
   } | null>(null);
   const [selectedSession, setSelectedSession] = useState<any>(null);
   const [selectedPayment, setSelectedPayment] = useState<any>(null);
+  const [selectedSpeaker, setSelectedSpeaker] = useState<any>(null);
+  const [selectedDelegate, setSelectedDelegate] = useState<any>(null);
   const [conferencePaymentData, setConferencePaymentData] = useState<{
     ticketInfo?: {
       module_name?: string;
@@ -221,6 +230,19 @@ export function useNavigationManager() {
     liveQA: () => setCurrentPage('liveQA'),
     sessionNotes: () => setCurrentPage('sessionNotes'),
     handouts: () => setCurrentPage('handouts'),
+    digitalPosters: () => setCurrentPage('digitalPosters'),
+    myAbstracts: () => setCurrentPage('myAbstracts'),
+    keynoteSpeakers: () => setCurrentPage('keynoteSpeakers'),
+    keynoteSpeakersDetails: (speakerData?: any) => {
+      if (speakerData) setSelectedSpeaker(speakerData);
+      setCurrentPage('keynoteSpeakersDetails');
+    },
+    delegateList: () => setCurrentPage('delegateList'),
+    delegateListDetails: (delegateData?: any) => {
+      if (delegateData) setSelectedDelegate(delegateData);
+      setCurrentPage('delegateListDetails');
+    },
+    privacySettings: () => setCurrentPage('privacySettings'),
     board: () => setCurrentPage('board'),
     profile: () => setCurrentPage('profile'),
     changePassword: () => setCurrentPage('changePassword'),
@@ -266,6 +288,8 @@ export function useNavigationManager() {
     selectedTicket,
     selectedSession,
     selectedPayment,
+    selectedSpeaker,
+    selectedDelegate,
     conferencePaymentData,
     conferenceRegistrationId,
     myConferenceSessions,

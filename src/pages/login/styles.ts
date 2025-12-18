@@ -5,7 +5,7 @@ import {
   Fonts,
   spacing,
 } from '../../styles/globalStyles';
-
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -87,8 +87,7 @@ const styles = StyleSheet.create({
   },
 
   loginCardContainer: {
-    backgroundColor: colors.white,
-    padding: spacing.lg,
+     padding:screenWidth * 0.045,       
   },
 
   loginCard: {
@@ -103,8 +102,8 @@ const styles = StyleSheet.create({
     shadowColor: colors.gray,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowRadius: 20,
+    elevation: 4,
   },
   ribbonContainer: {
     position: 'absolute',
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
   },
 
   mainInputContainer: {
-    marginHorizontal: spacing.sm,
+    marginHorizontal:0,
     marginBottom: spacing.md,
   },
 
@@ -183,7 +182,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: Dimensions.get('window').width * 0.04,
-    fontFamily: Fonts.Regular,
+    fontFamily: Fonts.Medium,
     color: colors.black,
     paddingVertical: spacing.sm,
     marginLeft: spacing.sm,
@@ -220,8 +219,9 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     borderColor: '#9A8A5B',
     borderRadius: 4,
-    padding: spacing.sm,
-    marginTop: 19,
+    paddingVertical: Dimensions.get('window').width * 0.02,
+    paddingHorizontal: Dimensions.get('window').width * 0.0,
+    marginTop: Dimensions.get('window').width * 0.019,
     marginBottom: spacing.sm,
   },
   captchaBox: {
@@ -235,10 +235,11 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontFamily: Fonts.Bold,
     letterSpacing: 2,
+    paddingLeft: Dimensions.get('window').width * 0.030,
   },
   captchaRefresh: {
     padding: spacing.xs,
-    marginRight: spacing.sm,
+    marginRight:Dimensions.get('window').width * 0.020,
   },
   captchaRefreshText: {
     fontSize: Dimensions.get('window').width * 0.07,
@@ -247,18 +248,17 @@ const styles = StyleSheet.create({
   },
   captchaInput: {
     flex: 1,
-    fontSize: Dimensions.get('window').width * 0.04,
+    fontSize: Dimensions.get('window').width * 0.043,
     fontFamily: Fonts.Medium,
     color: colors.primary,
     backgroundColor: colors.white,
     borderColor: colors.gray,
     borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 0,
-    textAlign: 'center',
+    borderRadius:borderRadius.sm,
+    paddingHorizontal:Dimensions.get('window').width * 0.02,
+    paddingVertical:Dimensions.get('window').height * 0.005,
+    textAlign: 'center', 
     textAlignVertical: 'center',
-    height: Dimensions.get('window').height * 0.042,
     marginLeft: Dimensions.get('window').width * 0.02,
     marginRight: Dimensions.get('window').width * 0.02,
   },
@@ -333,8 +333,8 @@ const styles = StyleSheet.create({
   },
   backToLoginText: {
     color: colors.primary,
-    fontSize: Dimensions.get('window').width * 0.04,
-    fontFamily: Fonts.Medium,
+    fontSize: Dimensions.get('window').width * 0.05,
+    fontFamily: Fonts.SemiBold,
     textDecorationLine: 'underline',
   },
 });

@@ -24,7 +24,6 @@ const STATIC_TOKEN_ENDPOINTS = [
   'v1/workshops?type=morning',
   'v1/workshops?type=afternoon',
   'v1/categories',
-  'v1/tickets',
   'v1/event-mappings',
   'v1/conference-registration',
   'v1/conference/create-order',
@@ -32,8 +31,8 @@ const STATIC_TOKEN_ENDPOINTS = [
  'v1/download-conference-qrcode',
  'v1/conference/send-efi-member-verification-otp',
  'v1/conference/verify-efi-member-otp',
- 'v1/calculate-conference-price'
-
+ 'v1/calculate-conference-price',
+ 'v1/speakers'
 
   // Add more API paths here as needed
 ];

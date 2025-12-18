@@ -14,11 +14,7 @@ import ConferencePaymentDetails from '../pages/conference/ConferencePaymentDetai
 import ConferenceQRCode from '../pages/conference/ConferenceQRCode';
 import ConferenceList from '../pages/conference/ConferenceList';
 import ConferenceSessionDetails from '../pages/conference/ConferenceSessionDetails';
-import MyConference from '../pages/conference/MyConference';
-import MyConferenceSession from '../pages/conference/MyConferenceSession';
-import LiveQA from '../pages/conference/LiveQA';
-import MySessionNotes from '../pages/conference/MySessionNotes';
-import Handouts from '../pages/conference/Handouts';
+import { MyConference, MyConferenceSession, LiveQA, MySessionNotes, Handouts, MyAbstracts, DigitalPosters, KeynoteSpeakers, KeynoteSpeakersDetails, DelegateList, DelegateListDetails, PrivacySettings } from '../pages/conference/ConferenceAccess';
 import TrainingPrograms from '../pages/training-programs/EFITrainingPrograms';
 import MembershipRegistrationForm from '../pages/membership/MembershipRegistrationForm';
 import MembershipPaymentDetails from '../pages/membership/MembershipPaymentDetails';
@@ -80,6 +76,8 @@ function AppNavigation() {
     selectedTicket,
     selectedSession,
     selectedPayment,
+    selectedSpeaker,
+    selectedDelegate,
     conferencePaymentData,
     conferenceRegistrationId,
     myConferenceSessions,
@@ -272,6 +270,98 @@ function AppNavigation() {
         }
         onNavigateToHome={navigate.home}
         sessionData={selectedSession}
+      />
+    ),
+    digitalPosters: (
+      <DigitalPosters
+        onBack={() =>
+          selectedSession
+            ? navigate.myConferenceSession(selectedSession)
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+        sessionData={selectedSession}
+      />
+    ),
+    myAbstracts: (
+      <MyAbstracts
+        onBack={() =>
+          selectedSession
+            ? navigate.myConferenceSession(selectedSession)
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+        sessionData={selectedSession}
+      />
+    ),
+    keynoteSpeakers: (
+      <KeynoteSpeakers
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+        onSpeakerPress={(speaker) => {
+          // Convert speaker data to details format
+          const speakerDetails = {
+            id: speaker.id,
+            name: speaker.name,
+            titles: [speaker.affiliation],
+            biography: `Biography for ${speaker.name}...`,
+            sessionTitle: 'Robotics in Endometriosis',
+            sessionSubtitle: 'Simulation to Strategy',
+            date: 'Monday, March 06, 2025',
+            location: 'Hall 1',
+            time: '08.00 am - 12:30pm',
+            workshopNumber: 'Workshop 1',
+            theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
+            overview: 'This hands-on workshop focuses on robotic-assisted surgery for endometriosis.',
+            image: speaker.image,
+          };
+          navigate.keynoteSpeakersDetails(speakerDetails);
+        }}
+      />
+    ),
+    keynoteSpeakersDetails: (
+      <KeynoteSpeakersDetails
+        onBack={navigate.keynoteSpeakers}
+        onNavigateToHome={navigate.home}
+        speakerData={selectedSpeaker}
+      />
+    ),
+    delegateList: (
+      <DelegateList
+        onBack={navigate.myConference}
+        onNavigateToHome={navigate.home}
+        onDelegatePress={(delegate) => {
+          // Convert delegate data to details format
+          const delegateDetails = {
+            id: delegate.id,
+            name: delegate.name,
+            titles: [delegate.affiliation],
+            biography: `Biography for ${delegate.name}...`,
+            sessionTitle: 'Robotics in Endometriosis',
+            sessionSubtitle: 'Simulation to Strategy',
+            date: 'Monday, March 06, 2025',
+            location: 'Hall 1',
+            time: '08.00 am - 12:30pm',
+            workshopNumber: 'Workshop 1',
+            theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
+            overview: 'This hands-on workshop focuses on robotic-assisted surgery for endometriosis.',
+            image: delegate.image,
+          };
+          navigate.delegateListDetails(delegateDetails);
+        }}
+      />
+    ),
+    delegateListDetails: (
+      <DelegateListDetails
+        onBack={navigate.delegateList}
+        onNavigateToHome={navigate.home}
+        delegateData={selectedDelegate}
+      />
+    ),
+    privacySettings: (
+      <PrivacySettings
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
       />
     ),
 

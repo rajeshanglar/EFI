@@ -160,11 +160,19 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
         navigate.donationsAndFundraising();
         break;
       case 'privacy':
+        navigate.privacySettings();
+        break;
       case 'posters':
-      case 'speakers':
-      case 'delegates':
+        navigate.digitalPosters();
+        break;
       case 'abstracts':
-        // Conference access items - handled by custom handler if needed
+        navigate.myAbstracts();
+        break;
+      case 'speakers':
+        navigate.keynoteSpeakers();
+        break;
+      case 'delegates':
+        navigate.delegateList();
         break;
       default:
         console.log('Menu pressed:', id);
