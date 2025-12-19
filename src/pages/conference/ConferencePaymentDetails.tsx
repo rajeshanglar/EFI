@@ -427,8 +427,18 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
             isPublicDownloads = true;
           }
         } else {
-          // For iOS, use Document directory
-          filePath = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/${filename}`;
+          // For iOS, create EFI folder in Document directory and save there
+          const efiFolderPath = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/EFI`;
+          
+          // Check if EFI folder exists, create if it doesn't
+          const efiFolderExists = await ReactNativeBlobUtil.fs.exists(efiFolderPath);
+          if (!efiFolderExists) {
+            await ReactNativeBlobUtil.fs.mkdir(efiFolderPath);
+            console.log('✅ Created EFI folder:', efiFolderPath);
+          }
+          
+          filePath = `${efiFolderPath}/${filename}`;
+          console.log('📁 iOS File Path:', filePath);
         }
 
         console.log('\n');
@@ -441,7 +451,10 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
         await ReactNativeBlobUtil.fs.writeFile(filePath, base64Data, 'base64');
 
         // Show success alert immediately after file write
-        const successMessage = `Payment receipt downloaded successfully!`;
+        let successMessage = `Payment receipt downloaded successfully!`;
+        if (Platform.OS === 'ios') {
+          successMessage = `Invoice saved to EFI folder!\n\nTo access: Files app > On My iPhone > Efi > EFI`;
+        }
 
         // Set alert state directly - React will handle the render
         console.log('Setting download alert - visible: true, message:', successMessage);
@@ -493,7 +506,10 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
         console.log('Is Public Downloads:', isPublicDownloads);
         console.log('Platform:', Platform.OS);
         console.log('Android Version:', Platform.OS === 'android' ? Platform.Version : 'N/A');
-        if (!isPublicDownloads && Platform.OS === 'android') {
+        if (Platform.OS === 'ios') {
+          console.log('\n📱 iOS File Location:');
+          console.log('Files app > On My iPhone > Efi > EFI >', filename);
+        } else if (!isPublicDownloads && Platform.OS === 'android') {
           console.log('\n📱 To access the file:');
           console.log('1. Open Files app (or any file manager)');
           console.log('2. Navigate to: Internal storage > Android > data > com.efi > files > Download');
@@ -713,6 +729,7 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
           onNavigateToQRCode?.(registrationId || undefined);
         }}
         onDownload={handleDownloadReceipt}
+        downloadText="Download Invoice"
       />
 
       {/* Failure Modal */}

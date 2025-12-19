@@ -14,6 +14,7 @@ const LoginButton: React.FC<Props> = React.memo(({ onPress, loading }) => (
     style={styles.loginButton}
     onPress={onPress}
     disabled={loading}
+    activeOpacity={0.7}
   >
     <LinearGradient
       colors={[colors.blue, colors.primaryLight]}

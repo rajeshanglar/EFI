@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   gradient: {
-    paddingVertical: spacing.sm,
     marginHorizontal: spacing.md,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 100,
+    borderRadius: 150,
+    height:42,
   },
   contentContainer: {
     flexDirection: 'row',

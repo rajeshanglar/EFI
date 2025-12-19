@@ -6,6 +6,10 @@ import {
   spacing,
 } from '../../styles/globalStyles';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Calculate button text sizes with minimums
+const buttonTextSize = Math.max(screenWidth * 0.047, 16);
+const buttonLineHeight = Math.max(screenHeight * 0.04, 20);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -280,19 +284,18 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   loginButtonGradient: {
-    paddingVertical: Dimensions.get('window').height * 0.02,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: Dimensions.get('window').height * 0.06,
   },
   loginButtonText: {
-    color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.047,
+    color: '#FFFFFF',
+    fontSize: buttonTextSize,
     fontFamily: Fonts.Bold,
+    fontWeight: '700',
     letterSpacing: 1,
     textAlign: 'center',
-    includeFontPadding: false,
-    textAlignVertical: 'center',
+    lineHeight: buttonLineHeight,
   },
   forgotPasswordSubtitle: {
     fontSize: Dimensions.get('window').width * 0.037,
