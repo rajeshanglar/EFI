@@ -137,6 +137,10 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
     workshop_amount?: number;
   } | null>(null);
   const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
+  // Refs for scrolling to errors
+  const scrollViewRef = useRef<ScrollView>(null);
+  const fieldRefs = useRef<{ [key: string]: View | null }>({});
+  const fieldPositions = useRef<{ [key: string]: number }>({});
   const [showCouponSuccessModal, setShowCouponSuccessModal] = useState(false);
   const [showMembershipAlert, setShowMembershipAlert] = useState(false);
   const [showEfiMemberOtpModal, setShowEfiMemberOtpModal] = useState(false);
@@ -1121,14 +1125,14 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
 
           <View style={styles.membershipTypeContainer}>
             {/* Display Membership Type (EFI Member or Non EFI Member) - Only for Non-Residential Packages */}
-            {selectedTicket.is_residential === 0 && actualMembershipType && (
+            {selectedTicket.is_residential === 0 && !!actualMembershipType && (
               <Text style={styles.membershipTypeText}>
                 {actualMembershipType === 'member' ? 'EFI Member' : 'Non EFI Member'}, 
               </Text>
             )}
 
 
-            {selectedTicket.module_name && (
+            {!!selectedTicket.module_name && (
               <Text style={styles.moduleName}>
                 {selectedTicket.module_name}
               </Text>
@@ -1136,12 +1140,12 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
           </View>
 
             <View style={styles.conferenHeaderTextContainer}>
-              {selectedTicket.categoryName && (
+              {!!selectedTicket.categoryName && (
                  <Text style={styles.conferenHeaderText}>
                   {selectedTicket.categoryName}
                 </Text>
               )}
-              {selectedTicket.ticket.name && (
+              {!!selectedTicket.ticket.name && (
                 <>
                   <Text style={styles.conferenHeaderDot }>| </Text>
                   <Text style={styles.conferenHeaderText}>
@@ -1276,16 +1280,35 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
             }
           }, [values.morning_workshop, values.afternoon_workshop, selectedTicket?.ticket?.mapping_id, selectedTicket?.category_id, actualMembershipType, calculatePrice]);
 
+          // Function to scroll to first error field
+          const scrollToFirstError = React.useCallback(() => {
+            const errorFields = Object.keys(formikErrors);
+            if (errorFields.length > 0 && scrollViewRef.current) {
+              // Find the first error field that has a position stored
+              const firstErrorField = errorFields.find(field => fieldPositions.current[field] !== undefined);
+              if (firstErrorField !== undefined && fieldPositions.current[firstErrorField] !== undefined) {
+                // Small delay to ensure layout is complete
+                setTimeout(() => {
+                  const yPosition = fieldPositions.current[firstErrorField];
+                  scrollViewRef.current?.scrollTo({ 
+                    y: Math.max(0, yPosition - 100), 
+                    animated: true 
+                  });
+                }, 300);
+              }
+            }
+          }, [formikErrors]);
+
           return (
           <>
-           
               <ScrollView
+                ref={scrollViewRef}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={globalStyles.formContainer}
                 keyboardShouldPersistTaps="handled"
                 keyboardDismissMode="on-drag"
               >            
-                {apiErrors.general && (
+                {!!apiErrors.general && (
                   <View style={globalStyles.fieldContainer}>
                     <Text style={globalStyles.fieldErrorText}>
                       {apiErrors.general}
@@ -1347,10 +1370,18 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                   const isEmail = field === 'email';
                   const isPhone = field === 'mobile';
                   const apiError = isEmail ? apiErrors.email : isPhone ? apiErrors.phone : undefined;
-                  const hasError = (touched[field] && formikErrors[field]) || apiError;
+                  const hasError = !!(touched[field] && formikErrors[field]) || !!apiError;
 
                   return (
-                  <View key={field} style={globalStyles.fieldContainer}>
+                  <View 
+                    key={field} 
+                    ref={(ref) => { fieldRefs.current[field] = ref; }}
+                    onLayout={(event) => {
+                      const { y } = event.nativeEvent.layout;
+                      fieldPositions.current[field] = y;
+                    }}
+                    style={globalStyles.fieldContainer}
+                  >
                       <Text style={globalStyles.fieldLabel}>
                         {label}
                         {required && <Text style={{ color: colors.red }}>*</Text>}                        
@@ -1389,7 +1420,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                           {apiError}
                         </Text>
                       ) : (
-                        touched[field] && formikErrors[field] ? (
+                        !!(touched[field] && formikErrors[field]) ? (
                       <Text style={globalStyles.fieldErrorText}>
                         {formikErrors[field]}
                       </Text>
@@ -1430,7 +1461,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                 />
 
                 {/** State Dropdown */}
-                {values.country && values.country !== 0 && (
+                {!!(values.country && values.country !== 0) && (
                   <Dropdown
                     label="Select State"
                     value={values.state ? values.state.toString() : ''}
@@ -1445,7 +1476,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                     placeholder={
                       statesLoading
                         ? 'Loading states...'
-                        : stateOptions.length === 0
+                        : stateOptions.length === 0 
                         ? 'No states available'
                         : 'Select State'
                     }
@@ -1455,7 +1486,14 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                 )}
 
                 {/** City Field */}
-                <View style={globalStyles.fieldContainer}>
+                <View 
+                  ref={(ref) => { fieldRefs.current['city'] = ref; }}
+                  onLayout={(event) => {
+                    const { y } = event.nativeEvent.layout;
+                    fieldPositions.current['city'] = y;
+                  }}
+                  style={globalStyles.fieldContainer}
+                >
                   <Text style={globalStyles.fieldLabel}>
                     City <Text style={{ color: colors.red }}>*</Text>
                   </Text>
@@ -1478,7 +1516,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                     }}
                     onBlur={handleBlur('city')}
                   />
-                  {touched.city && formikErrors.city ? (
+                  {!!(touched.city && formikErrors.city) ? (
                     <Text style={globalStyles.fieldErrorText}>
                       {formikErrors.city}
                     </Text>
@@ -1677,7 +1715,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                       )}
                     </Text>
                   )}
-                  {couponError && (
+                  {!!couponError && (
                     <Text style={styles.couponError}>
                       {couponError}
                     </Text>
@@ -1687,7 +1725,14 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
       
 
                 {/** CAPTCHA */}
-            <View style={globalStyles.fieldContainer}>
+            <View 
+              ref={(ref) => { fieldRefs.current['captcha'] = ref; }}
+              onLayout={(event) => {
+                const { y } = event.nativeEvent.layout;
+                fieldPositions.current['captcha'] = y;
+              }}
+              style={globalStyles.fieldContainer}
+            >
                   <Text style={globalStyles.fieldLabel}>CAPTCHA</Text>
                   <View style={globalStyles.formCaptchaContainer}>
                     <View style={globalStyles.formCaptchaCodeContainer}>
@@ -1726,7 +1771,7 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                       <RefreshIcon size={20} color={colors.primary} />
                     </TouchableOpacity>
                   </View>
-                  {touched.captcha && formikErrors.captcha ? (
+                  {!!(touched.captcha && formikErrors.captcha) ? (
                     <Text style={globalStyles.fieldErrorText}>
                       {formikErrors.captcha}
                     </Text>
@@ -1739,7 +1784,19 @@ const ConferenceRegistrationForm: React.FC<Props> = ({
                 title={isSubmitting ? 'SUBMITTING...' : 'SUBMIT'}
                 onPress={() => {
                   setApiErrors(prev => ({ ...prev, general: undefined }));
+                  // Mark all fields as touched to show validation errors
+                  const allFields = [
+                    'full_name', 'email', 'mobile', 'institute', 'specialization', 
+                    'address', 'pincode', 'dob', 'country', 'state', 'city', 
+                    'captcha', 'morning_workshop', 'afternoon_workshop'
+                  ];
+                  allFields.forEach(field => setFieldTouched(field, true));
+                  // Submit form
                   formikHandleSubmit();
+                  // Scroll to first error after a delay (to allow validation to complete)
+                  setTimeout(() => {
+                    scrollToFirstError();
+                  }, 100);
                 }}
                 disabled={isSubmitting}
               />

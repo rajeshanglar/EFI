@@ -949,11 +949,11 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                           {apiError}
                         </Text>
                       ) : (
-                        (touched[field] && formikErrors[field]) && (
+                        (touched[field] && formikErrors[field]) ? (
                           <Text style={globalStyles.fieldErrorText}>
                             {formikErrors[field]}
                           </Text>
-                        )
+                        ) : null
                       )}
                     </View>
                   );
@@ -1013,7 +1013,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       maximumDate={new Date()} // prevent selecting future dates
                     />
                   )}
-                  {touched.dob && formikErrors.dob && (
+                  {!!(touched.dob && formikErrors.dob) && (
                     <Text style={globalStyles.fieldErrorText}>
                       {formikErrors.dob}
                     </Text>
@@ -1046,7 +1046,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                 />
 
                 {/** State Dropdown */}
-                {values.country && values.country !== 0 && (
+                {!!(values.country && values.country !== 0) && (
                   <Dropdown
                     label="Select State"
                     value={values.state ? values.state.toString() : ''}
@@ -1080,7 +1080,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     onChangeText={handleChange('city')}
                     onBlur={handleBlur('city')}
                   />
-                  {touched.city && formikErrors.city && (
+                  {!!(touched.city && formikErrors.city) && (
                     <Text style={globalStyles.fieldErrorText}>
                       {formikErrors.city}
                     </Text>
@@ -1104,7 +1104,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     onBlur={handleBlur('address')}
                     multiline
                   />
-                  {touched.address && formikErrors.address && (
+                  {!!(touched.address && formikErrors.address) && (
                     <Text style={globalStyles.fieldErrorText}>
                       {formikErrors.address}
                     </Text>
@@ -1128,7 +1128,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                     onBlur={handleBlur('pin_code')}
                     keyboardType="number-pad"                   
                   />
-                  {touched.pin_code && (formikErrors as any).pin_code && (
+                  {!!(touched.pin_code && (formikErrors as any).pin_code) && (
                     <Text style={globalStyles.fieldErrorText}>
                       {(formikErrors as any).pin_code}
                     </Text>
@@ -1187,7 +1187,7 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       onBlur={handleBlur(field)}
                       keyboardType="number-pad"
                     />
-                    {touched[field] && formikErrors[field] && (
+                    {!!(touched[field] && formikErrors[field]) && (
                       <Text style={globalStyles.fieldErrorText}>
                         {formikErrors[field]}
                       </Text>
@@ -1242,14 +1242,14 @@ const MembershipRegistrationForm: React.FC<Props> = ({
                       )}
                     </Text>
                   )}
-                  {couponError && (
+                  {!!couponError && (
                     <Text style={styles.couponError}>
                       {couponError}
                     </Text>
                   )}
                 </View>
 
-                {apiErrors.general && (
+                {!!apiErrors.general && (
                   <View style={styles.generalErrorContainer}>
                     <Text style={styles.generalErrorText}>
                       {apiErrors.general}
