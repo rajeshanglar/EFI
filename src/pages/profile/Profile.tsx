@@ -54,6 +54,25 @@ const Profile: React.FC<ProfileProps> = ({
   const [loadingImage, setLoadingImage] = useState(false);
   const { user } = useAuth();
   
+  // Get membership, conference, and speaker registrations from linked_registrations
+  const membershipRegistrations = user?.linked_registrations?.membership || [];
+  const conferenceRegistrations = user?.linked_registrations?.conference || [];
+  const speakerRegistrations = user?.linked_registrations?.speaker || [];
+  
+  const hasMembership = Array.isArray(membershipRegistrations) && membershipRegistrations.length > 0;
+  const hasConference = Array.isArray(conferenceRegistrations) && conferenceRegistrations.length > 0;
+  const hasSpeaker = Array.isArray(speakerRegistrations) && speakerRegistrations.length > 0;
+
+  // Get serial number: prioritize membership, then speaker (exclude conference)
+  const membershipSerialNumber = hasMembership && membershipRegistrations[0]?.serial_number 
+    ? membershipRegistrations[0].serial_number 
+    : '';
+  const speakerSerialNumber = hasSpeaker && speakerRegistrations[0]?.serial_number 
+    ? speakerRegistrations[0].serial_number 
+    : '';
+  
+  const displaySerialNumber = membershipSerialNumber || speakerSerialNumber || '';
+
   // Get user data from context or use fallback values
   const userData = {
     name: user?.first_name && user?.last_name 
@@ -63,15 +82,8 @@ const Profile: React.FC<ProfileProps> = ({
       : user?.name || 'User',
     email: user?.email_id || user?.email || '',
     phone: user?.mobile_no || user?.phone || '',
-    serialNumber: user?.registration_serial_number || user?.serial_number || user?.serialNumber || '',
+    serialNumber: displaySerialNumber,
   };
-
-  // Get membership and conference registrations from linked_registrations
-  const membershipRegistrations = user?.linked_registrations?.membership || [];
-  const conferenceRegistrations = user?.linked_registrations?.conference || [];
-  
-  const hasMembership = Array.isArray(membershipRegistrations) && membershipRegistrations.length > 0;
-  const hasConference = Array.isArray(conferenceRegistrations) && conferenceRegistrations.length > 0;
 
   const userId = user?.id || user?.user_id;
 
@@ -227,9 +239,11 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
-          {hasMembership && userData.serialNumber ? (
+          {userData.serialNumber ? (
               <View style={styles.contactRow}>
-                <Text style={styles.serialNumberLabel}>Membership ID:</Text>
+                <Text style={styles.serialNumberLabel}>
+                  {membershipSerialNumber ? 'Membership ID:' : 'Speaker ID:'}
+                </Text>
                 <Text style={styles.serialNumberText}>{userData.serialNumber}</Text>
               </View>
             ) : null}
