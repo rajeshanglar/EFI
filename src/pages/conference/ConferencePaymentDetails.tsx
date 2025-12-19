@@ -111,7 +111,7 @@ const ConferencePaymentDetails: React.FC<ConferencePaymentDetailsProps> = ({
           description: "Conference Payment",
           image: require("../../assets/images/logo-efi.png"),
           currency: orderData.currency,
-          key: orderData.key, // Replace with Razorpay Key
+          key: orderData.key, // Razorpay key from backend API response
           amount: orderData.amount, // From backend
           order_id: orderData.order_id,   // From backend
           name: "EFI",

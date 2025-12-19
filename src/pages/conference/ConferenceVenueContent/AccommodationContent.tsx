@@ -264,7 +264,7 @@ export const AccommodationContent: React.FC = () => {
                   end={{ x: 1, y: 0 }}
                   style={styles.gradient}
                 >
-                  <PhoneWIcon size={20} color={colors.white} />
+                  <PhoneWIcon size={17} color={colors.white} />
                   <Text style={styles.buttonText}>Call Now</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -279,7 +279,7 @@ export const AccommodationContent: React.FC = () => {
                   end={{ x: 1, y: 0 }}
                   style={styles.gradient}
                 >
-                  <WebsiteWIcon size={20} color={colors.primary} />
+                  <WebsiteWIcon size={17} color={colors.primary} />
                   <Text style={styles.buttonText}>Website</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -294,7 +294,7 @@ export const AccommodationContent: React.FC = () => {
                   end={{ x: 1, y: 0 }}
                   style={styles.gradient}
                 >
-                  <MapWIcon size={20} color={colors.white} />
+                  <MapWIcon size={17} color={colors.white} />
                   <Text style={styles.buttonText}>Maps</Text>
                 </LinearGradient>
               </TouchableOpacity>
@@ -313,16 +313,6 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
 
-  gradient: {
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.sm,
-    marginRight:3,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100,
-    width: screenWidth * 0.25,    
-  },
 
   heading: {
     fontSize: screenWidth * 0.048,
@@ -401,7 +391,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.sm,
-    gap: spacing.sm,
+    gap: spacing.xs,
   },
   infoText: {
     fontSize: screenWidth * 0.036,
@@ -411,14 +401,28 @@ const styles = StyleSheet.create({
   },
   buttonsRow: {
     flexDirection: 'row',
-    gap: spacing.sm,
+    alignItems:'flex-start',
+    justifyContent:'flex-start',
     marginTop: spacing.md,
   },
   actionButton: {
+    width:(screenWidth *0.80) / 3,
+    marginRight:screenWidth * 0.01,
+    paddingHorizontal:0,
+    alignItems:'center',
+    justifyContent:'center',
     
   },
 
 
+  gradient: {
+    height:42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+    width:'100%',
+  },
 
   buttonText: {
     fontSize: screenWidth * 0.032,

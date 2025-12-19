@@ -17,25 +17,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Efi" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="GJd-Yh-RWb">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="LaunchIcon" translatesAutoresizingMaskIntoConstraints="NO" id="usX-Do-ku1">
-                                <rect key="frame" x="16" y="20" width="343" height="647"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="627"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="375" id="kQD-sf-5aW"/>
+                                    <constraint firstAttribute="height" constant="375" id="qgp-PV-tm9"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="usX-Do-ku1" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" id="KRN-Cd-PMH"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="usX-Do-ku1" secondAttribute="bottom" id="M4s-py-0Z4"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="GJd-Yh-RWb" secondAttribute="centerX" id="Q3B-4B-g5h"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="usX-Do-ku1" secondAttribute="trailing" id="aDt-SB-IOI"/>
-                            <constraint firstItem="GJd-Yh-RWb" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="bottom" multiplier="1/3" constant="1" id="moa-c2-u7t"/>
-                            <constraint firstItem="usX-Do-ku1" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="rV7-hM-zK5"/>
-                            <constraint firstItem="GJd-Yh-RWb" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" symbolic="YES" id="x7j-FC-K8j"/>
+                            <constraint firstItem="usX-Do-ku1" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" id="5Si-rG-sJx"/>
+                            <constraint firstItem="usX-Do-ku1" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="6UG-jq-2nO"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="usX-Do-ku1" secondAttribute="bottom" id="C0d-3z-6LJ"/>
+                            <constraint firstItem="usX-Do-ku1" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" id="bBd-7f-7ch"/>
+                            <constraint firstItem="usX-Do-ku1" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="hO2-T1-xQI"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="usX-Do-ku1" secondAttribute="bottom" id="qc2-Sw-nuQ"/>
                         </constraints>
                     </view>
                 </viewController>
