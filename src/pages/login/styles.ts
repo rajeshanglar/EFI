@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
   loginButton: {
     borderRadius: 100,
     overflow: 'hidden',
-    marginTop: 0,
+    marginTop: spacing.md,
     marginBottom: spacing.lg,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
@@ -280,19 +280,19 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   loginButtonGradient: {
-    paddingVertical: Dimensions.get('window').height * 0.03,
+    paddingVertical: Dimensions.get('window').height * 0.02,
     alignItems: 'center',
     justifyContent: 'center',
-    height: Dimensions.get('window').height * 0.04,
+    minHeight: Dimensions.get('window').height * 0.06,
   },
   loginButtonText: {
     color: colors.white,
     fontSize: Dimensions.get('window').width * 0.047,
-    height: Dimensions.get('window').height * 0.04,
-    lineHeight: Dimensions.get('window').height * 0.04,
     fontFamily: Fonts.Bold,
     letterSpacing: 1,
     textAlign: 'center',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   forgotPasswordSubtitle: {
     fontSize: Dimensions.get('window').width * 0.037,
