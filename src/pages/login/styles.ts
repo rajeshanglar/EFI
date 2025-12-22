@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 import {
   borderRadius,
   colors,
@@ -6,6 +6,10 @@ import {
   spacing,
 } from '../../styles/globalStyles';
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// Calculate button text sizes with minimums
+const buttonTextSize = Math.max(screenWidth * 0.047, 16);
+const buttonLineHeight = Math.max(screenHeight * 0.04, 20);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -104,6 +108,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 4,
+
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 16,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   ribbonContainer: {
     position: 'absolute',
@@ -271,7 +287,7 @@ const styles = StyleSheet.create({
   loginButton: {
     borderRadius: 100,
     overflow: 'hidden',
-    marginTop: 0,
+    marginTop: spacing.md,
     marginBottom: spacing.lg,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 4 },
@@ -280,19 +296,18 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   loginButtonGradient: {
-    paddingVertical: Dimensions.get('window').height * 0.03,
     alignItems: 'center',
     justifyContent: 'center',
-    height: Dimensions.get('window').height * 0.04,
+    minHeight: Dimensions.get('window').height * 0.06,
   },
   loginButtonText: {
-    color: colors.white,
-    fontSize: Dimensions.get('window').width * 0.047,
-    height: Dimensions.get('window').height * 0.04,
-    lineHeight: Dimensions.get('window').height * 0.04,
+    color: '#FFFFFF',
+    fontSize: buttonTextSize,
     fontFamily: Fonts.Bold,
+    fontWeight: '700',
     letterSpacing: 1,
     textAlign: 'center',
+    lineHeight: buttonLineHeight,
   },
   forgotPasswordSubtitle: {
     fontSize: Dimensions.get('window').width * 0.037,

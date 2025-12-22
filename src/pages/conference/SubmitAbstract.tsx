@@ -675,22 +675,30 @@ const styles = StyleSheet.create({
     borderColor: colors.gray,
     borderRadius: 0,
     backgroundColor: colors.white,
-    minHeight:Dimensions.get('window').height * 0.2,
-    marginTop: spacing.xs,
+    minHeight:Dimensions.get('window').height * 0.3,
+    marginTop:0,
   },
   richEditorContainerError: {
     borderColor: colors.red,
   },
   richEditorInnerContainer: {
     backgroundColor: colors.white,
-    padding: spacing.sm,
+    
   },
   richEditorStyle: {
     backgroundColor: colors.white,
     color: colors.black,
     fontSize: screenWidth * 0.038,
     fontFamily: Fonts.Regular,
-    minHeight: 150,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
+    
+ 
+    
   },
   richToolbarButtonSelected: {
     backgroundColor: colors.primary,
