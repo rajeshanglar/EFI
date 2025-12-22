@@ -16,7 +16,7 @@ export const ProgramContent: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Endometriosis India Congress 2026</Text>
-      <Text style={styles.details}>March 6–8 | Park Hyatt, Hyderabad, India</Text>
+      <Text style={styles.details}>March 6,7 & 8 | Park Hyatt, Hyderabad, India</Text>
       <Text style={styles.theme}>
         Theme: <Text style={styles.themeBold}>Invisible No More</Text>
       </Text>

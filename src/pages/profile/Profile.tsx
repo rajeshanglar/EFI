@@ -24,7 +24,7 @@ import {
   PhoneIcon,
   MembershipIcon,
   CongressIcon,
-
+  MapIcon,
   } from '../../components/icons';
 import { useAuth } from '../../contexts/AuthContext';
 import ImagePickerCropper, { Image as PickerImage } from 'react-native-image-crop-picker';
@@ -111,23 +111,21 @@ const Profile: React.FC<ProfileProps> = ({
       const profileBase64 = res?.data?.profile_base64;
       const mimeType = res?.data?.mime_type;
       
-      if (profileBase64 && mimeType && profileBase64 !== null && mimeType !== null) {
-        // Check if message indicates it's auto-generated (not uploaded)
-        const message = res?.message || '';
-        const lowerMessage = message.toLowerCase();
-        
-        // If message says "generated" but not "uploaded" or "updated", it's a default placeholder
-        if (lowerMessage.includes('generated') && 
-            !lowerMessage.includes('uploaded') && 
-            !lowerMessage.includes('updated')) {
-          // Auto-generated placeholder - show UserIcon
-          setProfileImage(null);
-        } else {
-          // Real uploaded image
-          setProfileImage(`data:${mimeType};base64,${profileBase64}`);
-        }
+      // Check if we have valid base64 data (not empty string, not null, and has actual image data)
+      if (profileBase64 && 
+          mimeType && 
+          profileBase64 !== null && 
+          mimeType !== null &&
+          profileBase64.trim() !== '' &&
+          profileBase64.length > 100) { // Real images have substantial base64 data
+        // Construct data URI and set the image
+        // Remove data URI prefix if already present
+        const base64Data = profileBase64.startsWith('data:') 
+          ? profileBase64 
+          : `data:${mimeType};base64,${profileBase64}`;
+        setProfileImage(base64Data);
       } else {
-        // No image (null values) - show UserIcon
+        // No valid image data - show UserIcon
         setProfileImage(null);
       }
     } catch (e: any) {
@@ -239,6 +237,10 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
+<Text style={styles.contactText}>{user?.title || user?.affiliation || ''}</Text>
+
+
+          {/* Membership ID or Speaker ID */}
           {userData.serialNumber ? (
               <View style={styles.contactRow}>
                 <Text style={styles.serialNumberLabel}>
@@ -258,19 +260,26 @@ const Profile: React.FC<ProfileProps> = ({
               <PhoneIcon size={screenWidth * 0.047} color={colors.primary} />
               <Text style={styles.contactText}>{userData.phone}</Text>
             </View>
+
+            <View style={styles.contactRow}>
+              <MapIcon size={screenWidth * 0.047} color={colors.primary} />
+              <Text style={styles.contactText}>{user?.title || user?.address || ''}</Text>
+            </View>
+
+            
     
           </View>
 
           {/* Change Password Button */}
           <View style={styles.changeEditButtonContainer}>
 
-          {/* <TouchableOpacity
-            style={[styles.changePasswordButton, {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs}]}
+           <TouchableOpacity
+            style={styles.changePasswordButton}
             onPress={onNavigateToEditProfile}
             activeOpacity={0.7}
           >
             <Text style={styles.changePasswordText}>Edit Profile</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity> 
 
 
           <TouchableOpacity
@@ -376,12 +385,12 @@ const styles = StyleSheet.create({
   },
 
   changeEditButtonContainer:{
-    // flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
-    // marginBottom: spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
     gap: spacing.sm,
-    width: '100%',
+
   },
 
   profileCard: {
@@ -492,6 +501,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Medium,
     color: colors.white,
     textAlign: 'center',
+    paddingHorizontal: spacing.md,
   },
   navigationItems: {
     paddingHorizontal: spacing.md,

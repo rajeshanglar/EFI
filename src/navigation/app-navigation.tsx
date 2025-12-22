@@ -22,6 +22,7 @@ import MembershipExclusiveAccess from '../pages/membership/membershipExclusiveAc
 import MembershipInfo from '../pages/membership-info/MembershipInfo';
 import Board from '../pages/board/Board';
 import Profile from '../pages/profile/Profile';
+import EditProfilePage from '../pages/profile/EditProfilePage';
 import ChangePassword from '../pages/profile/ChangePassword';
 import MyPayments from '../pages/payments/MyPayments';
 import MyPaymentsDetails from '../pages/payments/MyPaymentsDetails';
@@ -72,6 +73,7 @@ function AppNavigation() {
   const { loading } = useAuth();
   const {
     currentPage,
+    previousPage,
     selectedTier,
     selectedTicket,
     selectedSession,
@@ -122,6 +124,7 @@ function AppNavigation() {
         onNavigateToContactUs={navigate.contactUs}
         onNavigateToInformation={navigate.information}
         onNavigateToSubmitAbstract={navigate.submitAbstract}
+        onNavigateToSponsorPatient={navigate.sponsorPatient}
         onNavigateToDonationsAndFundraising={navigate.donationsAndFundraising}
       />
     ),
@@ -362,6 +365,7 @@ function AppNavigation() {
       <PrivacySettings
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
+        onNavigateToEditProfile={() => navigate.editProfile('privacySettings')}
       />
     ),
 
@@ -407,9 +411,23 @@ function AppNavigation() {
         onBack={navigate.home}
         onNavigateToHome={navigate.home}    
         onNavigateToMyPayments={navigate.myPayments}
+        onNavigateToEditProfile={() => navigate.editProfile('profile')}
         onNavigateToChangePassword={navigate.changePassword}
         onNavigateToMyCertificates={navigate.myCertificates}
         onNavigateToConferenceDetails={navigate.profileConferenceDetails}
+      />
+    ),
+    editProfile: (
+      <EditProfilePage
+        onBack={() => {
+          // Navigate back to previous page, or default to profile
+          if (previousPage && previousPage !== 'editProfile') {
+            navigate.to(previousPage);
+          } else {
+            navigate.profile();
+          }
+        }}
+        onNavigateToHome={navigate.home}
       />
     ),
     profileConferenceDetails: (

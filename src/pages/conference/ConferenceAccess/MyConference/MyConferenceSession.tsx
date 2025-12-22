@@ -180,7 +180,7 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
             </TouchableOpacity>
 
             {/* Handouts Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={globalStyles.actionButton}
               onPress={onHandouts}
               activeOpacity={0.8}
@@ -190,7 +190,7 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
                 <Text style={globalStyles.actionButtonText}>Handouts</Text>
                 <CardRightArrowIcon size={20} color={colors.black} />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </ScrollView>

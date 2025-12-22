@@ -44,6 +44,40 @@ export const updateProfilePicture = async (userId: number | string, base64Image:
 };
 
 
+export const editProfile = async (editProfilePayload: {
+  user_id: number | string;
+  affiliation: string;
+  address: string;
+}) => {
+  try {
+    const response = await api.post(`v1/edit-profile`, editProfilePayload);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const updatePrivacySettings = async (privacySettingsPayload: {
+  user_id: number | string;
+  privacy_settings: {
+    name: number;
+    affiliation: number;
+    address: number;
+    email: number;
+    mobile: number;
+    profile_pic: number;
+  };
+   
+}) => {
+  try {
+    const response = await api.post(`v1/privacy-settings`, privacySettingsPayload);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+
 
   
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -65,6 +65,7 @@ interface HomePageProps {
   onNavigateToInformation?: () => void;
   onNavigateToSubmitAbstract?: () => void;
   onNavigateToDonationsAndFundraising?: () => void;
+  onNavigateToSponsorPatient?: () => void;
 }
 
 // Conference Banner Data
@@ -73,24 +74,21 @@ interface ConferenceBanner {
   image: any;
   title?: string;
   subtitle?: string;
+  navigationTarget?: string;
 }
 
 const conferenceBanners: ConferenceBanner[] = [
   {
     id: '1',
     image: require('../../assets/images/conference-banner.jpg'),
-    
+    navigationTarget: 'conferenceDetails',
   },
   {
     id: '2',
     image: require('../../assets/images/conference-banner.jpg'),
-   
+    navigationTarget: 'conferenceDetails',
   },
-  {
-    id: '3',
-    image: require('../../assets/images/conference-banner.jpg'),
-  
-  },
+ 
 ];
 
 const HomePage: React.FC<HomePageProps> = ({
@@ -116,11 +114,68 @@ const HomePage: React.FC<HomePageProps> = ({
   onNavigateToInformation,
   onNavigateToSubmitAbstract,
   onNavigateToDonationsAndFundraising,
+  onNavigateToSponsorPatient,
 }) => {
   const { openMenu } = useMenu();
   const { user, isAuthenticated } = useAuth();
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const bannerFlatListRef = useRef<FlatList>(null);
+
+  // Navigation handler for banner clicks based on navigationTarget
+  const handleBannerNavigation = (navigationTarget?: string) => {
+    switch (navigationTarget) {
+      case 'conferenceDetails':
+        onNavigateToConferenceDetails?.() || console.log('Conference Details');
+        break;
+      case 'conferenceList':
+        onNavigateToConferenceList?.() || console.log('Conference List');
+        break;
+      case 'submitAbstract':
+        onNavigateToSubmitAbstract?.() || console.log('Submit Abstract');
+        break;
+      case 'trainingPrograms':
+        onNavigateToTrainingPrograms?.() || console.log('Training Programs');
+        break;
+      case 'membership':
+        onNavigateToMembership?.() || console.log('Membership');
+        break;
+      case 'outreachPrograms':
+        onNavigateToOutreachPrograms?.() || console.log('Outreach Programs');
+        break;
+      case 'yellowRibbonRun':
+        onNavigateToYellowRibbonRun?.() || console.log('Yellow Ribbon Run');
+        break;
+      case 'aboutUs':
+        onNavigateToAboutUs?.() || console.log('About Us');
+        break;
+      case 'endoCongress':
+        onNavigateToEndoCongress?.() || console.log('Endo Congress');
+        break;
+      case 'freeSurgeryProgram':
+        onNavigateToFreeSurgeryProgram?.() || console.log('Free Surgery Program');
+        break;
+      case 'contactUs':
+        onNavigateToContactUs?.() || console.log('Contact Us');
+        break;
+      case 'information':
+        onNavigateToInformation?.() || console.log('Information');
+        break;
+      case 'donationsAndFundraising':
+        onNavigateToDonationsAndFundraising?.() || console.log('Donations And Fundraising');
+        break;
+      case 'sponsorPatient':
+        onNavigateToSponsorPatient?.() || console.log('Sponsor Patient');
+        break;
+      case 'board':
+        onNavigateToBoard?.() || console.log('Board');
+        break;
+      case 'myCards':
+        onNavigateToMyCards?.() || console.log('My Cards');
+        break;
+      default:
+        onNavigateToConferenceDetails?.() || console.log('Conference Details (default)');
+    }
+  };
 
   // Get registration_type from user data
   const registrationType = user?.registration_type || '';
@@ -226,12 +281,12 @@ const HomePage: React.FC<HomePageProps> = ({
         </View>
         <View style={styles.headerRight}>
           <NotificationBadge count={0} />
-          <LanguageSelector
+          {/* <LanguageSelector
             onLanguageChange={language =>
               console.log('Language changed to:', language)
             }
             initialLanguage="en"
-          />
+          /> */}
           <TouchableOpacity onPress={openMenu}>
             <MenuIcon size={25} color={colors.white} />
           </TouchableOpacity>
@@ -275,7 +330,7 @@ const HomePage: React.FC<HomePageProps> = ({
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.congressCard}
-                  onPress={() => onNavigateToConferenceDetails?.() || console.log('Conference Details')}
+                  onPress={() => handleBannerNavigation(item.navigationTarget)}
                   activeOpacity={0.9}
                 >
                   <Image
@@ -350,7 +405,7 @@ const HomePage: React.FC<HomePageProps> = ({
                 </View>
               </View>
             </TouchableOpacity>
-            <Card style={styles.trainingSessionCard}>
+            {/* <Card style={styles.trainingSessionCard}>
               <View style={styles.trainingContent}>
                 <View style={styles.trainingTextContainer}>
                   <Text style={styles.trainingTitle}>Training Session</Text>
@@ -366,7 +421,34 @@ const HomePage: React.FC<HomePageProps> = ({
                   </TouchableOpacity>
                 </View>
               </View>
-            </Card>
+            </Card> */}
+
+
+           <Card style={styles.trainingSessionCard} onPress={() => {
+        onNavigateToSponsorPatient?.();
+      }}>
+          
+              <View style={styles.trainingContent}>
+                <View style={styles.trainingTextContainer}>
+                  <Text style={styles.trainingTitle}>Sponsor a Patient</Text>
+                  <Text style={styles.trainingTopic}>
+                  Our generosity brings medical care within reach.
+                  </Text>
+               
+               <View style={styles.trainingButton}>
+                    <Text style={styles.trainingButtonText}>More Details</Text>
+                    <ArrowLeftIconYellow
+                      size={13}
+                      style={{ transform: [{ rotate: '180deg' }] }}
+                    />
+                    </View>
+                 
+                </View>
+              </View>
+             
+            </Card> 
+          
+            
           </View>
         </View>
       </ScrollView>
@@ -580,6 +662,7 @@ const styles = StyleSheet.create({
   conferenceImage: {
     width: screenWidth - spacing.md * 2,
     height: screenHeight * 0.17,
+   
   },
   bannerOverlay: {
     position: 'absolute',
@@ -647,6 +730,7 @@ const styles = StyleSheet.create({
   abstractContent: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: spacing.xs,
   },
 
   abstractTextContainer: {

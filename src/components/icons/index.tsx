@@ -103,6 +103,9 @@ import RibbonRunBulletIconSvg from '../../assets/images/ribbonrun-icon-bullet.sv
 import SearchIconSvg from '../../assets/images/search-icon.svg';
 import TickIconSvg from '../../assets/images/tick-icon.svg';
 import OtpIconSvg from '../../assets/images/otp-icon.svg';
+import SponsorPatientWIconSvg from '../../assets/images/sponsor-patient-w-icon.svg';
+
+
 interface IconProps {
   size?: number;
   color?: string;
@@ -473,4 +476,8 @@ export const TickIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const OtpIcon = ({ size = 24, color, style }: IconProps) => (
   <OtpIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const SponsorPatientWIcon = ({ size = 24, color, style }: IconProps) => (
+  <SponsorPatientWIconSvg width={size} height={size} color={color} style={style} />
 );

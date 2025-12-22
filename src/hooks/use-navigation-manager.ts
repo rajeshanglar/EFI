@@ -30,6 +30,7 @@ export type PageType =
   | 'membershipExclusiveAccess'
   | 'board'
   | 'profile'
+  | 'editProfile'
   | 'changePassword'
   | 'myPayments'
   | 'myPaymentsDetails'
@@ -53,6 +54,7 @@ export type PageType =
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageType>('home');
+  const [previousPage, setPreviousPage] = useState<PageType | null>(null);
   const [selectedTier, setSelectedTier] = useState<string>('');
   const [selectedTicket, setSelectedTicket] = useState<{
     module_name?: string;
@@ -244,7 +246,19 @@ export function useNavigationManager() {
     },
     privacySettings: () => setCurrentPage('privacySettings'),
     board: () => setCurrentPage('board'),
-    profile: () => setCurrentPage('profile'),
+    profile: () => {
+      setPreviousPage(currentPage);
+      setCurrentPage('profile');
+    },
+    editProfile: (backPage?: PageType) => {
+      // Store the current page as previous page, or use provided backPage
+      if (backPage) {
+        setPreviousPage(backPage);
+      } else {
+        setPreviousPage(currentPage);
+      }
+      setCurrentPage('editProfile');
+    },
     changePassword: () => setCurrentPage('changePassword'),
     myPayments: () => setCurrentPage('myPayments'),
     myPaymentsDetails: (paymentData?: any) => {
@@ -284,6 +298,7 @@ export function useNavigationManager() {
 
   return {
     currentPage,
+    previousPage,
     selectedTier,
     selectedTicket,
     selectedSession,

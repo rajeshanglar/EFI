@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import authService from '../services/authService';
 
 interface User {
@@ -16,6 +17,7 @@ interface AuthContextType {
   login: (credentials: any) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshAuthStatus: () => Promise<void>;
+  updateUser: (userData: Partial<User>) => Promise<void>;
   loading: boolean;
 }
 
@@ -92,12 +94,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await checkAuthStatus();
   };
 
+  // Update user data directly (useful after profile updates)
+  const updateUser = async (userData: Partial<User>) => {
+    try {
+      if (user) {
+        const updatedUser = { ...user, ...userData };
+        setUser(updatedUser);
+        // Also update AsyncStorage
+        await authService.getCurrentUser().then(async (currentUser) => {
+          if (currentUser) {
+            const mergedUser = { ...currentUser, ...userData };
+            await AsyncStorage.setItem('user_data', JSON.stringify(mergedUser));
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
   const value: AuthContextType = {
     isAuthenticated,
     user,
     login,
     logout,
     refreshAuthStatus,
+    updateUser,
     loading,
   };
 
