@@ -78,7 +78,7 @@ const conferenceAccessItems = [
   { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
   { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
   { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
-  { id: 'abstracts', title: 'My\nAbstracts', icon: MyAbstractsIcon },
+  // { id: 'abstracts', title: 'My\nAbstracts', icon: MyAbstractsIcon },
 ];
 
 const menuItems: MenuItem[] = [
