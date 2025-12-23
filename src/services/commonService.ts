@@ -24,8 +24,6 @@ export const getPaymentTransactionById = async (id: number | string) => {
 };
 
 
-
-
 export const getProfilePicture = async (userId: number | string) => {
   if (!userId) throw new Error('User ID is required');  
   const payload = { user_id: userId };  
@@ -77,8 +75,48 @@ export const updatePrivacySettings = async (privacySettingsPayload: {
   }
 };
 
+export const getSpeakerSessions = async (
+  eventId: number | string,
+  payload: {
+    user_id: number | string;
+    affiliation: string;
+    address: string;
+  }
+) => {
+  try {
+    const response = await api.get(`v1/speaker/sessions`, {
+      params: {
+        event_id: eventId,
+        user_id: payload.user_id,
+        affiliation: payload.affiliation,
+        address: payload.address,
+      }
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
 
 
-  
+export const getSessionWishlist = async (sessionId: number | string) => {
+  try {
+    const response = await api.post(`v1/session-wishlist`, { session_id: sessionId });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+
+export const removeSessionWishlist = async (sessionId: number | string) => {
+  try {
+    const response = await api.post(`v1/remove-session-wishlist`, { session_id: sessionId });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 
 

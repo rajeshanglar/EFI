@@ -83,11 +83,11 @@ const conferenceBanners: ConferenceBanner[] = [
     image: require('../../assets/images/conference-banner.jpg'),
     navigationTarget: 'conferenceDetails',
   },
-  {
-    id: '2',
-    image: require('../../assets/images/conference-banner.jpg'),
-    navigationTarget: 'conferenceDetails',
-  },
+  // {
+  //   id: '2',
+  //   image: require('../../assets/images/conference-banner.jpg'),
+  //   navigationTarget: 'conferenceDetails',
+  // },
  
 ];
 
@@ -280,7 +280,7 @@ const HomePage: React.FC<HomePageProps> = ({
           )}
         </View>
         <View style={styles.headerRight}>
-          <NotificationBadge count={0} />
+          {/* <NotificationBadge count={0} /> */}
           {/* <LanguageSelector
             onLanguageChange={language =>
               console.log('Language changed to:', language)

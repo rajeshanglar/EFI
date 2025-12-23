@@ -109,7 +109,7 @@ const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   };
 
   // Default message for empty fields
-  const defaultMessage = 'Please click on Edit Profile Button and update it';
+  const defaultMessage = 'Click the above Edit Profile button to update.';
 
   // Static user data (can be replaced with actual user data from context)
   const userData = {

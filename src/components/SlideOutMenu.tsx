@@ -74,10 +74,10 @@ interface SlideOutMenuProps {
 
 const conferenceAccessItems = [
   { id: 'privacy', title: 'Privacy Settings', icon: PrivacySettingsIcon },
-  { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
-  { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
+  // { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
+  // { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
   { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
-  { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
+  // { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
   // { id: 'abstracts', title: 'My\nAbstracts', icon: MyAbstractsIcon },
 ];
 
@@ -94,8 +94,8 @@ const menuItems: MenuItem[] = [
   { id: 'congress', title: 'Endo Congress', icon: CongressIcon },
   { id: 'run', title: 'Yellow Ribbon Run', icon: RunIcon },
   { id: 'membership', title: 'Membership', icon: MembershipIcon },
-  { id: 'blogs', title: 'Blogs', icon: BlogIcon },
-  { id: 'media', title: 'Media', icon: MediaIcon },
+  // { id: 'blogs', title: 'Blogs', icon: BlogIcon },
+  // { id: 'media', title: 'Media', icon: MediaIcon },
   { id: 'donations', title: 'Donations and Fundraising', icon: DonationsIcon },
   { id: 'contact', title: 'Contact Us', icon: ContactIcon },
 ];
@@ -142,6 +142,11 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
   const hasConference = isAuthenticated && user?.linked_registrations?.conference && 
     Array.isArray(user.linked_registrations.conference) && 
     user.linked_registrations.conference.length > 0;
+
+  // Check if user has speaker registrations
+  const hasSpeaker = isAuthenticated && user?.linked_registrations?.speaker && 
+    Array.isArray(user.linked_registrations.speaker) && 
+    user.linked_registrations.speaker.length > 0;
 
   useEffect(() => {
     Animated.timing(translateX, {
@@ -288,7 +293,7 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
             style={styles.menuContainer}
             showsVerticalScrollIndicator={false}
           >
-           {hasConference && (
+           {(hasConference || hasSpeaker) && (
              <ConferenceAccess
                 styles={styles}
                 conferenceAccessItems={conferenceAccessItems}

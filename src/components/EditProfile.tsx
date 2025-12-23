@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
+    textTransform: 'capitalize',
   },
   submitButtonContainer: {
     marginTop: spacing.lg,

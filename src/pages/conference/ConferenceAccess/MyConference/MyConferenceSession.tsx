@@ -48,22 +48,24 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
   onSessionNotes,
   onHandouts,
 }) => {
-  // Default session data if not provided
-  const defaultSession: SessionData = {
-    id: '1',
-    date: 'Monday, March 06, 2025',
-    time: '08.00 am - 12:30pm',
-    location: 'Hall 1',
-    workshopNumber: 'Workshop 1',
-    title: 'Robotics in Endometriosis',
-    subtitle: 'Simulation to Strategy',
-    theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
-    overview:
-      'This hands-on workshop focuses on robotic-assisted surgery for endometriosis. It features console-based simulator training, step-by-step case videos, and real-time guidance from India\'s and the world\'s top robotic endometriosis surgeons.',
-    imageUrl: undefined,
-  };
+  // If no session data is provided, show empty state
+  if (!sessionData) {
+    return (
+      <View style={styles.container}>
+        <Header
+          title="My Conference Session"
+          onBack={onBack}
+          onNavigateToHome={onNavigateToHome}
+          onMenuItemPress={(id: any) => console.log('Menu:', id)}
+        />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No session data available</Text>
+        </View>
+      </View>
+    );
+  }
 
-  const session = sessionData || defaultSession;
+  const session = sessionData;
 
   const handleMoreDetails = () => {
     // Handle click on embedded image for more details
@@ -125,19 +127,19 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
           )}
 
           {/* Workshop Theme */}
-          <View style={globalStyles.themeContainer}>
+          {/* <View style={globalStyles.themeContainer}>
             <Text style={globalStyles.sectionLabel}>Workshop Theme</Text>
             <Text style={globalStyles.themeText}>{session.theme}</Text>
-          </View>
+          </View> */}
 
           {/* Brief Overview */}
-          <View style={globalStyles.overviewContainer}>
+          {/* <View style={globalStyles.overviewContainer}>
             <Text style={globalStyles.sectionLabel}>Brief Overview:</Text>
             <Text style={globalStyles.overviewText}>{session.overview}</Text>
-          </View>
+          </View> */}
 
           {/* Embedded Preview Image */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={globalStyles.imageContainer}
             onPress={handleMoreDetails}
             activeOpacity={0.7}
@@ -145,7 +147,7 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
             <Image source={require('../../../../assets/images/pdfscreen.jpg')} style={globalStyles.previewImage} />
          
             <Text style={globalStyles.moreDetailsText}>Click this for more details</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* My Actions Section */}
           <View style={globalStyles.actionsSection}>
@@ -210,8 +212,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingBottom: 100,
   },
-
-  
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+    paddingHorizontal: spacing.lg,
+  },
+  emptyText: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    textAlign: 'center',
+  },
 });
 
 export default MyConferenceSession;

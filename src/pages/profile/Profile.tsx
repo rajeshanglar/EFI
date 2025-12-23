@@ -237,9 +237,6 @@ const Profile: React.FC<ProfileProps> = ({
 
           {/* User Name */}
           <Text style={styles.userName}>{userData.name}</Text>
-<Text style={styles.contactText}>{user?.title || user?.affiliation || ''}</Text>
-
-
           {/* Membership ID or Speaker ID */}
           {userData.serialNumber ? (
               <View style={styles.contactRow}>
@@ -249,6 +246,13 @@ const Profile: React.FC<ProfileProps> = ({
                 <Text style={styles.serialNumberText}>{userData.serialNumber}</Text>
               </View>
             ) : null}
+
+          {user?.affiliation && user.affiliation.trim() !== '' && (
+            <Text style={styles.contactText}>{user.affiliation}</Text>
+          )}
+
+
+          
 
           {/* Contact Information */}
           <View style={styles.contactInfo}>
@@ -261,10 +265,12 @@ const Profile: React.FC<ProfileProps> = ({
               <Text style={styles.contactText}>{userData.phone}</Text>
             </View>
 
-            <View style={styles.contactRow}>
-              <MapIcon size={screenWidth * 0.047} color={colors.primary} />
-              <Text style={styles.contactText}>{user?.title || user?.address || ''}</Text>
-            </View>
+            {user?.address && user.address.trim() !== '' && (
+              <View style={styles.contactRow}>
+                <MapIcon size={screenWidth * 0.047} color={colors.primary} />
+                <Text style={styles.contactText}>{user.address}</Text>
+              </View>
+            )}
 
             
     
@@ -396,7 +402,7 @@ const styles = StyleSheet.create({
   profileCard: {
     backgroundColor: colors.white,
     borderRadius: borderRadius.sm,
-    padding: spacing.lg,
+    padding: spacing.md,
     marginHorizontal: spacing.md,
     marginTop:70,
     marginBottom: spacing.md,
@@ -469,19 +475,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: spacing.sm,
-    justifyContent: 'center',
+    justifyContent: 'center',  
   },
   contactText: {
     fontSize: screenWidth * 0.036,
     fontFamily: Fonts.Regular,
-    color: colors.black,
+    color:'#333333',
     marginLeft: spacing.sm,
+    textAlign: 'center',
+
   },
   serialNumberLabel: {
     fontSize: screenWidth * 0.036,
     fontFamily: Fonts.Medium,
     color: colors.primary,
     marginRight: spacing.xs,
+    textAlign: 'center',
   },
   serialNumberText: {
     fontSize: screenWidth * 0.034,

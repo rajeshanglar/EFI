@@ -68,7 +68,7 @@ export const EfiBoard: React.FC<EfiBoardProps> = ({ onViewAll }) => {
 
 const styles = StyleSheet.create({
   boardSectionContainer: {  
-    marginTop: Dimensions.get('window').width * 0.020,
+    marginTop: Dimensions.get('window').width * 0.03,
     marginBottom:0,
     borderRadius: borderRadius.lg,
     width: '100%', 

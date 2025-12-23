@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import {API_BASE_URL, ENABLE_API_LOGGING, STATIC_API_TOKEN} from '../utils/enums';
 import {ToastService} from '../utils/service-handlers';
+import { handleAuthError } from '../utils/authErrorHandler';
 
 
 /* ----------------------------------------------------------
@@ -32,7 +33,8 @@ const STATIC_TOKEN_ENDPOINTS = [
  'v1/conference/send-efi-member-verification-otp',
  'v1/conference/verify-efi-member-otp',
  'v1/calculate-conference-price',
- 'v1/speakers'
+ 'v1/speakers',
+ 'v1/sessions'
 
   // Add more API paths here as needed
 ];
@@ -237,6 +239,44 @@ api.interceptors.response.use(
         console.error('================================');
       }
       console.error('===========================================');
+    }
+
+    // Handle 401 errors for all authenticated endpoints (except login)
+    if (status === 401 && !isLoginEndpoint) {
+      const errorMessage = error.response?.data?.message || '';
+      
+      // Check for specific token expiration message
+      if (
+        errorMessage.toLowerCase().includes('api token') && 
+        (errorMessage.toLowerCase().includes('no longer valid') || 
+         errorMessage.toLowerCase().includes('invalid') ||
+         errorMessage.toLowerCase().includes('expired')) ||
+        errorMessage.toLowerCase().includes('please log in again')
+      ) {
+        console.error('=== 401 ERROR: API TOKEN NO LONGER VALID ===');
+        console.error('Error Message:', errorMessage);
+        
+        // Clear invalid tokens
+        try {
+          await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token', 'user_data']);
+          console.error('=== CLEARED INVALID TOKENS ===');
+          
+          // Trigger logout and redirect to login
+          await handleAuthError();
+          console.error('=== TRIGGERED LOGOUT AND REDIRECT TO LOGIN ===');
+        } catch (clearError) {
+          console.error('Error clearing tokens:', clearError);
+        }
+      } else if (errorMessage.includes('token') || errorMessage.includes('invalid') || errorMessage.includes('expired')) {
+        // Generic token error handling
+        try {
+          await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token']);
+          console.error('=== 401 ERROR: CLEARED INVALID TOKENS ===');
+          await handleAuthError();
+        } catch (clearError) {
+          console.error('Error clearing tokens:', clearError);
+        }
+      }
     }
 
     downloadApiLog(msg); // 👈 still download even if it fails

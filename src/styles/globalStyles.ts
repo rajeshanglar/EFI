@@ -460,7 +460,6 @@ export const globalStyles = StyleSheet.create({
 dateTabsContainer: {
   flexDirection: 'row',
   paddingHorizontal: spacing.md,
-  paddingVertical: spacing.sm,
   gap: spacing.md,
 },
 dateTab: {
@@ -514,8 +513,9 @@ dateTabDayNameActive: {
    // Conference List Styles
   section: {
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
+    paddingTop: spacing.md,
+    paddingBottom: spacing.xs,
+
   },
   sectionTitle: {
     fontSize: screenWidth * 0.042,
@@ -534,10 +534,11 @@ dateTabDayNameActive: {
     borderWidth: 1,
     borderColor: colors.lightGray,
     overflow: 'hidden',
-    
+    backgroundColor:colors.white,
+    borderRadius: borderRadius.sm,
   },
   timeBlock: {
-    width: screenWidth * 0.25,
+    minWidth: screenWidth * 0.2,
     backgroundColor: colors.primaryLight,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.sm,
@@ -561,13 +562,13 @@ dateTabDayNameActive: {
     fontSize: screenWidth * 0.038,
     fontFamily: Fonts.Medium,
     color: colors.black,
-    textAlign: 'center',
-  
+    textAlign: 'center',  
   },
   eventsContainer: {
     flex: 1,
     borderRadius: borderRadius.sm,
     overflow: 'hidden',
+   
   },
   eventItem: {
     flexDirection: 'row',
@@ -582,26 +583,26 @@ dateTabDayNameActive: {
     borderBottomColor: colors.lightGray,
   },
   eventContent: {
-    flex: 1,
-  
+    flex: 1,  
     alignItems: 'flex-start',
     flexWrap: 'wrap',
+    justifyContent: 'center',
 },
 eventHall: {
   fontSize: screenWidth * 0.035,
-  fontFamily: Fonts.Regular,
+  fontFamily: Fonts.Medium,
   color: colors.black,
 },
 eventTitle: {
   fontSize: screenWidth * 0.035,
-  fontFamily: Fonts.Bold,
-  color: colors.black,
+  fontFamily: Fonts.SemiBold,
+  color: colors.primary,
   flex: 1,
 },
 eventTitleNoHall: {
   fontSize: screenWidth * 0.035,
-  fontFamily: Fonts.Bold,
-  color: colors.black,
+  fontFamily: Fonts.SemiBold,
+  color: colors.primary,
 },
 eventArrow: {
   marginLeft: spacing.sm,
@@ -805,7 +806,7 @@ removeButton: {
 removeButtonText: {
   fontSize: screenWidth * 0.04,
   fontFamily: Fonts.Bold,
-  color: colors.black,
+  color: colors.red,
 },
 //session details styles END
 

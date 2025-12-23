@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { setAuthErrorHandler } from '../utils/authErrorHandler';
 
 export type PageType =
   | 'login'
@@ -113,6 +114,31 @@ export function useNavigationManager() {
     if (!isAuthenticated) setCurrentPage('home');
   }, [isAuthenticated]);
 
+  // Set up auth error handler for API interceptor
+  useEffect(() => {
+    const handleAuthError = async () => {
+      console.log('=== AUTH ERROR HANDLER: LOGGING OUT AND REDIRECTING TO LOGIN ===');
+      try {
+        // Logout user
+        await logout();
+        // Navigate to login page
+        setCurrentPage('login');
+      } catch (error) {
+        console.error('Error in auth error handler:', error);
+        // Still navigate to login even if logout fails
+        setCurrentPage('login');
+      }
+    };
+
+    // Register the handler
+    setAuthErrorHandler(handleAuthError);
+
+    // Cleanup on unmount
+    return () => {
+      setAuthErrorHandler(() => {});
+    };
+  }, [logout]);
+
   const navigate = {
     to: setCurrentPage,
     home: () => setCurrentPage('home'),
@@ -178,15 +204,14 @@ export function useNavigationManager() {
         id: eventData.id,
         date: eventData.parsedDate || eventData.date,
         time: eventData.timeRange,
-        location: eventData.hall || 'Main Hall',
+        location: eventData.hall,
         workshopNumber: workshopFromType || workshopFromTitle,
         title: eventData.title.includes(':')
           ? eventData.title.split(':')[1].trim()
           : eventData.title,
-        subtitle: eventData.eventType || 'Simulation to Strategy',
-        theme: 'The Robotic Edge: Precision, Depth & Dexterity',
-        overview:
-          'Hands-on robotic-assisted surgery workshop by top experts.',
+        subtitle: eventData.eventType,
+        theme: eventData.theme || eventData.title || '',
+        overview: eventData.overview || eventData.description || '',
       };
       setSelectedSession(sessionData);
       setCurrentPage('sessionDetails');
@@ -219,12 +244,11 @@ export function useNavigationManager() {
         id: eventData.id,
         date: eventData.parsedDate || eventData.date,
         time: eventData.timeRange,
-        location: eventData.hall || 'Main Hall',
+        location: eventData.hall,
         workshopNumber: eventData.eventType,
-        subtitle: eventData.eventType || 'Simulation to Strategy',
-        theme: 'The Robotic Edge: Precision, Depth & Dexterity',
-        overview:
-          'Hands-on robotic-assisted surgery workshop by top experts.',
+        subtitle: eventData.eventType || eventData.subtitle || '',
+        theme: eventData.theme || eventData.title || '',
+        overview: eventData.overview || eventData.description || '',
       };
       setSelectedSession(sessionData);
       setCurrentPage('myConferenceSession');

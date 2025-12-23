@@ -8,11 +8,14 @@ import {
   Dimensions,
   ImageBackground,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../../components/Header';
 import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
   MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
+import { getSessionWishlist, removeSessionWishlist } from '../../services/commonService';
+import { ToastService } from '../../utils/service-handlers';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -55,40 +58,87 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
   onHandouts,
 }) => {
   const [isAdded, setIsAdded] = useState(isInMyConference);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Default session data if not provided
-  const defaultSession: SessionData = {
-    id: '1',
-    date: 'Monday, March 06, 2025',
-    time: '08.00 am - 12:30pm',
-    location: 'Hall 1',
-    workshopNumber: 'Workshop 1',
-    title: 'Robotics in Endometriosis',
-    subtitle: 'Simulation to Strategy',
-    theme: '"The Robotic Edge: Precision, Depth & Dexterity"',
-    overview:
-      'This hands-on workshop focuses on robotic-assisted surgery for endometriosis. It features console-based simulator training, step-by-step case videos, and real-time guidance from India\'s and the world\'s top robotic endometriosis surgeons Suitable for beginners to advanced surgeons, this workshop provides comprehensive insight into robotic techniques. Participants will gain hands-on experience with the latest robotic systems and learn from world-renowned experts in the field.',
-    imageUrl: undefined,
-  };
+  // If no session data is provided, show empty state
+  if (!sessionData) {
+    return (
+      <View style={styles.container}>
+        <Header
+          title={isFromMyConference ? "My Conference Session" : "Session Details"}
+          onBack={onBack}
+          onNavigateToHome={onNavigateToHome}
+          onMenuItemPress={(id: any) => console.log('Menu:', id)}
+        />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No session data available</Text>
+        </View>
+      </View>
+    );
+  }
 
-  const session = sessionData || defaultSession;
+  const session = sessionData;
 
   useEffect(() => {
     setIsAdded(isInMyConference);
   }, [isInMyConference]);
 
-  const handleAddToConference = () => {
-    if (session.id && onAddToMyConference) {
-      onAddToMyConference(session.id);
+  const handleAddToConference = async () => {
+    if (!session.id) return;
+    
+    try {
+      setIsLoading(true);
+      const sessionId = parseInt(session.id, 10);
+      
+      const response = await getSessionWishlist(sessionId);
+      
+      if (response?.success) {
+        setIsAdded(true);
+        if (onAddToMyConference) {
+          onAddToMyConference(session.id);
+        }
+        ToastService.success('Success', response?.message || 'Session added to wishlist successfully');
+      } else {
+        ToastService.error('Error', response?.message || 'Failed to add session to wishlist');
+      }
+    } catch (error: any) {
+      console.error('Error adding session to wishlist:', error);
+      ToastService.error(
+        'Error',
+        error?.response?.data?.message || error?.message || 'Failed to add session to wishlist'
+      );
+    } finally {
+      setIsLoading(false);
     }
-    setIsAdded(true);
   };
 
-  const handleRemoveFromConference = () => {
-    if (session.id && onRemoveFromMyConference) {
-      onRemoveFromMyConference(session.id);
+  const handleRemoveFromConference = async () => {
+    if (!session.id) return;
+    
+    try {
+      setIsLoading(true);
+      const sessionId = parseInt(session.id, 10);
+      
+      const response = await removeSessionWishlist(sessionId);
+      
+      if (response?.success) {
+        setIsAdded(false);
+        if (onRemoveFromMyConference) {
+          onRemoveFromMyConference(session.id);
+        }
+        ToastService.success('Success', response?.message || 'Session removed from wishlist successfully');
+      } else {
+        ToastService.error('Error', response?.message || 'Failed to remove session from wishlist');
+      }
+    } catch (error: any) {
+      console.error('Error removing session from wishlist:', error);
+      ToastService.error(
+        'Error',
+        error?.response?.data?.message || error?.message || 'Failed to remove session from wishlist'
+      );
+    } finally {
+      setIsLoading(false);
     }
-    setIsAdded(false);
   };
 
   const handleMoreDetails = () => {
@@ -162,7 +212,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
           </View>
 
           {/* Embedded Preview Image */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={globalStyles.imageContainer}
             onPress={handleMoreDetails}
             activeOpacity={0.7}
@@ -170,7 +220,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
             <Image source={require('../../assets/images/pdfscreen.jpg')} style={globalStyles.previewImage} />
          
             <Text style={globalStyles.moreDetailsText}>Click this for more details</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* My Actions Section - Only show when accessed from MyConference */}
           {isFromMyConference && (
@@ -239,23 +289,48 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         ) : (
           // When from ConferenceList, show Add/Remove toggle
           <>
-            <TouchableOpacity
-              style={globalStyles.addButtonContainer}
-              onPress={!isAdded ? handleAddToConference : undefined}
-              disabled={isAdded}
-            >
-              <Text style={globalStyles.addButtonText}>Add to my Conference</Text>
-            </TouchableOpacity>
-            {isAdded && (
-              <View style={globalStyles.statusContainer}>
-                <View style={globalStyles.checkmarkIcon}>
-                  <SuccessIcon size={20} color={colors.white} />
-                </View>
-                <TouchableOpacity onPress={handleRemoveFromConference}>
-                  <Text style={globalStyles.removeText}>X Remove</Text>
+            <View style={globalStyles.statusContainer}>
+              {!isAdded ? (
+                <TouchableOpacity
+                  style={[globalStyles.addButtonContainer, { flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}
+                  onPress={handleAddToConference}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={colors.white} />
+                  ) : (
+                    <>
+                      <Text style={globalStyles.addButtonText}>Add to my Conference</Text>
+                      <View style={[
+                        globalStyles.checkmarkIcon,
+                        { backgroundColor: colors.white }
+                      ]}>
+                      </View>
+                    </>
+                  )}
                 </TouchableOpacity>
-              </View>
-            )}
+              ) : (
+                <TouchableOpacity
+                  style={[globalStyles.addButtonContainer, { flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}
+                  onPress={handleRemoveFromConference}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={colors.white} />
+                  ) : (
+                    <>
+                      <Text style={globalStyles.removeButtonText}>Remove from My Conference</Text>
+                      <View style={[
+                        globalStyles.checkmarkIcon,
+                        { backgroundColor: colors.white }
+                      ]}>
+                        <SuccessIcon size={20} color="#4CAF50" />
+                      </View>
+                    </>
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
           </>
         )}
       </View>
@@ -272,7 +347,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
- 
+
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+    paddingHorizontal: spacing.lg,
+  },
+  emptyText: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    textAlign: 'center',
+  },
 });
 
 export default ConferenceSessionDetails;

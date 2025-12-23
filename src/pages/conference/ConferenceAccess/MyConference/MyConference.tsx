@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,13 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import Header from '../../../../components/Header';
 import { CardRightArrowIcon, CloseIcon, YellowRibbonIcon } from '../../../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../../styles/globalStyles';
+import { getSpeakerSessions } from '../../../../services/commonService';
+import { useAuth } from '../../../../contexts/AuthContext';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -20,6 +23,7 @@ interface MyConferenceProps {
   onEventPress?: (event: EventItem, fromMyConference?: boolean) => void;
   myConferenceSessions?: string[]; // Array of session IDs that are added to "My Conference"
   onRemoveSession?: (eventId: string) => void;
+  eventId?: number | string; // Event ID for fetching speaker sessions
 }
 
 interface EventItem {
@@ -52,92 +56,154 @@ const MyConference: React.FC<MyConferenceProps> = ({
   onEventPress,
   myConferenceSessions = [],
   onRemoveSession,
+  eventId = 1, // Default event_id, can be passed as prop
 }) => {
-  const [selectedDate, setSelectedDate] = useState<'mar06' | 'mar07' | 'mar08'>('mar06');
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [allSessions, setAllSessions] = useState<Record<string, DaySchedule>>({});
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
-  // Mock data - In real app, this would come from API/state management
-  // For demo, we'll use some of the sessions from ConferenceList
-  const allSessions: Record<string, DaySchedule> = {
-       mar06: {
-      date: '2026-03-06',
-      dateLabel: 'MAR 06 Mon',
-      sections: [
-        {
-          title: 'Pre Congress Workshops',
-          timeSlots: [
-            {
-              id: '1',
-              timeRange: '08.00 am to 12.30 pm',
-              events: [
-                { id: '1', hall: 'Hall 1', eventType: 'Workshop-1', title:'Robotics in Endometriosis', isClickable: true },               
-              ],
-            },
-            
-            {
-              id: '3',
-              timeRange: '13.30 pm to 18.00 pm',
-              events: [
-                { id: '5', hall: 'Hall 1', eventType: 'Workshop-4', title: 'Hands on Robotic Simulator', isClickable: true },
-               
-              ],
-            },           
-          ],
-        },
-      ],
-    },
-    mar07: {
-      date: '2026-03-07',
-      dateLabel: 'MAR 07 TUE',
-      sections: [
-        {
-          title: 'Main Congress Day 1',
-          timeSlots: [
-            {
-              id: '1',
-              timeRange: '09.00 am to 10.30 am',
-              events: [
-                { id: '1', hall: 'Main Hall', eventType: '', title: 'Opening Ceremony', isClickable: true },
-               
-              ],
-            },
-            
-            {
-              id: '3',
-              timeRange: '11.00 am to 12.30 pm',
-              events: [
-                { id: '4', hall: 'Main Hall', eventType: 'Session 1',  title: 'Advanced Laparoscopic Techniques', isClickable: true },
-               
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    mar08: {
-      date: '2026-03-08',
-      dateLabel: 'MAR 08 WED',
-      sections: [
-        {
-          title: 'Main Congress Day 2',
-          timeSlots: [
-            {
-              id: '1',
-              timeRange: '09.00 am to 10.30 am',
-              events: [
-                { id: '1', hall: 'Main Hall', eventType: 'Session 3', title: 'Robotic Surgery Innovations', isClickable: true },
-              ],
-            },
-            
-            
-          ],
-        },
-      ],
-    },
+  // Fetch speaker sessions data from API
+  useEffect(() => {
+    const fetchSpeakerSessions = async () => {
+      if (!eventId) {
+        setError('Event ID is required');
+        setLoading(false);
+        return;
+      }
+
+      const userId = user?.id || user?.user_id;
+      if (!userId) {
+        setError('User ID is required');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        console.log('Fetching speaker sessions for eventId:', eventId);
+        console.log('User ID:', userId);
+        
+        const payload = {
+          user_id: userId,
+          affiliation: user?.affiliation || user?.title || '',
+          address: user?.address || '',
+        };
+
+        const response = await getSpeakerSessions(eventId, payload);
+        console.log('Speaker Sessions API Response:', JSON.stringify(response, null, 2));
+        
+        if (response?.success && response?.data) {
+          // Check if data is empty or has no keys
+          const dataKeys = Object.keys(response.data);
+          if (dataKeys.length === 0) {
+            setError('No speaker sessions available for this event.');
+            setLoading(false);
+            return;
+          }
+
+          // Transform API response to match our data structure
+          const transformedData: Record<string, DaySchedule> = {};
+          const dates: string[] = [];
+
+          Object.keys(response.data).forEach((dateKey) => {
+            const dayData = response.data[dateKey];
+            if (!dayData || !dayData.sections || !Array.isArray(dayData.sections)) {
+              console.warn(`Invalid data structure for date key: ${dateKey}`, dayData);
+              return;
+            }
+
+            transformedData[dateKey] = {
+              date: dayData.date || '',
+              dateLabel: dayData.dateLabel || '',
+              sections: dayData.sections.map((section: any) => ({
+                title: section.title || '',
+                timeSlots: (section.timeSlots || []).map((timeSlot: any) => ({
+                  id: timeSlot.id || '',
+                  timeRange: timeSlot.timeRange || '',
+                  events: (timeSlot.events || []).map((event: any) => ({
+                    id: event.id || '',
+                    title: event.title || '',
+                    hall: event.hall || undefined,
+                    eventType: event.eventType || '',
+                    isClickable: event.isClickable !== undefined ? event.isClickable : true,
+                  })),
+                })),
+              })),
+            };
+            dates.push(dateKey);
+          });
+
+          if (dates.length === 0) {
+            setError('No valid speaker session data found in the response.');
+            setLoading(false);
+            return;
+          }
+
+          setAllSessions(transformedData);
+          setAvailableDates(dates);
+          
+          // Set first available date as selected
+          if (dates.length > 0) {
+            setSelectedDate(dates[0]);
+          }
+        } else {
+          const errorMsg = response?.message || 'Failed to load speaker sessions data';
+          console.error('API response indicates failure:', response);
+          setError(errorMsg);
+        }
+      } catch (err: any) {
+        console.error('Error fetching speaker sessions:', err);
+        console.error('Error details:', {
+          message: err?.message,
+          response: err?.response?.data,
+          status: err?.response?.status,
+          statusText: err?.response?.statusText,
+        });
+        
+        // Extract more detailed error message
+        let errorMessage = 'Failed to load speaker sessions. Please try again.';
+        if (err?.response?.data?.message) {
+          errorMessage = err.response.data.message;
+        } else if (err?.message) {
+          errorMessage = err.message;
+        } else if (err?.response?.status === 404) {
+          errorMessage = 'Event not found. Please check the event ID.';
+        } else if (err?.response?.status === 401) {
+          errorMessage = 'Authentication failed. Please try again.';
+        } else if (err?.response?.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+        
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSpeakerSessions();
+  }, [eventId, user]);
+
+  // Helper function to extract date parts from dateLabel (e.g., "MAR 06 FRI" -> { month: "MAR", day: "06", dayName: "FRI" })
+  const parseDateLabel = (dateLabel: string) => {
+    const parts = dateLabel.split(' ');
+    return {
+      month: parts[0] || '',
+      day: parts[1] || '',
+      dayName: parts[2] || '',
+    };
   };
 
   // Filter to show only sessions that are in "My Conference"
   // For UI purposes, if myConferenceSessions is empty, show all sessions
   const getFilteredSchedule = () => {
+    if (!selectedDate || !allSessions[selectedDate]) {
+      return { date: '', dateLabel: '', sections: [] };
+    }
+    
     const schedule = allSessions[selectedDate];
     
     // If no sessions are selected, show all sessions for UI demonstration
@@ -214,65 +280,111 @@ const MyConference: React.FC<MyConferenceProps> = ({
         imageStyle={globalStyles.imgBgWave}
       >
         <View style={globalStyles.dateTabsContainer}>
-          <TouchableOpacity
-            style={[
-              globalStyles.dateTab,
-              selectedDate === 'mar06' && globalStyles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar06')}
-          >
-            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar06' && globalStyles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar06' && globalStyles.dateTabDayActive]}>
-              06
-            </Text>
-            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar06' && globalStyles.dateTabDayNameActive]}>
-              Mon
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              globalStyles.dateTab,
-              selectedDate === 'mar07' && globalStyles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar07')}
-          >
-            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar07' && globalStyles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar07' && globalStyles.dateTabDayActive]}>
-              07
-            </Text>
-            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar07' && globalStyles.dateTabDayNameActive]}>
-              TUE
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              globalStyles.dateTab,
-              selectedDate === 'mar08' && globalStyles.dateTabActive,
-            ]}
-            onPress={() => setSelectedDate('mar08')}
-          >
-            <Text style={[globalStyles.dateTabMonth, selectedDate === 'mar08' && globalStyles.dateTabMonthActive]}>
-              MAR
-            </Text>
-            <Text style={[globalStyles.dateTabDay, selectedDate === 'mar08' && globalStyles.dateTabDayActive]}>
-              08
-            </Text>
-            <Text style={[globalStyles.dateTabDayName, selectedDate === 'mar08' && globalStyles.dateTabDayNameActive]}>
-              WED
-            </Text>
-          </TouchableOpacity>
+          {availableDates.map((dateKey) => {
+            const daySchedule = allSessions[dateKey];
+            if (!daySchedule) return null;
+            
+            const dateParts = parseDateLabel(daySchedule.dateLabel);
+            const isActive = selectedDate === dateKey;
+            
+            return (
+              <TouchableOpacity
+                key={dateKey}
+                style={[
+                  globalStyles.dateTab,
+                  isActive && globalStyles.dateTabActive,
+                ]}
+                onPress={() => setSelectedDate(dateKey)}
+              >
+                <Text style={[globalStyles.dateTabMonth, isActive && globalStyles.dateTabMonthActive]}>
+                  {dateParts.month}
+                </Text>
+                <Text style={[globalStyles.dateTabDay, isActive && globalStyles.dateTabDayActive]}>
+                  {dateParts.day}
+                </Text>
+                <Text style={[globalStyles.dateTabDayName, isActive && globalStyles.dateTabDayNameActive]}>
+                  {dateParts.dayName}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ImageBackground>
 
       {/* Content Area */}
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {currentSchedule.sections.map((section, sectionIndex) => (
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>Loading speaker sessions...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity
+              style={styles.retryButton}
+              onPress={() => {
+                setError(null);
+                setLoading(true);
+                // Retry fetch
+                const userId = user?.id || user?.user_id;
+                if (userId && eventId) {
+                  getSpeakerSessions(eventId, {
+                    user_id: userId,
+                    affiliation: user?.affiliation || user?.title || '',
+                    address: user?.address || '',
+                  })
+                    .then((response) => {
+                      if (response?.success && response?.data) {
+                        const transformedData: Record<string, DaySchedule> = {};
+                        const dates: string[] = [];
+
+                        Object.keys(response.data).forEach((dateKey) => {
+                          const dayData = response.data[dateKey];
+                          transformedData[dateKey] = {
+                            date: dayData.date,
+                            dateLabel: dayData.dateLabel,
+                            sections: dayData.sections.map((section: any) => ({
+                              title: section.title,
+                              timeSlots: section.timeSlots.map((timeSlot: any) => ({
+                                id: timeSlot.id,
+                                timeRange: timeSlot.timeRange,
+                                events: timeSlot.events.map((event: any) => ({
+                                  id: event.id,
+                                  title: event.title,
+                                  hall: event.hall || undefined,
+                                  eventType: event.eventType || '',
+                                  isClickable: event.isClickable !== undefined ? event.isClickable : true,
+                                })),
+                              })),
+                            })),
+                          };
+                          dates.push(dateKey);
+                        });
+
+                        setAllSessions(transformedData);
+                        setAvailableDates(dates);
+                        if (dates.length > 0) {
+                          setSelectedDate(dates[0]);
+                        }
+                      }
+                    })
+                    .catch((err) => {
+                      setError(err?.message || 'Failed to load speaker sessions. Please try again.');
+                    })
+                    .finally(() => setLoading(false));
+                }
+              }}
+            >
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : currentSchedule.sections.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No speaker sessions available for this date.</Text>
+          </View>
+        ) : (
+          currentSchedule.sections.map((section, sectionIndex) => (
           <View key={sectionIndex} style={globalStyles.section}>
             {section.title && (
               <Text style={globalStyles.sectionTitle}>{section.title}</Text>
@@ -315,7 +427,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
                       <View style={globalStyles.eventContent}>
                         {event.hall && (
                           <Text style={globalStyles.eventHall}>
-                            {event.hall} -{' '} {event.eventType}{' '}
+                            {event.hall}
                           </Text>
                         )}
                        
@@ -339,7 +451,8 @@ const MyConference: React.FC<MyConferenceProps> = ({
               </View>
             )})}
           </View>
-        ))}
+        ))
+        )}
       </ScrollView>
 
     </View>
@@ -354,6 +467,56 @@ const styles = StyleSheet.create({
  
   scrollView: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  loadingText: {
+    marginTop: spacing.md,
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+    paddingHorizontal: spacing.lg,
+  },
+  errorText: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.red,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  retryButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.sm,
+    marginTop: spacing.md,
+  },
+  retryButtonText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Medium,
+    color: colors.white,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  emptyText: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Regular,
+    color: colors.darkGray,
+    textAlign: 'center',
   },
   emptyState: {
     padding: spacing.xl,
