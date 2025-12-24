@@ -78,6 +78,9 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "org.endometriosis.efi.connect"
+    buildFeatures {
+        buildConfig true
+    }
     defaultConfig {
         applicationId "org.endometriosis.efi.connect"
         minSdkVersion rootProject.ext.minSdkVersion
