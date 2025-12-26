@@ -175,12 +175,22 @@ export const GetConferenceCategories = async () => {
     }
   };
 
-  export const getSessionsByEventId = async (event_id: number | string) => {
+
+  // Conference List
+  export const getSessions = async () => {
     try {
       const response = await apiStatic.get(`v1/sessions`, {
-        params: {
-          event_id: event_id
-        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+    // Conference Session Details
+  export const getSessionDetailsBySessionId = async (session_id: number | string) => {
+    try {
+      const response = await apiStatic.get(`v1/session-details?session_id=${session_id}`, {
       });
       return response.data;
     } catch (error) {

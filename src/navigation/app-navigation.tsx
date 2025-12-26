@@ -2,10 +2,11 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigationManager } from '../hooks/use-navigation-manager';
 import { NavigationProvider } from '../contexts/NavigationContext';
 import { MenuProvider } from '../contexts/MenuContext';
-import React, { JSX, Suspense } from 'react';
-import { ActivityIndicator, ViewStyle } from 'react-native';
+import React, { JSX, Suspense, useState, useEffect } from 'react';
+import { ActivityIndicator, ViewStyle, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../styles/globalStyles';
+import { GetEventMappings } from '../services/staticService';
 
 import NonResidentialPackages from '../pages/conference/NonResidentialPackages';
 import ConferenceRegistrationForm  from '../pages/conference/ConferenceRegistrationForm';
@@ -88,6 +89,26 @@ function AppNavigation() {
     myConference,
     handleLogout,
   } = useNavigationManager();
+
+  // Fetch eventId from GetEventMappings API
+  const [eventId, setEventId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchEventId = async () => {
+      try {
+        const response = await GetEventMappings();
+        if (response?.success && response?.data && response.data.length > 0) {
+          const eventData = response.data[0];
+          setEventId(eventData.id);
+          console.log('Event ID fetched from GetEventMappings:', eventData.id);
+        }
+      } catch (error) {
+        console.error('Error fetching event ID:', error);
+      }
+    };
+
+    fetchEventId();
+  }, []);
 
   if (loading) {
     return (
@@ -208,17 +229,21 @@ function AppNavigation() {
         onEventPress={navigate.sessionDetails}
       />
     ),
-    sessionDetails: (
+    sessionDetails: selectedSession?.id ? (
       <ConferenceSessionDetails
         onBack={navigate.conferenceList}
         onNavigateToHome={navigate.home}
-        sessionData={selectedSession}
+        sessionId={selectedSession.id}
         onAddToMyConference={myConference.add}
         onRemoveFromMyConference={myConference.remove}
         isInMyConference={myConferenceSessions.includes(
-          selectedSession?.id || '',
+          String(selectedSession?.id || ''),
         )}
       />
+    ) : (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     ),
     myConference: (
       <MyConference
@@ -229,18 +254,19 @@ function AppNavigation() {
         onRemoveSession={myConference.remove}
       />
     ),
-    myConferenceSession: (
+    myConferenceSession: selectedSession?.id ? (
       <MyConferenceSession
         onBack={navigate.myConference}
         onNavigateToHome={navigate.home}
-        sessionData={selectedSession}
-        onRemoveFromConference={() =>
-          selectedSession ? myConference.remove(selectedSession.id) : undefined
-        }
+        sessionId={selectedSession.id}
         onLiveQA={navigate.liveQA}
         onSessionNotes={navigate.sessionNotes}
         onHandouts={navigate.handouts}
       />
+    ) : (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     ),
     liveQA: (
       <LiveQA
@@ -253,7 +279,7 @@ function AppNavigation() {
         sessionData={selectedSession}
       />
     ),
-    sessionNotes: (
+    sessionNotes: selectedSession?.id ? (
       <MySessionNotes
         onBack={() =>
           selectedSession
@@ -261,8 +287,12 @@ function AppNavigation() {
             : navigate.myConference()
         }
         onNavigateToHome={navigate.home}
-        sessionData={selectedSession}
+        sessionId={selectedSession.id}
       />
+    ) : (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     ),
     handouts: (
       <Handouts

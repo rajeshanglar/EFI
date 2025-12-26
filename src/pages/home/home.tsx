@@ -189,16 +189,26 @@ const HomePage: React.FC<HomePageProps> = ({
     Array.isArray(user.linked_registrations.conference) && 
     user.linked_registrations.conference.length > 0;
 
+  // Check if user has speaker registration
+  const hasSpeaker = isAuthenticated && user?.linked_registrations?.speaker && 
+    Array.isArray(user.linked_registrations.speaker) && 
+    user.linked_registrations.speaker.length > 0;
+
+  // User has conference access if they have conference registration OR speaker registration
+  const hasConferenceAccess = hasConference || hasSpeaker;
+
   // Determine button titles and styles based on linked_registrations
   // If user has membership registration, show "Membership Exclusive Access"
   const membershipTitle = hasMembership 
     ? 'Membership\nExclusive Access' 
     : 'Membership Registration';
   
-  // If user has conference registration, show "Conference"
-  const conferenceTitle = hasConference
+  // If user has conference registration or speaker registration, show "Conference"
+  const conferenceTitle = hasConferenceAccess
     ? 'Conference'
     : 'Conference Registration';
+
+
 
   const actionButtons = [
     {
@@ -226,15 +236,15 @@ const HomePage: React.FC<HomePageProps> = ({
       title: conferenceTitle,
       icon: CongressIcon,
       onPress: () => {
-        // If user has conference registration, navigate to ConferenceList page
-        if (hasConference) {
+        // If user has conference registration or speaker registration, navigate to ConferenceList page
+        if (hasConferenceAccess) {
           onNavigateToConferenceList?.() || console.log('Conference List');
         } else {
           // Otherwise, navigate to conference registration
           onNavigateToConference?.() || console.log('Conference Registration');
         }
       },
-      isSpecial: hasConference, // Special styling for users with conference registration
+      isSpecial: hasConferenceAccess, // Special styling for users with conference or speaker registration
     },
     {
       title: 'Donations And Fundraising',
@@ -453,7 +463,7 @@ const HomePage: React.FC<HomePageProps> = ({
         </View>
       </ScrollView>
 
-      {hasConference && (
+      {hasConferenceAccess && (
         <TouchableOpacity style={globalStyles.footerBtContainer}>
           <GradientButton
             title="MY CARDS"

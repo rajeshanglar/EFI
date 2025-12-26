@@ -75,22 +75,9 @@ export const updatePrivacySettings = async (privacySettingsPayload: {
   }
 };
 
-export const getSpeakerSessions = async (
-  eventId: number | string,
-  payload: {
-    user_id: number | string;
-    affiliation: string;
-    address: string;
-  }
-) => {
+export const getSpeakerSessions = async () => {
   try {
     const response = await api.get(`v1/speaker/sessions`, {
-      params: {
-        event_id: eventId,
-        user_id: payload.user_id,
-        affiliation: payload.affiliation,
-        address: payload.address,
-      }
     });
     return response.data;
   } catch (error: any) {
@@ -117,6 +104,40 @@ export const removeSessionWishlist = async (sessionId: number | string) => {
     throw error;
   }
 };
+
+
+export const getSessionWorkshops = async () => {
+  try {
+    const response = await api.get(`v1/get-session-wishlist`, {
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+
+export const saveSessionNotes = async (sessionId: number, notes: string) => {
+  try {
+    const response = await api.post(`v1/session-notes`, { session_id: sessionId, notes: notes });
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+export const getSessionNotesBySessionId = async (sessionId: number) => {
+  try {
+    const response = await api.get(`v1/get-session-notes?session_id=${sessionId}`);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+
+
+
 
 
 

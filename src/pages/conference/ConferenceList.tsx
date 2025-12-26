@@ -12,7 +12,7 @@ import {
 import Header from '../../components/Header';
 import { ArrowRightIcon, CardRightArrowIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
-import { getSessionsByEventId } from '../../services/staticService';
+import { getSessions } from '../../services/staticService';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -20,7 +20,6 @@ interface ConferenceListProps {
   onBack: () => void;
   onNavigateToHome: () => void;
   onEventPress?: (event: EventItem) => void;
-  eventId?: number | string;
 }
 
 interface EventItem {
@@ -50,7 +49,6 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
   onBack,
   onNavigateToHome,
   onEventPress,
-  eventId = 1, // Default event_id, can be passed as prop
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,17 +59,11 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
   // Fetch sessions data from API
   useEffect(() => {
     const fetchSessions = async () => {
-      if (!eventId) {
-        setError('Event ID is required');
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching sessions for eventId:', eventId);
-        const response = await getSessionsByEventId(eventId);
+        console.log('Fetching sessions');
+        const response = await getSessions();
         console.log('API Response:', JSON.stringify(response, null, 2));
         
         if (response?.success && response?.data) {
@@ -163,7 +155,7 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
     };
 
     fetchSessions();
-  }, [eventId]);
+  }, []);
 
   const currentSchedule = scheduleData[selectedDate] || { date: '', dateLabel: '', sections: [] };
 
@@ -267,8 +259,8 @@ const ConferenceList: React.FC<ConferenceListProps> = ({
                 setError(null);
                 setLoading(true);
                 // Retry fetch
-                getSessionsByEventId(eventId)
-                  .then((response) => {
+                getSessions()
+                  .then((response: any) => {
                     if (response?.success && response?.data) {
                       const transformedData: Record<string, DaySchedule> = {};
                       const dates: string[] = [];

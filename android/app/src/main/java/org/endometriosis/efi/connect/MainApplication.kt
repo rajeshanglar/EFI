@@ -1,4 +1,4 @@
-package com.efi
+package org.endometriosis.efi.connect
 
 import android.app.Application
 import com.facebook.react.PackageList

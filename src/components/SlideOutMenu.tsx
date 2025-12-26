@@ -74,7 +74,7 @@ interface SlideOutMenuProps {
 
 const conferenceAccessItems = [
   { id: 'privacy', title: 'Privacy Settings', icon: PrivacySettingsIcon },
-  // { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
+  { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
   // { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
   { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
   // { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },

@@ -612,13 +612,13 @@ eventArrow: {
 
   //Session Details Styles
 metadataCard: {
-  marginHorizontal: spacing.md,
+  marginHorizontal: spacing.sm,
   marginTop:0, 
 },
 metadataRow: {
   flexDirection: 'row',
   alignItems: 'center',
-  marginBottom: spacing.md,
+  marginBottom: spacing.sm,
 },
 iconContainer: {
   marginRight: spacing.sm,
@@ -635,6 +635,7 @@ dateText: {
   fontSize: screenWidth * 0.04,
   fontFamily: Fonts.Bold,
   color: colors.primaryLight,
+ 
 },
 metadataInfoRow: {
   flexDirection: 'row',
@@ -1459,6 +1460,60 @@ conatctAffiliation: {
 conatctArrowIcon: {
   marginLeft: spacing.sm,
 },
+
+
+detailSpeakerContainer:{
+  backgroundColor: colors.lightBlue,
+  paddingTop: spacing.md,
+  paddingBottom: 0,
+  paddingHorizontal: spacing.lg,
+  marginTop: -spacing.sm,
+},
+
+speakerSessionDetailsCard: {
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+},
+speakerSessionDetailsImageContainer: {
+  marginRight: spacing.md,
+},
+speakersessionDetailsImage: {
+  width: 70,
+  height: 70,
+  borderRadius: 35,
+  backgroundColor: colors.white,
+},
+speakerSessionDetailsImagePlaceholder: {
+  width: 70,
+  height: 70,
+  borderRadius: 35,
+  backgroundColor: colors.white,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+speakerInfoSessionDetails: {
+  flex: 1,
+},
+
+speakerSessionDetailsFullName:{
+  fontSize: screenWidth * 0.04,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+  textTransform: 'capitalize',
+},
+
+speakerSessionDetailsInfoMText:{
+  fontSize: screenWidth * 0.033,
+  fontFamily: Fonts.SemiBold,
+  color: colors.primary,
+
+},
+speakerSessionDetailsInfoText: {
+  fontSize: screenWidth * 0.033,
+  fontFamily: Fonts.Regular,
+  color: colors.black,
+},
+
 
 });
 export default globalStyles;

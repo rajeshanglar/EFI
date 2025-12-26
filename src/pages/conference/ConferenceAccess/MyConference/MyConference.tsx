@@ -12,7 +12,7 @@ import {
 import Header from '../../../../components/Header';
 import { CardRightArrowIcon, CloseIcon, YellowRibbonIcon } from '../../../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../../styles/globalStyles';
-import { getSpeakerSessions } from '../../../../services/commonService';
+import { getSpeakerSessions, getSessionWorkshops } from '../../../../services/commonService';
 import { useAuth } from '../../../../contexts/AuthContext';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -23,7 +23,6 @@ interface MyConferenceProps {
   onEventPress?: (event: EventItem, fromMyConference?: boolean) => void;
   myConferenceSessions?: string[]; // Array of session IDs that are added to "My Conference"
   onRemoveSession?: (eventId: string) => void;
-  eventId?: number | string; // Event ID for fetching speaker sessions
 }
 
 interface EventItem {
@@ -56,7 +55,6 @@ const MyConference: React.FC<MyConferenceProps> = ({
   onEventPress,
   myConferenceSessions = [],
   onRemoveSession,
-  eventId = 1, // Default event_id, can be passed as prop
 }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -65,18 +63,58 @@ const MyConference: React.FC<MyConferenceProps> = ({
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
 
-  // Fetch speaker sessions data from API
-  useEffect(() => {
-    const fetchSpeakerSessions = async () => {
-      if (!eventId) {
-        setError('Event ID is required');
-        setLoading(false);
+  // Check if user is a speaker
+  const isSpeaker = user?.linked_registrations?.speaker && 
+    Array.isArray(user.linked_registrations.speaker) && 
+    user.linked_registrations.speaker.length > 0;
+
+  // Check if user has conference registration
+  const hasConference = user?.linked_registrations?.conference && 
+    Array.isArray(user.linked_registrations.conference) && 
+    user.linked_registrations.conference.length > 0;
+
+  // Transform API response to match our data structure
+  const transformResponseData = (responseData: any): { transformedData: Record<string, DaySchedule>, dates: string[] } => {
+    const transformedData: Record<string, DaySchedule> = {};
+    const dates: string[] = [];
+
+    Object.keys(responseData).forEach((dateKey) => {
+      const dayData = responseData[dateKey];
+      if (!dayData || !dayData.sections || !Array.isArray(dayData.sections)) {
+        console.warn(`Invalid data structure for date key: ${dateKey}`, dayData);
         return;
       }
 
-      const userId = user?.id || user?.user_id;
-      if (!userId) {
-        setError('User ID is required');
+      transformedData[dateKey] = {
+        date: dayData.date || '',
+        dateLabel: dayData.dateLabel || '',
+        sections: dayData.sections.map((section: any) => ({
+          title: section.title || '',
+          timeSlots: (section.timeSlots || []).map((timeSlot: any) => ({
+            id: timeSlot.id || '',
+            timeRange: timeSlot.timeRange || '',
+            events: (timeSlot.events || []).map((event: any) => ({
+              id: event.id || '',
+              title: event.title || '',
+              hall: event.hall || undefined,
+              eventType: event.eventType || '',
+              isClickable: event.isClickable !== undefined ? event.isClickable : true,
+            })),
+          })),
+        })),
+      };
+      dates.push(dateKey);
+    });
+
+    return { transformedData, dates };
+  };
+
+  // Fetch sessions data from API (speaker or conference user wishlist)
+  useEffect(() => {
+    const fetchSessions = async () => {
+      // If not speaker, require conference registration
+      if (!isSpeaker && !hasConference) {
+        setError('Conference registration is required to view wishlist sessions');
         setLoading(false);
         return;
       }
@@ -84,61 +122,36 @@ const MyConference: React.FC<MyConferenceProps> = ({
       try {
         setLoading(true);
         setError(null);
-        console.log('Fetching speaker sessions for eventId:', eventId);
-        console.log('User ID:', userId);
         
-        const payload = {
-          user_id: userId,
-          affiliation: user?.affiliation || user?.title || '',
-          address: user?.address || '',
-        };
-
-        const response = await getSpeakerSessions(eventId, payload);
-        console.log('Speaker Sessions API Response:', JSON.stringify(response, null, 2));
+        let response;
+        if (isSpeaker) {
+          console.log('Fetching speaker sessions');
+          response = await getSpeakerSessions();
+          console.log('Speaker Sessions API Response:', JSON.stringify(response, null, 2));
+        } else if (hasConference) {
+          console.log('Fetching conference user wishlist sessions');
+          response = await getSessionWorkshops();
+          console.log('User Wishlist API Response:', JSON.stringify(response, null, 2));
+        }
         
         if (response?.success && response?.data) {
           // Check if data is empty or has no keys
           const dataKeys = Object.keys(response.data);
           if (dataKeys.length === 0) {
-            setError('No speaker sessions available for this event.');
+            setError(isSpeaker 
+              ? 'No speaker sessions available for this event.' 
+              : 'No sessions in your wishlist.');
             setLoading(false);
             return;
           }
 
           // Transform API response to match our data structure
-          const transformedData: Record<string, DaySchedule> = {};
-          const dates: string[] = [];
-
-          Object.keys(response.data).forEach((dateKey) => {
-            const dayData = response.data[dateKey];
-            if (!dayData || !dayData.sections || !Array.isArray(dayData.sections)) {
-              console.warn(`Invalid data structure for date key: ${dateKey}`, dayData);
-              return;
-            }
-
-            transformedData[dateKey] = {
-              date: dayData.date || '',
-              dateLabel: dayData.dateLabel || '',
-              sections: dayData.sections.map((section: any) => ({
-                title: section.title || '',
-                timeSlots: (section.timeSlots || []).map((timeSlot: any) => ({
-                  id: timeSlot.id || '',
-                  timeRange: timeSlot.timeRange || '',
-                  events: (timeSlot.events || []).map((event: any) => ({
-                    id: event.id || '',
-                    title: event.title || '',
-                    hall: event.hall || undefined,
-                    eventType: event.eventType || '',
-                    isClickable: event.isClickable !== undefined ? event.isClickable : true,
-                  })),
-                })),
-              })),
-            };
-            dates.push(dateKey);
-          });
+          const { transformedData, dates } = transformResponseData(response.data);
 
           if (dates.length === 0) {
-            setError('No valid speaker session data found in the response.');
+            setError(isSpeaker 
+              ? 'No valid speaker session data found in the response.' 
+              : 'No valid wishlist data found in the response.');
             setLoading(false);
             return;
           }
@@ -151,12 +164,14 @@ const MyConference: React.FC<MyConferenceProps> = ({
             setSelectedDate(dates[0]);
           }
         } else {
-          const errorMsg = response?.message || 'Failed to load speaker sessions data';
+          const errorMsg = response?.message || (isSpeaker 
+            ? 'Failed to load speaker sessions data' 
+            : 'Failed to load wishlist data');
           console.error('API response indicates failure:', response);
           setError(errorMsg);
         }
       } catch (err: any) {
-        console.error('Error fetching speaker sessions:', err);
+        console.error(`Error fetching ${isSpeaker ? 'speaker sessions' : 'wishlist'}:`, err);
         console.error('Error details:', {
           message: err?.message,
           response: err?.response?.data,
@@ -165,13 +180,17 @@ const MyConference: React.FC<MyConferenceProps> = ({
         });
         
         // Extract more detailed error message
-        let errorMessage = 'Failed to load speaker sessions. Please try again.';
+        let errorMessage = isSpeaker 
+          ? 'Failed to load speaker sessions. Please try again.' 
+          : 'Failed to load wishlist. Please try again.';
         if (err?.response?.data?.message) {
           errorMessage = err.response.data.message;
         } else if (err?.message) {
           errorMessage = err.message;
         } else if (err?.response?.status === 404) {
-          errorMessage = 'Event not found. Please check the event ID.';
+          errorMessage = isSpeaker 
+            ? 'Event not found. Please check the event ID.' 
+            : 'Wishlist not found.';
         } else if (err?.response?.status === 401) {
           errorMessage = 'Authentication failed. Please try again.';
         } else if (err?.response?.status === 500) {
@@ -184,8 +203,8 @@ const MyConference: React.FC<MyConferenceProps> = ({
       }
     };
 
-    fetchSpeakerSessions();
-  }, [eventId, user]);
+    fetchSessions();
+  }, [user, isSpeaker, hasConference]);
 
   // Helper function to extract date parts from dateLabel (e.g., "MAR 06 FRI" -> { month: "MAR", day: "06", dayName: "FRI" })
   const parseDateLabel = (dateLabel: string) => {
@@ -316,7 +335,9 @@ const MyConference: React.FC<MyConferenceProps> = ({
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.loadingText}>Loading speaker sessions...</Text>
+            <Text style={styles.loadingText}>
+              {isSpeaker ? 'Loading speaker sessions...' : 'Loading wishlist...'}
+            </Text>
           </View>
         ) : error ? (
           <View style={styles.errorContainer}>
@@ -327,53 +348,34 @@ const MyConference: React.FC<MyConferenceProps> = ({
                 setError(null);
                 setLoading(true);
                 // Retry fetch
-                const userId = user?.id || user?.user_id;
-                if (userId && eventId) {
-                  getSpeakerSessions(eventId, {
-                    user_id: userId,
-                    affiliation: user?.affiliation || user?.title || '',
-                    address: user?.address || '',
-                  })
-                    .then((response) => {
-                      if (response?.success && response?.data) {
-                        const transformedData: Record<string, DaySchedule> = {};
-                        const dates: string[] = [];
-
-                        Object.keys(response.data).forEach((dateKey) => {
-                          const dayData = response.data[dateKey];
-                          transformedData[dateKey] = {
-                            date: dayData.date,
-                            dateLabel: dayData.dateLabel,
-                            sections: dayData.sections.map((section: any) => ({
-                              title: section.title,
-                              timeSlots: section.timeSlots.map((timeSlot: any) => ({
-                                id: timeSlot.id,
-                                timeRange: timeSlot.timeRange,
-                                events: timeSlot.events.map((event: any) => ({
-                                  id: event.id,
-                                  title: event.title,
-                                  hall: event.hall || undefined,
-                                  eventType: event.eventType || '',
-                                  isClickable: event.isClickable !== undefined ? event.isClickable : true,
-                                })),
-                              })),
-                            })),
-                          };
-                          dates.push(dateKey);
-                        });
-
-                        setAllSessions(transformedData);
-                        setAvailableDates(dates);
-                        if (dates.length > 0) {
-                          setSelectedDate(dates[0]);
-                        }
-                      }
-                    })
-                    .catch((err) => {
-                      setError(err?.message || 'Failed to load speaker sessions. Please try again.');
-                    })
-                    .finally(() => setLoading(false));
+                let fetchPromise: Promise<any>;
+                if (isSpeaker) {
+                  fetchPromise = getSpeakerSessions();
+                } else if (hasConference) {
+                  fetchPromise = getSessionWorkshops();
+                } else {
+                  setError('Conference registration is required to view wishlist sessions');
+                  setLoading(false);
+                  return;
                 }
+                
+                fetchPromise
+                  .then((response) => {
+                    if (response?.success && response?.data) {
+                      const { transformedData, dates } = transformResponseData(response.data);
+                      setAllSessions(transformedData);
+                      setAvailableDates(dates);
+                      if (dates.length > 0) {
+                        setSelectedDate(dates[0]);
+                      }
+                    }
+                  })
+                  .catch((err) => {
+                    setError(err?.message || (isSpeaker 
+                      ? 'Failed to load speaker sessions. Please try again.' 
+                      : 'Failed to load wishlist. Please try again.'));
+                  })
+                  .finally(() => setLoading(false));
               }}
             >
               <Text style={styles.retryButtonText}>Retry</Text>
@@ -381,7 +383,11 @@ const MyConference: React.FC<MyConferenceProps> = ({
           </View>
         ) : currentSchedule.sections.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No speaker sessions available for this date.</Text>
+            <Text style={styles.emptyText}>
+              {isSpeaker 
+                ? 'No speaker sessions available for this date.' 
+                : 'No wishlist sessions available for this date.'}
+            </Text>
           </View>
         ) : (
           currentSchedule.sections.map((section, sectionIndex) => (

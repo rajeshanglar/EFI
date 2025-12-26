@@ -193,27 +193,9 @@ export function useNavigationManager() {
     },
     conferenceList: () => setCurrentPage('conferenceList'),
     sessionDetails: (eventData: any) => {
-      const workshopFromTitle = eventData.title.match(/Workshop\s*\d+/)?.[0];
-      const workshopFromType =
-        typeof eventData.eventType === 'string' &&
-        eventData.eventType.includes('Workshop')
-          ? eventData.eventType
-          : undefined;
-
-      const sessionData = {
-        id: eventData.id,
-        date: eventData.parsedDate || eventData.date,
-        time: eventData.timeRange,
-        location: eventData.hall,
-        workshopNumber: workshopFromType || workshopFromTitle,
-        title: eventData.title.includes(':')
-          ? eventData.title.split(':')[1].trim()
-          : eventData.title,
-        subtitle: eventData.eventType,
-        theme: eventData.theme || eventData.title || '',
-        overview: eventData.overview || eventData.description || '',
-      };
-      setSelectedSession(sessionData);
+      // Store session ID to fetch details via API
+      const sessionId = eventData.id;
+      setSelectedSession({ id: sessionId });
       setCurrentPage('sessionDetails');
     },
     myConference: () => setCurrentPage('myConference'),
@@ -239,18 +221,8 @@ export function useNavigationManager() {
     },
     membershipExclusiveAccess: () => setCurrentPage('membershipExclusiveAccess'),
     myConferenceSession: (eventData: any) => {
-      const sessionData = {
-        ...eventData,
-        id: eventData.id,
-        date: eventData.parsedDate || eventData.date,
-        time: eventData.timeRange,
-        location: eventData.hall,
-        workshopNumber: eventData.eventType,
-        subtitle: eventData.eventType || eventData.subtitle || '',
-        theme: eventData.theme || eventData.title || '',
-        overview: eventData.overview || eventData.description || '',
-      };
-      setSelectedSession(sessionData);
+      // Store just the session ID, component will fetch full details via API
+      setSelectedSession({ id: eventData.id });
       setCurrentPage('myConferenceSession');
     },
     liveQA: () => setCurrentPage('liveQA'),

@@ -34,7 +34,8 @@ const STATIC_TOKEN_ENDPOINTS = [
  'v1/conference/verify-efi-member-otp',
  'v1/calculate-conference-price',
  'v1/speakers',
- 'v1/sessions'
+ 'v1/sessions',
+ 'v1/session-details'
 
   // Add more API paths here as needed
 ];
@@ -243,39 +244,22 @@ api.interceptors.response.use(
 
     // Handle 401 errors for all authenticated endpoints (except login)
     if (status === 401 && !isLoginEndpoint) {
+      console.error('=== 401 UNAUTHORIZED ERROR - Redirecting to login ===');
       const errorMessage = error.response?.data?.message || '';
+      console.error('Error Message:', errorMessage);
       
-      // Check for specific token expiration message
-      if (
-        errorMessage.toLowerCase().includes('api token') && 
-        (errorMessage.toLowerCase().includes('no longer valid') || 
-         errorMessage.toLowerCase().includes('invalid') ||
-         errorMessage.toLowerCase().includes('expired')) ||
-        errorMessage.toLowerCase().includes('please log in again')
-      ) {
-        console.error('=== 401 ERROR: API TOKEN NO LONGER VALID ===');
-        console.error('Error Message:', errorMessage);
+      // Clear all tokens and user data
+      try {
+        await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token', 'user_data']);
+        console.error('=== CLEARED INVALID TOKENS ===');
         
-        // Clear invalid tokens
-        try {
-          await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token', 'user_data']);
-          console.error('=== CLEARED INVALID TOKENS ===');
-          
-          // Trigger logout and redirect to login
-          await handleAuthError();
-          console.error('=== TRIGGERED LOGOUT AND REDIRECT TO LOGIN ===');
-        } catch (clearError) {
-          console.error('Error clearing tokens:', clearError);
-        }
-      } else if (errorMessage.includes('token') || errorMessage.includes('invalid') || errorMessage.includes('expired')) {
-        // Generic token error handling
-        try {
-          await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token']);
-          console.error('=== 401 ERROR: CLEARED INVALID TOKENS ===');
-          await handleAuthError();
-        } catch (clearError) {
-          console.error('Error clearing tokens:', clearError);
-        }
+        // Trigger logout and redirect to login
+        await handleAuthError();
+        console.error('=== TRIGGERED LOGOUT AND REDIRECT TO LOGIN ===');
+      } catch (clearError) {
+        console.error('Error clearing tokens:', clearError);
+        // Still try to redirect even if clearing tokens fails
+        await handleAuthError();
       }
     }
 

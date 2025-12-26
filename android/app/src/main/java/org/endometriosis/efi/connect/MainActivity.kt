@@ -1,4 +1,4 @@
-package com.efi
+package org.endometriosis.efi.connect
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
