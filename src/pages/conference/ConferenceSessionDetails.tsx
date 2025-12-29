@@ -9,10 +9,13 @@ import {
   ImageBackground,
   Image,
   ActivityIndicator,
+  Linking,
+  Alert,
+  Modal,
 } from 'react-native';
 import Header from '../../components/Header';
 import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
-  MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon, UserIcon } from '../../components/icons';
+  MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon, UserIcon, CloseIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
 import { getSessionWishlist, removeSessionWishlist } from '../../services/commonService';
 import { getSessionDetailsBySessionId } from '../../services/staticService';
@@ -51,6 +54,7 @@ interface ApiSessionData {
   time_range: string;
   session_type: string;
   session_pdf_url: string | null;
+  session_pdf_image: string | null;
   hall: {
     hall_id: number;
     hall_name: string;
@@ -109,6 +113,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
   const [sessionData, setSessionData] = useState<ApiSessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSpeakerBio, setSelectedSpeakerBio] = useState<{ name: string; bio: string } | null>(null);
 
   // Check if user is a speaker
   const isSpeaker = user?.linked_registrations?.speaker && 
@@ -211,9 +216,20 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
     }
   };
 
-  const handleMoreDetails = () => {
-    // Handle click on embedded image for more details
-    console.log('View more details');
+  const handleMoreDetails = async () => {
+    if (sessionData?.session_pdf_url) {
+      try {
+        const canOpen = await Linking.canOpenURL(sessionData.session_pdf_url);
+        if (canOpen) {
+          await Linking.openURL(sessionData.session_pdf_url);
+        } else {
+          Alert.alert('Error', 'Unable to open PDF. Please check the URL.');
+        }
+      } catch (error) {
+        console.error('Error opening PDF:', error);
+        Alert.alert('Error', 'Failed to open PDF. Please try again.');
+      }
+    }
   };
 
   return (
@@ -277,7 +293,8 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
 <View style={globalStyles.detailSpeakerContainer}>
     {/* Speakers Section */}
     {sessionData.speakers && sessionData.speakers.length > 0 && (
-            <View style={globalStyles.overviewContainer}>           
+            <View style={globalStyles.overviewContainer}>  
+            
               {sessionData.speakers.map((speaker, index) => (
                 <View key={speaker.speaker_id || index} style={globalStyles.speakerSessionDetailsCard}>
                   {/* Profile Image */}
@@ -297,6 +314,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
                   
                   {/* Name and Qualifications */}
                   <View style={globalStyles.speakerInfoSessionDetails}>
+                  <Text style={styles.speakerLabel}>Speaker</Text>
                     <Text style={globalStyles.speakerSessionDetailsFullName}>{speaker.full_name}</Text>
                     {speaker.qualification && (
                       <Text style={globalStyles.speakerSessionDetailsInfoMText}>{speaker.qualification}</Text>
@@ -306,7 +324,25 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
                     )}
 
                     {speaker.bio && (
-                      <Text style={globalStyles.speakerSessionDetailsInfoText}>{stripHtml(speaker.bio)}</Text>
+                      <View>
+                        <Text 
+                          style={globalStyles.speakerSessionDetailsInfoText}
+                          numberOfLines={3}
+                          ellipsizeMode="tail"
+                        >
+                          {stripHtml(speaker.bio)}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            console.log('Opening bio modal for:', speaker.full_name);
+                            console.log('Bio content:', speaker.bio);
+                            setSelectedSpeakerBio({ name: speaker.full_name, bio: speaker.bio || '' });
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <Text style={styles.readMoreText}>Read more...</Text>
+                        </TouchableOpacity>
+                      </View>
                     )}
 
 
@@ -375,15 +411,21 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
             </View>
           )} */}
 
-          {/* session_pdf */}
-          <TouchableOpacity
-            style={globalStyles.imageContainer}
-            onPress={handleMoreDetails}
-            activeOpacity={0.7}
-          >
-            <Image source={require('../../assets/images/pdfscreen.jpg')} style={globalStyles.previewImage} />
-             <Text style={globalStyles.moreDetailsText}>Click this for more details</Text>
-          </TouchableOpacity> 
+          {/* Session PDF */}
+          {sessionData.session_pdf_url && (
+            <TouchableOpacity
+              style={globalStyles.imageContainer}
+              onPress={handleMoreDetails}
+              activeOpacity={0.7}
+            >
+              <Image 
+              //  source={{ uri: sessionData.session_pdf_image || require('../../assets/images/default-pdf-screen.jpg') }} 
+                source={require('../../assets/images/default-pdf-screen.jpg')} 
+                style={globalStyles.previewImage}
+              />
+              <Text style={globalStyles.moreDetailsText}>Click this for more details</Text>
+            </TouchableOpacity>
+          )} 
 
 
           
@@ -504,6 +546,48 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         )}
       </View>
       )}
+
+      {/* Speaker Bio Modal */}
+      <Modal
+        visible={selectedSpeakerBio !== null}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setSelectedSpeakerBio(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            {/* Header */}
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{selectedSpeakerBio?.name || 'Speaker Bio'}</Text>
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => setSelectedSpeakerBio(null)}
+                activeOpacity={0.7}
+              >
+                <CloseIcon size={15} color={colors.white} />
+              </TouchableOpacity>
+
+
+         
+            </View>
+
+            {/* Body */}
+            <ScrollView
+              style={styles.modalBody}
+              contentContainerStyle={styles.modalBodyContent}
+              showsVerticalScrollIndicator={true}
+            >
+              {selectedSpeakerBio?.bio && stripHtml(selectedSpeakerBio.bio) ? (
+                <Text style={styles.modalBioText}>
+                  {stripHtml(selectedSpeakerBio.bio)}
+                </Text>
+              ) : (
+                <Text style={styles.modalBioText}>No biography available.</Text>
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -542,8 +626,69 @@ const styles = StyleSheet.create({
     color: colors.darkGray,
     textAlign: 'center',
   },
- 
-
+  readMoreText: {
+    fontSize: screenWidth * 0.035,
+    fontFamily: Fonts.Medium,
+    color: colors.primary,
+    marginTop: spacing.xs,
+    textDecorationLine: 'underline',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width:'100%',
+    maxHeight: screenHeight * 0.8,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  modalHeader: {
+    backgroundColor: colors.primary,
+    padding: spacing.md,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: screenWidth * 0.042,
+    fontFamily: Fonts.Bold,
+    color: colors.white,
+    flex: 1,
+    marginRight: spacing.md,
+  },
+  modalCloseButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xs,
+  },
+  modalBody: {
+    maxHeight: screenHeight * 0.8,
+    backgroundColor: colors.white,
+    minHeight: 200,
+  },
+  modalBodyContent: {
+    padding: spacing.md,
+    flexGrow: 1,
+  },
+  modalBioText: {
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    color: colors.black,
+    lineHeight: screenWidth * 0.055,
+  },
+  speakerLabel:{
+    fontSize: screenWidth * 0.038,
+    fontFamily: Fonts.Regular,
+    color: colors.black,  
+  }
 });
 
 export default ConferenceSessionDetails;

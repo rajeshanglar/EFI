@@ -241,7 +241,7 @@ const MySessionNotes: React.FC<MySessionNotesProps> = ({
                 onChangeText={setNotes}
                 editable={!saving}
               />
-              <TouchableOpacity 
+              {/* <TouchableOpacity 
                 style={[styles.saveButton, saving && styles.saveButtonDisabled]} 
                 onPress={handleSaveNotes}
                 disabled={saving || !sessionId || !sessionData}
@@ -251,7 +251,7 @@ const MySessionNotes: React.FC<MySessionNotesProps> = ({
                 ) : (
                   <Text style={styles.saveButtonText}>Save Notes</Text>
                 )}
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <Text style={styles.helperText}>
                 When you click "Export your notes," your notes will be emailed to you in an Excel file.
@@ -264,7 +264,10 @@ const MySessionNotes: React.FC<MySessionNotesProps> = ({
 
         {!loading && sessionData && (
         <View style={globalStyles.footerBtContainer}>
-        <GradientButton title="save and Export Your Notes"  onPress={handleExport}/>
+        <GradientButton title="save and Export Your Notes"  
+        onPress={handleSaveNotes}
+        disabled={saving || !sessionId || !sessionData}
+        />
         </View>
         )}
 
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
 padding: spacing.md,
   },
   notesInput: {
-    minHeight:Dimensions.get('window').height * 0.45,
+    minHeight:Dimensions.get('window').height * 0.52,
     borderRadius: borderRadius.md,
     borderWidth: 1,
     borderColor: colors.lightGray,

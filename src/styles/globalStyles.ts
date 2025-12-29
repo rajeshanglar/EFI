@@ -743,13 +743,13 @@ imageContainer: {
   justifyContent: 'center',
 },
 previewImage: {
-  width: Dimensions.get('window').width * 0.7,
-  height: Dimensions.get('window').height * 0.2,
+  width: Dimensions.get('window').width * 0.45,
+  height: Dimensions.get('window').height * 0.15,
   resizeMode: 'cover',
 },
 
 moreDetailsText: {
-  fontSize: screenWidth * 0.04,
+  fontSize: screenWidth * 0.034,
   fontFamily: Fonts.Medium,
   color: colors.blue,
   textAlign: 'center',

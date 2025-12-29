@@ -229,7 +229,7 @@ const HomePage: React.FC<HomePageProps> = ({
     {
       title: 'Training\nSession',
       icon: TrainingIcon,
-      onPress: () => console.log('Training'),
+      onPress: () => onNavigateToTrainingPrograms?.() || console.log('Training Programs'),
       isSpecial: false,
     },
     {
