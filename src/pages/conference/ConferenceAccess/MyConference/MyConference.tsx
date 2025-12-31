@@ -218,36 +218,19 @@ const MyConference: React.FC<MyConferenceProps> = ({
     };
   };
 
-  // Filter to show only sessions that are in "My Conference"
-  // For UI purposes, if myConferenceSessions is empty, show all sessions
+  // Show all sessions from API response
+  // For both speakers and wishlist users, the API already returns the correct sessions
+  // (speaker sessions for speakers, wishlist sessions for regular users)
   const getFilteredSchedule = () => {
     if (!selectedDate || !allSessions[selectedDate]) {
       return { date: '', dateLabel: '', sections: [] };
     }
     
-    const schedule = allSessions[selectedDate];
-    
-    // If no sessions are selected, show all sessions for UI demonstration
-    if (myConferenceSessions.length === 0) {
-      return schedule;
-    }
-    
-    const filteredSections = schedule.sections.map((section) => ({
-      ...section,
-      timeSlots: section.timeSlots
-        .map((timeSlot) => ({
-          ...timeSlot,
-          events: timeSlot.events.filter((event) =>
-            myConferenceSessions.includes(event.id)
-          ),
-        }))
-        .filter((timeSlot) => timeSlot.events.length > 0),
-    })).filter((section) => section.timeSlots.length > 0);
-
-    return {
-      ...schedule,
-      sections: filteredSections,
-    };
+    // Always return all sessions from the API response
+    // The API already filters correctly:
+    // - For speakers: returns only their sessions
+    // - For regular users: returns only wishlist sessions
+    return allSessions[selectedDate];
   };
 
   const currentSchedule = getFilteredSchedule();
@@ -267,11 +250,11 @@ const MyConference: React.FC<MyConferenceProps> = ({
     }
   };
 
-  const handleRemoveSession = (eventId: string) => {
-    if (onRemoveSession) {
-      onRemoveSession(eventId);
-    }
-  };
+  // const handleRemoveSession = (eventId: string) => {
+  //   if (onRemoveSession) {
+  //     onRemoveSession(eventId);
+  //   }
+  // };
 
   const handleRemoveFromConference = async (sessionId: string, event: EventItem) => {
     try {
@@ -497,18 +480,19 @@ const MyConference: React.FC<MyConferenceProps> = ({
                         </View>
                       </TouchableOpacity>
                       
-                      {/* Remove Button */}
-                      <TouchableOpacity
-                        style={styles.removeButtonContainer}
-                        onPress={() => handleRemoveFromConference(event.id, event)}
-                        disabled={removingSessionId === event.id}
-                        activeOpacity={0.7}
-                      >
-                        
-                        <View style={styles.removeButtonIcon}>
-                          <CloseIcon size={10} color={colors.white} />
-                        </View>
-                      </TouchableOpacity>
+                      {/* Remove Button - Hide for speakers */}
+                      {!isSpeaker && (
+                        <TouchableOpacity
+                          style={styles.removeButtonContainer}
+                          onPress={() => handleRemoveFromConference(event.id, event)}
+                          disabled={removingSessionId === event.id}
+                          activeOpacity={0.7}
+                        >                          
+                          <View style={styles.removeButtonIcon}>
+                            <CloseIcon size={10} color={colors.white} />
+                          </View>
+                        </TouchableOpacity>
+                      )}
                       
                       {/* Arrow Icon */}
                       {event.isClickable && (
