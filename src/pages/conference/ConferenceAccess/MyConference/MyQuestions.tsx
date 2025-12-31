@@ -16,8 +16,10 @@ import globalStyles, {
 } from '../../../../styles/globalStyles';
 import { getSessionQuestions } from '../../../../services/conferenceService';
 import { ToastService } from '../../../../utils/service-handlers';
+import { stripHtml } from '../../../../utils/stripHtml';
+import { formatDate } from '../../../../utils/dateFormatter';
 
-const { width: screenWidth } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 interface Question {
   question_id: string | number;
@@ -27,64 +29,53 @@ interface Question {
   created_at: string;
   session_title?: string;
   is_anonymous?: number;
+  answer: any;
 }
 
 interface MyQuestionsProps {
   onBack: () => void;
   onNavigateToHome: () => void;
+  sessionId?: number | string;
 }
 
 const MyQuestions: React.FC<MyQuestionsProps> = ({
   onBack,
   onNavigateToHome,
+  sessionId,
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch questions on mount
+  // Fetch questions on mount or when sessionId changes
   useEffect(() => {
     fetchQuestions();
-  }, []);
+  }, [sessionId]);
 
   const fetchQuestions = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Fetching session questions...');
-      const response = await getSessionQuestions();
-      console.log('Session Questions API Response:', JSON.stringify(response, null, 2));
+      
+      // Log payload
+      const payload = sessionId ? { session_id: sessionId } : {};
+      console.log('My Questions - Payload:', payload);
+      
+      const response = await getSessionQuestions(sessionId);
+      
+      // Log response
+      console.log('My Questions - Response:', response);
       
       if (response?.success && response?.data) {
-        const questionsList = response.data.questions || [];
-        console.log('Questions Data:', JSON.stringify(questionsList, null, 2));
-        setQuestions(questionsList);
+        setQuestions(response.data.questions || []);
       } else {
-        console.error('API response indicates failure:', response);
         setError(response?.message || 'Failed to load questions');
       }
     } catch (err: any) {
-      console.error('Error fetching questions:', err);
-      console.error('Error details:', {
-        message: err?.message,
-        response: err?.response?.data,
-        status: err?.response?.status,
-        statusText: err?.response?.statusText,
-      });
       setError(err?.response?.data?.message || err?.message || 'Failed to load questions');
       ToastService.error('Error', err?.response?.data?.message || err?.message || 'Failed to load questions');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string): string => {
-    if (!dateString) return '';
-    try {
-      const date = new Date(dateString);
-      return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-    } catch {
-      return dateString;
     }
   };
 
@@ -97,12 +88,13 @@ const MyQuestions: React.FC<MyQuestionsProps> = ({
   };
 
   const getStatusText = (status: string): string => {
-    const s = status.toLowerCase();
-    if (s === 'approved') return 'Approved';
-    if (s === 'pending') return 'Pending';
-    if (s === 'answered') return 'Answered';
-    if (s === 'rejected') return 'Rejected';
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    const statusMap: Record<string, string> = {
+      approved: 'Approved',
+      pending: 'Pending',
+      answered: 'Answered',
+      rejected: 'Rejected',
+    };
+    return statusMap[status.toLowerCase()] || status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   return (
@@ -111,7 +103,7 @@ const MyQuestions: React.FC<MyQuestionsProps> = ({
         title="My Questions"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
-        onMenuItemPress={(id: any) => console.log('Menu:', id)}
+        onMenuItemPress={() => {}}
       />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -132,36 +124,47 @@ const MyQuestions: React.FC<MyQuestionsProps> = ({
         ) : (
           <View style={styles.contentContainer}>
             {questions.map((question, index) => (
-              <View key={question.question_id || index} style={styles.questionCard}>
-                <View style={styles.questionHeader}>
-                  <Text style={styles.questionTitle}>Question #{question.question_id}</Text>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(question.status) + '20' }]}>
-                    <Text style={[styles.statusText, { color: getStatusColor(question.status) }]}>
-                      {getStatusText(question.status)}
-                    </Text>
+              <View key={question.question_id || index} style={styles.questionCard}>             
+
+                <Text style={styles.questionText}>
+                  <Text style={styles.questionTextBold}>Q:</Text> {question.question}
+                </Text>
+                
+                {question.status.toLowerCase() !== 'answered' && (
+                  <View style={styles.statusBadgeContainer}>
+                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(question.status) + '20' }]}>
+                      <Text style={[styles.statusText, { color: getStatusColor(question.status) }]}>
+                        {getStatusText(question.status)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                )}
+                
+                {question.answer && (
+                  <View style={styles.answerContainer}> 
+                    <Text style={styles.questionTextBold}>A:</Text>                
+                    <Text style={styles.answerText}>{stripHtml(question.answer)}</Text>
+                  </View>
+                )}
 
-                <Text style={styles.questionText}>{question.question}</Text>
-
-                <View style={styles.questionFooter}>
+          <View style={styles.questionFooter}>
                   <View style={styles.questionInfo}>
-                    <Text style={styles.infoLabel}>Date:</Text>
+                    <Text style={styles.infoLabel}>Asked on:</Text>
                     <Text style={styles.infoValue}>{formatDate(question.created_at)}</Text>
                   </View>
-                  {question.session_title && (
+                  {/* {question.session_title && (
                     <View style={styles.questionInfo}>
                       <Text style={styles.infoLabel}>Session:</Text>
                       <Text style={styles.infoValue} numberOfLines={1}>
                         {question.session_title}
                       </Text>
                     </View>
-                  )}
-                  {question.is_anonymous === 1 && (
+                  )} */}
+                  {/* {question.is_anonymous === 1 && (
                     <View style={styles.anonymousBadge}>
                       <Text style={styles.anonymousText}>Anonymous</Text>
                     </View>
-                  )}
+                  )} */}
                 </View>
               </View>
             ))}
@@ -242,67 +245,75 @@ const styles = StyleSheet.create({
   },
   questionHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     marginBottom: spacing.sm,
   },
-  questionTitle: {
-    fontSize: spacing.md,
-    fontFamily: Fonts.SemiBold,
-    color: colors.black,
+  statusBadgeContainer: {
+    marginTop:0,
+    alignSelf: 'flex-start',
   },
   statusBadge: {
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: borderRadius.sm,
+
+
+    gap: spacing.sm,
+ 
   },
   statusText: {
-    fontSize: spacing.sm,
+    fontSize: screenWidth * 0.032,
     fontFamily: Fonts.SemiBold,
   },
   questionText: {
-    fontSize: spacing.md,
-    fontFamily: Fonts.Regular,
+    fontSize: screenWidth * 0.037,
+    fontFamily: Fonts.Medium,
     color: colors.black,
     lineHeight: 22,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  answerContainer: {
+    marginTop: spacing.sm,
+    gap: spacing.sm,
+    flexDirection: 'row',
+    width: '95%',
+  },
+  answerText: {
+    fontSize: screenWidth * 0.037,
+    fontFamily: Fonts.Regular,
+    color: colors.primary,
+    flex: 1,
+  },
+  questionTextBold: {
+    fontSize: spacing.md,
+    fontFamily: Fonts.SemiBold,
+    color: colors.black,
   },
   questionFooter: {
     borderTopWidth: 1,
     borderTopColor: colors.lightGray,
     paddingTop: spacing.sm,
-    gap: spacing.xs,
+    marginTop: spacing.sm,
+    
   },
   questionInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.xs,
+    marginBottom:5,
   },
   infoLabel: {
-    fontSize: spacing.sm,
+    fontSize:screenWidth * 0.03,
     fontFamily: Fonts.SemiBold,
     color: colors.darkGray,
     marginRight: spacing.xs,
     minWidth: 60,
   },
   infoValue: {
-    fontSize: spacing.sm,
+    fontSize:screenWidth * 0.032,
     fontFamily: Fonts.Regular,
     color: colors.black,
     flex: 1,
-  },
-  anonymousBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: colors.lightGray,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: borderRadius.sm,
-    marginTop: spacing.xs,
-  },
-  anonymousText: {
-    fontSize: spacing.sm,
-    fontFamily: Fonts.Regular,
-    color: colors.darkGray,
   },
 });
 

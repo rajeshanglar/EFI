@@ -278,7 +278,7 @@ function AppNavigation() {
         onNavigateToHome={navigate.home}
         sessionData={selectedSession}
         sessionId={selectedSession.id}
-        onMyQuestionsPress={navigate.myQuestions}
+        onMyQuestionsPress={(sessionId?: number | string) => navigate.myQuestions(sessionId)}
       />
     ) : (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -308,6 +308,7 @@ function AppNavigation() {
             : navigate.myConference()
         }
         onNavigateToHome={navigate.home}
+        sessionId={selectedSession?.id}
       />
     ),
     handouts: (

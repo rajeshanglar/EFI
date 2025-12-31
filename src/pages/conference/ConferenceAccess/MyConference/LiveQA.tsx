@@ -103,7 +103,7 @@ interface LiveQAProps {
   sessionData?: SessionData;
   sessionId?: number | string;
   onSubmitQuestion?: (question: string) => void;
-  onMyQuestionsPress?: () => void;
+  onMyQuestionsPress?: (sessionId?: number | string) => void;
   onRecentQuestionsPress?: () => void;
 }
 
@@ -320,7 +320,7 @@ const LiveQA: React.FC<LiveQAProps> = ({
                 <TouchableOpacity
                   style={globalStyles.actionButton}
                   activeOpacity={0.8}
-                  onPress={onMyQuestionsPress}
+                  onPress={() => onMyQuestionsPress?.(apiSessionData?.session_id || sessionId)}
                 >
                   <View style={globalStyles.actionButtonContent}>
                     <View style={styles.actionIconWrapper}>

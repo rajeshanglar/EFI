@@ -248,7 +248,10 @@ export function useNavigationManager() {
     },
     liveQA: () => setCurrentPage('liveQA'),
     sessionNotes: () => setCurrentPage('sessionNotes'),
-    myQuestions: () => setCurrentPage('myQuestions'),
+    myQuestions: (sessionId?: number | string) => {
+      if (sessionId) setSelectedSession({ id: sessionId });
+      setCurrentPage('myQuestions');
+    },
     handouts: () => setCurrentPage('handouts'),
     digitalPosters: () => setCurrentPage('digitalPosters'),
     myAbstracts: () => setCurrentPage('myAbstracts'),

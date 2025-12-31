@@ -9,9 +9,13 @@ export const askSessionQuestion = async (sessionId: number, question: string, is
   }
 };
 
-export const getSessionQuestions = async () => {
+export const getSessionQuestions = async (sessionId?: number | string) => {
   try {
-    const response = await api.get(`v1/session-question/my-questions`);
+    let url = `v1/session-question/my-questions`;
+    if (sessionId) {
+      url += `?session_id=${sessionId}`;
+    }
+    const response = await api.get(url);
     return response.data;
   } catch (error: any) {
     throw error;
