@@ -117,17 +117,37 @@ export function useNavigationManager() {
 
   // Set up auth error handler for API interceptor
   useEffect(() => {
-    const handleAuthError = async () => {
-      console.log('=== AUTH ERROR HANDLER: LOGGING OUT AND REDIRECTING TO LOGIN ===');
+    const handleAuthError = async (shouldRedirectToLogin: boolean) => {
+      console.log('=== AUTH ERROR HANDLER ===');
+      console.log('Should redirect to login:', shouldRedirectToLogin);
+      console.log('Is authenticated (before logout):', isAuthenticated);
+      
       try {
-        // Logout user
-        await logout();
-        // Navigate to login page
-        setCurrentPage('login');
+        // Logout user if they were logged in (tokens are already cleared by interceptor)
+        if (isAuthenticated) {
+          await logout();
+          console.log('=== LOGGED OUT USER ===');
+        }
+        
+        // Redirect based on the flag passed from API interceptor
+        // shouldRedirectToLogin is true when: user was logged in AND token expired
+        if (shouldRedirectToLogin) {
+          // User was logged in and token expired - redirect to login
+          console.log('=== REDIRECTING TO LOGIN (TOKEN EXPIRED) ===');
+          setCurrentPage('login');
+        } else {
+          // User was not logged in - redirect to dashboard/home
+          console.log('=== REDIRECTING TO HOME (NOT LOGGED IN) ===');
+          setCurrentPage('home');
+        }
       } catch (error) {
         console.error('Error in auth error handler:', error);
-        // Still navigate to login even if logout fails
-        setCurrentPage('login');
+        // Fallback: redirect based on shouldRedirectToLogin flag
+        if (shouldRedirectToLogin) {
+          setCurrentPage('login');
+        } else {
+          setCurrentPage('home');
+        }
       }
     };
 
@@ -138,7 +158,7 @@ export function useNavigationManager() {
     return () => {
       setAuthErrorHandler(() => {});
     };
-  }, [logout]);
+  }, [logout, isAuthenticated]);
 
   const navigate = {
     to: setCurrentPage,

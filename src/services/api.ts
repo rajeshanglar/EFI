@@ -235,19 +235,29 @@ api.interceptors.response.use(
       const errorMessage = error.response?.data?.message || '';
       console.error('Error Message:', errorMessage);
       
+      // Check if the error message matches the token expiration message
+      const isTokenExpired = errorMessage.includes('The API token is no longer valid') || 
+                             errorMessage.includes('Please log in again');
+      
+      // Check if user is logged in (has accessToken)
+      const accessToken = await AsyncStorage.getItem('accessToken');
+      const isLoggedIn = !!accessToken;
+      
+      console.error('Is Token Expired:', isTokenExpired);
+      console.error('Is Logged In:', isLoggedIn);
+      
       // Clear all tokens and user data
       try {
         await AsyncStorage.multiRemove(['accessToken', 'refreshToken', 'tokenExpiry', 'auth_token', 'user_data']);
         console.error('=== CLEARED INVALID TOKENS ===');
-        
-        // Trigger logout and redirect to login
-        await handleAuthError();
-        console.error('=== TRIGGERED LOGOUT AND REDIRECT TO LOGIN ===');
       } catch (clearError) {
         console.error('Error clearing tokens:', clearError);
-        // Still try to redirect even if clearing tokens fails
-        await handleAuthError();
       }
+      
+      // Trigger auth error handler with context
+      // The handler will check authentication status and redirect accordingly
+      await handleAuthError(isLoggedIn && isTokenExpired);
+      console.error('=== TRIGGERED AUTH ERROR HANDLER ===');
     }
 
     downloadApiLog(msg); // 👈 still download even if it fails

@@ -1,13 +1,13 @@
 // Global handler for authentication errors
-let onAuthErrorCallback: (() => void) | null = null;
+let onAuthErrorCallback: ((shouldRedirectToLogin: boolean) => void) | null = null;
 
-export const setAuthErrorHandler = (callback: () => void) => {
+export const setAuthErrorHandler = (callback: (shouldRedirectToLogin: boolean) => void) => {
   onAuthErrorCallback = callback;
 };
 
-export const handleAuthError = async () => {
+export const handleAuthError = async (shouldRedirectToLogin: boolean = true) => {
   if (onAuthErrorCallback) {
-    onAuthErrorCallback();
+    onAuthErrorCallback(shouldRedirectToLogin);
   }
 };
 
