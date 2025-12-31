@@ -86,7 +86,7 @@ export const getSpeakerSessions = async () => {
 };
 
 
-export const getSessionWishlist = async (sessionId: number | string) => {
+export const postSessionWishlist = async (sessionId: number | string) => {
   try {
     const response = await api.post(`v1/session-wishlist`, { session_id: sessionId });
     return response.data;
@@ -106,7 +106,7 @@ export const removeSessionWishlist = async (sessionId: number | string) => {
 };
 
 
-export const getSessionWorkshops = async () => {
+export const getSessionWishlist = async () => {
   try {
     const response = await api.get(`v1/get-session-wishlist`, {
     });

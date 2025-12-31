@@ -27,8 +27,9 @@ import {
   DonationsIcon,
   ContactIcon,
   FacebookIcon,
-  TwitterIcon,
+  InstagramIcon,
   LinkedinIcon,
+  XIcon,
   YoutubeIcon,
   AbstractIcon,
   WhiteUserIcon,
@@ -42,6 +43,8 @@ import {
   MyAbstractsIcon,
   FundraisingIcon,
   ProfileIcon,
+  WhatsappIcon,
+
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
 import { Screen } from 'react-native-screens';
@@ -74,7 +77,7 @@ interface SlideOutMenuProps {
 
 const conferenceAccessItems = [
   { id: 'privacy', title: 'Privacy Settings', icon: PrivacySettingsIcon },
-  { id: 'myConference', title: 'My\nConference', icon: MyConferenceIcon },
+  { id: 'myConference', title: 'My\nWishlist', icon: MyConferenceIcon },
   // { id: 'posters', title: 'Digital\nPosters', icon: DigitalPostersIcon },
   { id: 'speakers', title: 'Keynote\nSpeakers', icon: KeynoteSpeakersIcon },
   // { id: 'delegates', title: 'Delegate\nList', icon: DelegateListIcon },
@@ -110,18 +113,31 @@ const defaultSocialIcons: SocialIconConfig[] = [
   },
   { 
     id: 'instagram', 
-    icon: TwitterIcon, 
-    url: 'https://www.instagram.com/endofoundindia/?igshid=YmMyMTA2M2Y%3D' // Replace with your Twitter handle URL
+    icon: InstagramIcon, 
+    url: 'https://www.instagram.com/endofoundindia/?igshid=YmMyMTA2M2Y%3D'
   },
+
+  { 
+    id: 'x', 
+    icon: XIcon, 
+    url: 'https://x.com/endofoundindia' 
+    },
+
+  { 
+    id: 'whatsapp', 
+    icon: WhatsappIcon, 
+    url: 'https://wa.me/919100014632' 
+  },
+  
   { 
     id: 'linkedin', 
     icon: LinkedinIcon, 
-    url: 'https://www.linkedin.com/uas/login?session_redirect=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fendometriosis-foundation-india%2Fabout%2F' // Replace with your LinkedIn page URL
+    url: 'https://www.linkedin.com/uas/login?session_redirect=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fendometriosis-foundation-india%2Fabout%2F' 
   },
   { 
     id: 'youtube', 
     icon: YoutubeIcon, 
-    url: 'https://www.youtube.com/@EndometriosisFoundationofIndia' // Replace with your YouTube channel URL
+    url: 'https://www.youtube.com/@EndometriosisFoundationofIndia'
   },
 ];
 

@@ -10,7 +10,8 @@ import MediaIconSvg from '../../assets/images/media-icon.svg';
 import DonationsIconSvg from '../../assets/images/donations-icon.svg';
 import ContactIconSvg from '../../assets/images/contact-icon.svg';
 import FacebookIconSvg from '../../assets/images/facebook-icon.svg';
-import TwitterIconSvg from '../../assets/images/twitter-icon.svg';
+import XIconSvg from '../../assets/images/x-icon.svg';
+import InstagramIconSvg from '../../assets/images/instagram-icon.svg';
 import LinkedinIconSvg from '../../assets/images/linkedin-icon.svg';
 import YoutubeIconSvg from '../../assets/images/youtube-icon.svg';
 import AboutUsIconSvg from '../../assets/images/info-icon.svg';
@@ -104,7 +105,7 @@ import SearchIconSvg from '../../assets/images/search-icon.svg';
 import TickIconSvg from '../../assets/images/tick-icon.svg';
 import OtpIconSvg from '../../assets/images/otp-icon.svg';
 import SponsorPatientWIconSvg from '../../assets/images/sponsor-patient-w-icon.svg';
-
+import WhatsappIconSvg from '../../assets/images/whatsapp-icon.svg';
 
 interface IconProps {
   size?: number;
@@ -145,8 +146,12 @@ export const FacebookIcon = ({ size = 24, color, style }: IconProps) => (
   <FacebookIconSvg width={size} height={size} color={color} style={style} />
 );
 
-export const TwitterIcon = ({ size = 24, color, style }: IconProps) => (
-  <TwitterIconSvg width={size} height={size} color={color} style={style} />
+export const XIcon = ({ size = 24, color, style }: IconProps) => (
+  <XIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const InstagramIcon = ({ size = 24, color, style }: IconProps) => (
+  <InstagramIconSvg width={size} height={size} color={color} style={style} />
 );
 
 export const LinkedinIcon = ({ size = 24, color, style }: IconProps) => (
@@ -480,4 +485,8 @@ export const OtpIcon = ({ size = 24, color, style }: IconProps) => (
 
 export const SponsorPatientWIcon = ({ size = 24, color, style }: IconProps) => (
   <SponsorPatientWIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const WhatsappIcon = ({ size = 24, color, style }: IconProps) => (
+  <WhatsappIconSvg width={size} height={size} color={color} style={style} />
 );

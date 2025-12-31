@@ -42,8 +42,9 @@ interface ApiSessionData {
   start_time: string;
   end_time: string;
   time_range: string;
-  session_type: string;
+  session_type: number;
   session_pdf_url: string | null;
+  session_pdf_image?: string | null;
   hall: {
     hall_id: number;
     hall_name: string;

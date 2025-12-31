@@ -12,8 +12,9 @@ import {
 import Header from '../../../../components/Header';
 import { CardRightArrowIcon, CloseIcon, YellowRibbonIcon } from '../../../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../../../styles/globalStyles';
-import { getSpeakerSessions, getSessionWorkshops } from '../../../../services/commonService';
+import { getSpeakerSessions, getSessionWishlist, removeSessionWishlist } from '../../../../services/commonService';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { ToastService } from '../../../../utils/service-handlers';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -62,6 +63,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
   const [allSessions, setAllSessions] = useState<Record<string, DaySchedule>>({});
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [removingSessionId, setRemovingSessionId] = useState<string | null>(null);
 
   // Check if user is a speaker
   const isSpeaker = user?.linked_registrations?.speaker && 
@@ -130,7 +132,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
           console.log('Speaker Sessions API Response:', JSON.stringify(response, null, 2));
         } else if (hasConference) {
           console.log('Fetching conference user wishlist sessions');
-          response = await getSessionWorkshops();
+          response = await getSessionWishlist();
           console.log('User Wishlist API Response:', JSON.stringify(response, null, 2));
         }
         
@@ -271,6 +273,50 @@ const MyConference: React.FC<MyConferenceProps> = ({
     }
   };
 
+  const handleRemoveFromConference = async (sessionId: string, event: EventItem) => {
+    try {
+      setRemovingSessionId(sessionId);
+      const id = typeof sessionId === 'number' ? sessionId : Number(sessionId);
+      
+      const response = await removeSessionWishlist(id);
+      
+      if (response?.success) {
+        // Remove from local state
+        const updatedSessions = { ...allSessions };
+        if (updatedSessions[selectedDate]) {
+          updatedSessions[selectedDate] = {
+            ...updatedSessions[selectedDate],
+            sections: updatedSessions[selectedDate].sections.map((section) => ({
+              ...section,
+              timeSlots: section.timeSlots.map((timeSlot) => ({
+                ...timeSlot,
+                events: timeSlot.events.filter((e) => e.id !== sessionId),
+              })).filter((timeSlot) => timeSlot.events.length > 0),
+            })).filter((section) => section.timeSlots.length > 0),
+          };
+          setAllSessions(updatedSessions);
+        }
+        
+        // Call parent callback if provided
+        if (onRemoveSession) {
+          onRemoveSession(sessionId);
+        }
+        
+        ToastService.success('Success', response?.message || 'Session removed from wishlist successfully');
+      } else {
+        ToastService.error('Error', response?.message || 'Failed to remove session from wishlist');
+      }
+    } catch (error: any) {
+      console.error('Error removing session from wishlist:', error);
+      ToastService.error(
+        'Error',
+        error?.response?.data?.message || error?.message || 'Failed to remove session from wishlist'
+      );
+    } finally {
+      setRemovingSessionId(null);
+    }
+  };
+
   const getFormattedDate = (dateString: string): string => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
@@ -286,7 +332,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
     <View style={styles.container}>
       {/* Header */}
       <Header
-        title="My Conference"
+        title="My Wishlist"
         onBack={onBack}
         onNavigateToHome={onNavigateToHome}
         onMenuItemPress={(id: any) => console.log('Menu:', id)}
@@ -352,7 +398,7 @@ const MyConference: React.FC<MyConferenceProps> = ({
                 if (isSpeaker) {
                   fetchPromise = getSpeakerSessions();
                 } else if (hasConference) {
-                  fetchPromise = getSessionWorkshops();
+                  fetchPromise = getSessionWishlist();
                 } else {
                   setError('Conference registration is required to view wishlist sessions');
                   setLoading(false);
@@ -419,39 +465,58 @@ const MyConference: React.FC<MyConferenceProps> = ({
                 {/* Events List */}
                 <View style={globalStyles.eventsContainer}>
                   {timeSlot.events.map((event, eventIndex) => (
-                    <TouchableOpacity
+                    <View
                       key={event.id}
                       style={[
                         globalStyles.eventItem,
                         eventIndex !== timeSlot.events.length - 1 &&
                         globalStyles.eventItemBorder,
                       ]}
-                      onPress={() => handleEventPress(event, timeSlot.timeRange)}
-                      disabled={!event.isClickable}
-                      activeOpacity={event.isClickable ? 0.7 : 1}
                     >
-                      <View style={globalStyles.eventContent}>
-                        {event.hall && (
-                          <Text style={globalStyles.eventHall}>
-                            {event.hall}
+                      <TouchableOpacity
+                        style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start' }}
+                        onPress={() => handleEventPress(event, timeSlot.timeRange)}
+                        disabled={!event.isClickable}
+                        activeOpacity={event.isClickable ? 0.7 : 1}
+                      >
+                        <View style={globalStyles.eventContent}>
+                          {event.hall && (
+                            <Text style={globalStyles.eventHall}>
+                              {event.hall}
+                            </Text>
+                          )}
+                         
+                          <Text
+                            style={[
+                              globalStyles.eventTitle,
+                              !event.hall && globalStyles.eventTitleNoHall,
+                            ]}
+                          >
+                            {event.title}
                           </Text>
-                        )}
-                       
-                        <Text
-                          style={[
-                            globalStyles.eventTitle,
-                            !event.hall && globalStyles.eventTitleNoHall,
-                          ]}
-                        >
-                          {event.title}
-                        </Text>
-                      </View>
+                        </View>
+                      </TouchableOpacity>
+                      
+                      {/* Remove Button */}
+                      <TouchableOpacity
+                        style={styles.removeButtonContainer}
+                        onPress={() => handleRemoveFromConference(event.id, event)}
+                        disabled={removingSessionId === event.id}
+                        activeOpacity={0.7}
+                      >
+                        
+                        <View style={styles.removeButtonIcon}>
+                          <CloseIcon size={10} color={colors.white} />
+                        </View>
+                      </TouchableOpacity>
+                      
+                      {/* Arrow Icon */}
                       {event.isClickable && (
-                        <View style={globalStyles.eventArrow}>
+                        <View style={styles.eventArrow}>
                          <CardRightArrowIcon size={16} color={colors.darkGray} />
                         </View>
                       )}
-                    </TouchableOpacity>
+                    </View>
                   ))}
                 </View>
               </View>
@@ -473,6 +538,12 @@ const styles = StyleSheet.create({
  
   scrollView: {
     flex: 1,
+  },
+  eventArrow:{
+    position: 'absolute',
+    bottom: 20,
+    right: 10,
+    marginLeft: spacing.sm,
   },
   loadingContainer: {
     flex: 1,
@@ -639,6 +710,32 @@ const styles = StyleSheet.create({
   ribbonIcon: {
     width: screenWidth * 0.3,
     height: screenWidth * 0.3,
+  },
+  removeButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: spacing.sm,
+    position: 'absolute',
+    top: 10,
+    right: 0,
+  },
+  removeButtonText: {
+    fontSize: screenWidth * 0.04,
+    fontFamily: Fonts.Medium,
+    color: colors.white,
+    marginRight: spacing.xs,
+   
+  },
+  removeButtonIcon: {
+    width: 23,
+    height: 23,
+    borderRadius: '100%',
+    backgroundColor:'#FFEAEA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.xs,
+    borderWidth: 1,
+    borderColor: colors.red,
   },
 });
 

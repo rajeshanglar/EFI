@@ -17,7 +17,7 @@ import Header from '../../components/Header';
 import { SuccessIcon, ArrowRightIcon, CalendarIconYellow,
   MapWIcon, TimeWIcon, WorkshopIcon, InformationIcon, DownloadIcon, CardRightArrowIcon, UserIcon, CloseIcon } from '../../components/icons';
 import globalStyles, { colors, spacing, borderRadius, Fonts } from '../../styles/globalStyles';
-import { getSessionWishlist, removeSessionWishlist } from '../../services/commonService';
+import { postSessionWishlist, removeSessionWishlist, getSessionWishlist } from '../../services/commonService';
 import { getSessionDetailsBySessionId } from '../../services/staticService';
 import { ToastService } from '../../utils/service-handlers';
 import { useAuth } from '../../contexts/AuthContext';
@@ -52,9 +52,9 @@ interface ApiSessionData {
   start_time: string;
   end_time: string;
   time_range: string;
-  session_type: string;
+  session_type: number;
   session_pdf_url: string | null;
-  session_pdf_image: string | null;
+  session_pdf_image?: string | null;
   hall: {
     hall_id: number;
     hall_name: string;
@@ -120,7 +120,66 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
     Array.isArray(user.linked_registrations.speaker) && 
     user.linked_registrations.speaker.length > 0;
 
-  // Fetch session details from API
+  // Check if user has conference registration
+  const hasConference = user?.linked_registrations?.conference && 
+    Array.isArray(user.linked_registrations.conference) && 
+    user.linked_registrations.conference.length > 0;
+
+  // Check if session is in wishlist
+  const checkSessionInWishlist = async (sessionIdToCheck: number | string) => {
+    try {
+      // Only check if user has conference registration
+      if (!hasConference) {
+        console.log('User does not have conference registration, skipping wishlist check');
+        return false;
+      }
+
+      const id = typeof sessionIdToCheck === 'number' ? sessionIdToCheck : Number(sessionIdToCheck);
+      const wishlistResponse = await getSessionWishlist();
+      
+      if (wishlistResponse?.success && wishlistResponse?.data) {
+        // Check if session_id exists in any of the wishlist data
+        const wishlistData = wishlistResponse.data;
+        let isInWishlist = false;
+        
+        // Iterate through all dates and sections to find the session
+        Object.keys(wishlistData).forEach((dateKey) => {
+          if (isInWishlist) return; // Early exit if found
+          
+          const dayData = wishlistData[dateKey];
+          if (dayData?.sections && Array.isArray(dayData.sections)) {
+            dayData.sections.forEach((section: any) => {
+              if (isInWishlist) return; // Early exit if found
+              
+              if (section?.timeSlots && Array.isArray(section.timeSlots)) {
+                section.timeSlots.forEach((timeSlot: any) => {
+                  if (isInWishlist) return; // Early exit if found
+                  
+                  if (timeSlot?.events && Array.isArray(timeSlot.events)) {
+                    const found = timeSlot.events.some((event: any) => {
+                      const eventId = typeof event.id === 'number' ? event.id : Number(event.id);
+                      return eventId === id;
+                    });
+                    if (found) {
+                      isInWishlist = true;
+                    }
+                  }
+                });
+              }
+            });
+          }
+        });
+        
+        return isInWishlist;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking wishlist:', error);
+      return false;
+    }
+  };
+
+  // Fetch session details from API and check wishlist status
   useEffect(() => {
     const fetchSessionDetails = async () => {
       try {
@@ -133,6 +192,18 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
         if (response?.success && response?.data) {
           console.log('Session Details Data:', JSON.stringify(response.data, null, 2));
           setSessionData(response.data);
+          
+          // Check if session is in wishlist (only if not from MyConference and not a speaker)
+          // Also respect the isInMyConference prop as a fallback
+          if (!isFromMyConference && !isSpeaker) {
+            const isInWishlist = await checkSessionInWishlist(sessionId);
+            console.log('Session in wishlist:', isInWishlist);
+            // Use API check result, but fallback to prop if API check fails
+            setIsAdded(isInWishlist || isInMyConference);
+          } else {
+            // If from MyConference or is speaker, use the prop value
+            setIsAdded(isInMyConference);
+          }
         } else {
           console.error('API response indicates failure:', response);
           setError(response?.message || 'Failed to load session details');
@@ -152,7 +223,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
     };
 
     fetchSessionDetails();
-  }, [sessionId]);
+  }, [sessionId, isFromMyConference, isSpeaker]);
 
   // Update isAdded when isInMyConference changes
   useEffect(() => {
@@ -167,12 +238,18 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
       setIsLoading(true);
       const id = typeof sessionId === 'number' ? sessionId : Number(sessionId);
       
-      const response = await getSessionWishlist(sessionId);
+      // Validate sessionId
+      if (isNaN(id) || id <= 0) {
+        ToastService.error('Error', 'Invalid session ID');
+        return;
+      }
+      
+      const response = await postSessionWishlist(id);
       
       if (response?.success) {
         setIsAdded(true);
         if (onAddToMyConference) {
-          onAddToMyConference(String(sessionId));
+          onAddToMyConference(String(id));
         }
         ToastService.success('Success', response?.message || 'Session added to wishlist successfully');
       } else {
@@ -180,10 +257,29 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
       }
     } catch (error: any) {
       console.error('Error adding session to wishlist:', error);
-      ToastService.error(
-        'Error',
-        error?.response?.data?.message || error?.message || 'Failed to add session to wishlist'
-      );
+      console.error('Error response data:', error?.response?.data);
+      
+      // Extract detailed error message
+      let errorMessage = 'Failed to add session to wishlist';
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Check if session is already in wishlist (400 might mean duplicate)
+      if (error?.response?.status === 400) {
+        if (errorMessage.toLowerCase().includes('already') || 
+            errorMessage.toLowerCase().includes('duplicate') ||
+            errorMessage.toLowerCase().includes('exist')) {
+          setIsAdded(true);
+          errorMessage = 'Session is already in your wishlist';
+        }
+      }
+      
+      ToastService.error('Error', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -374,7 +470,7 @@ const ConferenceSessionDetails: React.FC<ConferenceSessionDetailsProps> = ({
           <View style={globalStyles.overviewContainer}>
             <Text style={globalStyles.sectionLabel}>Brief Overview:</Text>
             <Text style={globalStyles.overviewText}>
-              {sessionData.workshop?.description || sessionData.description}
+            {stripHtml(sessionData.workshop?.description || sessionData.description)}j             
             </Text>
           </View>
 
