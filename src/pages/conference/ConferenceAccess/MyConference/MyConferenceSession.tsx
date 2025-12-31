@@ -208,12 +208,7 @@ const MyConferenceSession: React.FC<MyConferenceSessionProps> = ({
               <TimeWIcon size={20} color={colors.primaryLight} />
               <Text style={globalStyles.metadataText}>{sessionData.time_range}</Text>
             </View>
-            {sessionData.workshop?.name && (
-              <View style={globalStyles.metadataInfoItem}>
-                <WorkshopIcon size={20} color={colors.primaryLight} />
-                <Text style={globalStyles.metadataText}>Workshop</Text>
-              </View>
-            )}
+           
           </View>
         </View>
         </ImageBackground>

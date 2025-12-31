@@ -15,7 +15,7 @@ import ConferencePaymentDetails from '../pages/conference/ConferencePaymentDetai
 import ConferenceQRCode from '../pages/conference/ConferenceQRCode';
 import ConferenceList from '../pages/conference/ConferenceList';
 import ConferenceSessionDetails from '../pages/conference/ConferenceSessionDetails';
-import { MyConference, MyConferenceSession, LiveQA, MySessionNotes, Handouts, MyAbstracts, DigitalPosters, KeynoteSpeakers, KeynoteSpeakersDetails, DelegateList, DelegateListDetails, PrivacySettings } from '../pages/conference/ConferenceAccess';
+import { MyConference, MyConferenceSession, LiveQA, MySessionNotes, MyQuestions, Handouts, MyAbstracts, DigitalPosters, KeynoteSpeakers, KeynoteSpeakersDetails, DelegateList, DelegateListDetails, PrivacySettings } from '../pages/conference/ConferenceAccess';
 import TrainingPrograms from '../pages/training-programs/EFITrainingPrograms';
 import MembershipRegistrationForm from '../pages/membership/MembershipRegistrationForm';
 import MembershipPaymentDetails from '../pages/membership/MembershipPaymentDetails';
@@ -268,7 +268,7 @@ function AppNavigation() {
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     ),
-    liveQA: (
+    liveQA: selectedSession?.id ? (
       <LiveQA
         onBack={() =>
           selectedSession
@@ -277,7 +277,13 @@ function AppNavigation() {
         }
         onNavigateToHome={navigate.home}
         sessionData={selectedSession}
+        sessionId={selectedSession.id}
+        onMyQuestionsPress={navigate.myQuestions}
       />
+    ) : (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     ),
     sessionNotes: selectedSession?.id ? (
       <MySessionNotes
@@ -293,6 +299,16 @@ function AppNavigation() {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
+    ),
+    myQuestions: (
+      <MyQuestions
+        onBack={() =>
+          selectedSession
+            ? navigate.liveQA()
+            : navigate.myConference()
+        }
+        onNavigateToHome={navigate.home}
+      />
     ),
     handouts: (
       <Handouts

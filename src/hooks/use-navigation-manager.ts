@@ -17,6 +17,7 @@ export type PageType =
   | 'myConferenceSession'
   | 'trainingPrograms'
   | 'liveQA'
+  | 'myQuestions'
   | 'sessionNotes'
   | 'handouts'
   | 'digitalPosters'
@@ -227,6 +228,7 @@ export function useNavigationManager() {
     },
     liveQA: () => setCurrentPage('liveQA'),
     sessionNotes: () => setCurrentPage('sessionNotes'),
+    myQuestions: () => setCurrentPage('myQuestions'),
     handouts: () => setCurrentPage('handouts'),
     digitalPosters: () => setCurrentPage('digitalPosters'),
     myAbstracts: () => setCurrentPage('myAbstracts'),

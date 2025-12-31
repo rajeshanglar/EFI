@@ -698,7 +698,7 @@ actionButtonText: {
   fontSize: screenWidth * 0.038,
   fontFamily: Fonts.Bold,
   color: colors.black,
-  marginLeft: spacing.md,
+  marginLeft: spacing.sm,
 },
 sessionTitle: {
   fontSize: screenWidth * 0.044,

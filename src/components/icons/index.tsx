@@ -106,7 +106,6 @@ import TickIconSvg from '../../assets/images/tick-icon.svg';
 import OtpIconSvg from '../../assets/images/otp-icon.svg';
 import SponsorPatientWIconSvg from '../../assets/images/sponsor-patient-w-icon.svg';
 import WhatsappIconSvg from '../../assets/images/whatsapp-icon.svg';
-
 interface IconProps {
   size?: number;
   color?: string;
@@ -490,3 +489,4 @@ export const SponsorPatientWIcon = ({ size = 24, color, style }: IconProps) => (
 export const WhatsappIcon = ({ size = 24, color, style }: IconProps) => (
   <WhatsappIconSvg width={size} height={size} color={color} style={style} />
 );
+
