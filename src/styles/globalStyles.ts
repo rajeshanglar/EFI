@@ -3,9 +3,9 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 // Color palette based on the UI design
 export const colors = {
   primary: '#08265D', // Dark blue
-  primaryLight: '#FFE610', // Slightly lighter blue
+  primaryLight: '#FFE610', // Yellow
   lightBlue: '#E1EBFF', // Light blue
-  accent: '#ffeb3b', // Yellow
+  accent: '#FFE610', // Yellow
   white: '#ffffff',
   black: '#000000',
   gray: '#9e9e9e',
@@ -14,7 +14,7 @@ export const colors = {
   red: '#f44336',
   transparent: 'transparent',
   blue: '#245BBC',
-  lightYellow: '#FFFBEE',
+  lightYellow: '#FFFBEE', // Light yellow bckground color use
 };
 
 export const Fonts = {
