@@ -8,6 +8,9 @@ import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 import { AuthProvider } from './src/contexts/AuthContext';
 import AppNavigation from './src/navigation/app-navigation';
 import { Fonts } from './src/styles/globalStyles';
+import { getDeviceInfoForBackend } from './src/utils/deviceInfo';
+import api from './src/services/api';
+import { registerDeviceTokenAnonymous } from './src/services/staticService';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -102,9 +105,46 @@ const toastConfig = {
 // --------------------
 export default function App() {
 
-  useEffect(() => {
-    requestNotificationPermission();
-  }, []);
+  // Send Device Info to Backend
+  const sendDeviceInfoToBackend = async (fcmToken?: string) => {
+    try {
+      const deviceInfo = await getDeviceInfoForBackend();
+
+      // Only send to backend if we have an FCM token
+      if (fcmToken) {
+        const payload = {
+          app_version: deviceInfo.app_version,
+          platform: deviceInfo.platform.toLowerCase(),
+          device_id: deviceInfo.device_id,
+          device_token: fcmToken
+        };
+        
+        try {
+          console.log('Payload to send to backend:', JSON.stringify(payload, null, 2));
+          await registerDeviceTokenAnonymous(payload);
+          console.log('Device info registered successfully');
+        } catch (error: any) {
+          // Silently handle errors - don't break the app
+          console.error('Failed to register device info:', error.response?.status || error.message);
+        }
+      }
+    } catch (error: any) {
+      // Silently handle errors - don't break the app
+      console.error('Error getting device info:', error.message);
+    }
+  };
+
+  // Get FCM Token
+  const getFcmToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      console.log('FCM Token obtained:', token);
+      // Send FCM token along with device info to backend
+      await sendDeviceInfoToBackend(token);
+    } catch (error) {
+      console.error('FCM token error:', error);
+    }
+  };
 
   // Request Notification Permission
   const requestNotificationPermission = async () => {
@@ -154,16 +194,68 @@ export default function App() {
     }
   };
 
-  // Get FCM Token
-  const getFcmToken = async () => {
-    try {
-      const token = await messaging().getToken();
-      console.log('FCM TOKEN:', token);
-      // TODO: send token to backend
-    } catch (error) {
-      console.log('FCM token error:', error);
-    }
-  };
+  // Initialize on app mount
+  useEffect(() => {
+    // Send device info on app startup (without FCM token)
+    sendDeviceInfoToBackend().catch(() => {
+      // Silently handle errors
+    });
+    
+    // Request notification permission
+    requestNotificationPermission().catch(() => {
+      // Silently handle errors
+    });
+
+    // Handle foreground notifications (when app is open)
+    const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
+      console.log('Foreground FCM Message received:', remoteMessage);
+      
+      // Show notification when app is in foreground
+      if (remoteMessage.notification) {
+        Toast.show({
+          type: 'info',
+          text1: remoteMessage.notification.title || 'Notification',
+          text2: remoteMessage.notification.body || '',
+          visibilityTime: 4000,
+        });
+      }
+    });
+
+    // Handle notification opened when app is in background
+    const unsubscribeBackground = messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Notification opened app from background:', remoteMessage);
+      // Handle navigation or other actions here if needed
+    });
+    
+    // Listen for token refresh (important for receiving notifications)
+    const unsubscribeTokenRefresh = messaging().onTokenRefresh(async (token) => {
+      console.log('FCM Token refreshed, updating backend:', token);
+      // Update token on backend when it refreshes
+      await sendDeviceInfoToBackend(token).catch(() => {
+        // Silently handle errors
+      });
+    });
+
+    // Check if app was opened from a notification (quit state)
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('App opened from notification (quit state):', remoteMessage);
+          // Handle the notification data here if needed
+        }
+      })
+      .catch(error => {
+        console.error('Error getting initial notification:', error);
+      });
+
+    // Cleanup on unmount
+    return () => {
+      unsubscribeForeground();
+      unsubscribeBackground();
+      unsubscribeTokenRefresh();
+    };
+  }, []);
 
   return (
     <SafeAreaProvider>

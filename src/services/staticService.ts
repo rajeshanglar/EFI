@@ -198,6 +198,17 @@ export const GetConferenceCategories = async () => {
     }
   };
 
+  export const registerDeviceTokenAnonymous = async (payload: {
+    device_id: string;
+    platform: string;
+    device_token: string;
+    app_version: string;
+  }) => {
+    console.log('registerDeviceTokenAnonymous: Calling API with payload:', payload);
+    const response = await apiStatic.post('v1/register-device-token-anonymous', payload);
+    return response.data;
+  };
+
 
 
   

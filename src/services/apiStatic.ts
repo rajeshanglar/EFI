@@ -35,7 +35,8 @@ const STATIC_TOKEN_ENDPOINTS = [
  'v1/calculate-conference-price',
  'v1/speakers',
  'v1/sessions',
- 'v1/session-details'
+ 'v1/session-details',
+ 'v1/register-device-token-anonymous'
 
   // Add more API paths here as needed
 ];

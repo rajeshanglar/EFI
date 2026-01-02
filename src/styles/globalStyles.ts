@@ -1299,8 +1299,8 @@ feeNoteYellow:{
 
 
 bulletDot: {
-  width: 20,
-  height: 20,
+  width: 16,
+  height: 16,
   borderRadius: 100,
   backgroundColor: colors.accent,
   marginTop: spacing.xs,
@@ -1319,11 +1319,11 @@ bulletRowLight: {
   justifyContent: 'flex-start',
 },
 bulletDotAccent: {
-  width: 18,
-  height: 18,
+  width: 16,
+  height: 16,
   borderRadius: 100,
   backgroundColor: colors.accent,
-  marginTop: 8,
+  marginTop: 5,
 },
 bulletTextLight: {
   flex: 1,

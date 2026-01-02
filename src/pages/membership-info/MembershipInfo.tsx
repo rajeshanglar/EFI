@@ -145,10 +145,10 @@ const MembershipInfo: React.FC<MembershipInfoProps> = ({
         </View>
      
     
-         <Text style={[globalStyles.headingH1, {marginTop: spacing.md}]}>
+         {/* <Text style={[globalStyles.headingH1, {marginTop: spacing.md}]}>
          Bank Details:
-        </Text> 
-
+        </Text>  */}
+{/* 
 <View style={{marginBottom: spacing.md, marginTop: spacing.md}}>
   <Text style={globalStyles.paragraphP}>A/c Name </Text>
   <Text style={globalStyles.h2}>The Endometriosis Foundation Of India</Text>
@@ -167,7 +167,7 @@ const MembershipInfo: React.FC<MembershipInfoProps> = ({
 <View style={{marginBottom: spacing.sm}}>
   <Text style={globalStyles.paragraphP}>IFSC Code</Text>
   <Text style={globalStyles.h2}>UTIB0000030</Text>
-</View>
+</View> */}
 
 
          

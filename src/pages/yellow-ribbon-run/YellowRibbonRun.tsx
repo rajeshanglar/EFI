@@ -133,7 +133,7 @@ const YellowRibbonRun: React.FC<YellowRibbonRunProps> = ({
                 activeOpacity={0.85}
                 onPress={handlePhonePress}
               >
-                <Text style={styles.primaryButtonText}>+91-XXXXXXXXXX</Text>
+                {/* <Text style={styles.primaryButtonText}>+91-XXXXXXXXXX</Text> */}
               </TouchableOpacity>
             </View>
           </View>
