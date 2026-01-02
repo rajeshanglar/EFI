@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1036851862280",
+    "project_id": "efi-connect-5ddb2",
+    "storage_bucket": "efi-connect-5ddb2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036851862280:android:92226bd6d7065e1071aabd",
+        "android_client_info": {
+          "package_name": "org.endometriosis.efi.connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTdCO63I2jzgUTci2oq_EDGLZDgM3g4wM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

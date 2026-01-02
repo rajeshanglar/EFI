@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+
 import { AuthProvider } from './src/contexts/AuthContext';
 import AppNavigation from './src/navigation/app-navigation';
 import { Fonts } from './src/styles/globalStyles';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Custom Toast component that allows full text wrapping
+// --------------------
+// Custom Toast Component
+// --------------------
 const CustomToast = ({ text1, text2, type }: any) => {
   const getBorderColor = () => {
     switch (type) {
@@ -39,11 +43,7 @@ const CustomToast = ({ text1, text2, type }: any) => {
   return (
     <View style={[styles.toastContainer, { borderLeftColor: getBorderColor() }]}>
       <View style={styles.contentContainer}>
-        {text1 && (
-          <Text style={styles.text1}>
-            {text1}
-          </Text>
-        )}
+        {text1 && <Text style={styles.text1}>{text1}</Text>}
         {text2 && (
           <Text style={[styles.text2, { color: getText2Color() }]}>
             {text2}
@@ -54,6 +54,9 @@ const CustomToast = ({ text1, text2, type }: any) => {
   );
 };
 
+// --------------------
+// Styles
+// --------------------
 const styles = StyleSheet.create({
   toastContainer: {
     minHeight: 70,
@@ -76,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: screenWidth * 0.04,
     fontFamily: Fonts.SemiBold,
     color: '#000',
-    marginBottom:3,
+    marginBottom: 3,
   },
   text2: {
     fontSize: screenWidth * 0.035,
@@ -84,14 +87,54 @@ const styles = StyleSheet.create({
   },
 });
 
-// Custom Toast configuration with font size and styling
+// --------------------
+// Toast Configuration
+// --------------------
 const toastConfig = {
   success: (props: any) => <CustomToast {...props} type="success" />,
   error: (props: any) => <CustomToast {...props} type="error" />,
   info: (props: any) => <CustomToast {...props} type="info" />,
 };
 
+// --------------------
+// App Component
+// --------------------
 export default function App() {
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
+  // Request Notification Permission
+  const requestNotificationPermission = async () => {
+    try {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+      if (enabled) {
+        console.log('Notification permission granted');
+        getFcmToken();
+      } else {
+        console.log('Notification permission denied');
+      }
+    } catch (error) {
+      console.log('Permission request error:', error);
+    }
+  };
+
+  // Get FCM Token
+  const getFcmToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      console.log('FCM TOKEN:', token);
+      // TODO: send token to backend
+    } catch (error) {
+      console.log('FCM token error:', error);
+    }
+  };
+
   return (
     <SafeAreaProvider>
       <AuthProvider>
