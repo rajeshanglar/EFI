@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { PERMISSIONS, request, check, RESULTS } from 'react-native-permissions';
 
 import { AuthProvider } from './src/contexts/AuthContext';
 import AppNavigation from './src/navigation/app-navigation';
@@ -108,16 +109,45 @@ export default function App() {
   // Request Notification Permission
   const requestNotificationPermission = async () => {
     try {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      if (enabled) {
-        console.log('Notification permission granted');
-        getFcmToken();
+      if (Platform.OS === 'android') {
+        // For Android 13+ (API 33+), we need to request POST_NOTIFICATIONS permission
+        if (Platform.Version >= 33) {
+          // Use permission string directly for Android 13+ POST_NOTIFICATIONS
+          const permission = 'android.permission.POST_NOTIFICATIONS' as any;
+          const checkResult = await check(permission);
+          
+          if (checkResult === RESULTS.GRANTED) {
+            console.log('Notification permission already granted');
+            getFcmToken();
+          } else if (checkResult === RESULTS.DENIED) {
+            const requestResult = await request(permission);
+            if (requestResult === RESULTS.GRANTED) {
+              console.log('Notification permission granted');
+              getFcmToken();
+            } else {
+              console.log('Notification permission denied');
+            }
+          } else {
+            console.log('Notification permission blocked or unavailable');
+          }
+        } else {
+          // For Android 12 and below, permissions are granted by default
+          console.log('Notification permission granted (Android < 13)');
+          getFcmToken();
+        }
       } else {
-        console.log('Notification permission denied');
+        // For iOS, use Firebase messaging permission request
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        if (enabled) {
+          console.log('Notification permission granted');
+          getFcmToken();
+        } else {
+          console.log('Notification permission denied');
+        }
       }
     } catch (error) {
       console.log('Permission request error:', error);

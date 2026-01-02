@@ -17,9 +17,9 @@ interface AdvisoryBoardContentProps {
 
 const advisoryMembers: BoardMemberData[] = [
   {
-    name: 'Mohd Mabrouk',
-    country: 'UK',
-    countryCode: 'GB',
+    name: 'Hemant Kanojia',
+    country: 'India',
+    countryCode: 'IN',
     image: null,
     role: 'Advisory Board Member',
     bio: ``,
@@ -28,6 +28,14 @@ const advisoryMembers: BoardMemberData[] = [
     name: 'Seema Pandey',
     country: 'India',
     countryCode: 'IN',
+    image: null,
+    role: 'Advisory Board Member',
+    bio: ``,
+  },
+  {
+    name: 'Mohd Mabrouk',
+    country: 'UK',
+    countryCode: 'GB',
     image: null,
     role: 'Advisory Board Member',
     bio: ``,
@@ -48,14 +56,16 @@ const advisoryMembers: BoardMemberData[] = [
     role: 'Advisory Board Member',
     bio: ``,
   },
+
   {
-    name: 'Hemant Kanojia',
-    country: 'India',
-    countryCode: 'IN',
+    name: 'Yamal Patel',
+    country: 'Kenya',
+    countryCode: 'KE',
     image: null,
     role: 'Advisory Board Member',
     bio: ``,
   },
+  
 ];
 
 // Country flag emojis
@@ -64,6 +74,7 @@ const getCountryFlag = (countryCode: string): string => {
     GB: '🇬🇧',
     IN: '🇮🇳',
     DE: '🇩🇪',
+    KE: '🇰🇪',
   };
   return flags[countryCode] || '🏳️';
 };

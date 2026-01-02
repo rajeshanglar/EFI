@@ -36,6 +36,12 @@ const voluntaryMembers: VoluntaryMember[] = [
     place:'Mumbai',  
   },
   {
+    name: 'Puja Pathak',   
+    image: null,
+    role: 'Voluntary Team Member', 
+    place:'New Delhi',  
+  },
+  {
     name: 'Saranya Ravi',   
     image: null,
     role: 'Voluntary Team Member', 
@@ -53,17 +59,18 @@ const voluntaryMembers: VoluntaryMember[] = [
     role: 'Voluntary Team Member', 
     place:'Hyderabad',  
   },
-  {
-    name: 'Puja Pathak',   
-    image: null,
-    role: 'Voluntary Team Member', 
-    place:'New Delhi',  
-  },
+
   {
     name: 'Deepika',   
     image: null,
     role: 'Voluntary Team Member', 
     place:'Bangalore',  
+  },
+  {
+    name: 'Shivanka',   
+    image: null,
+    role: 'Voluntary Team Member', 
+    place:'Hyderabad',  
   },
 
 ];
