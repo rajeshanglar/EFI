@@ -234,7 +234,7 @@ export const globalStyles = StyleSheet.create({
     paddingTop: spacing.sm,
   },
   tierTab: {
-    marginRight: screenWidth * 0.06,
+    marginRight: screenWidth * 0.05,
     paddingVertical:5,
     alignItems: 'flex-start',
     borderBottomWidth: 5,
