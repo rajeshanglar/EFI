@@ -1515,5 +1515,22 @@ speakerSessionDetailsInfoText: {
 },
 
 
+pricacySectionTitle: {
+  fontSize: screenWidth * 0.042,
+  fontFamily: Fonts.Bold,
+  color: colors.primary,
+  marginTop: spacing.md,
+  
+},
+
+pricacyParagraph: {
+  fontSize: screenWidth * 0.039,
+  fontFamily: Fonts.Regular,
+  color: colors.primary,
+  lineHeight: screenWidth * 0.055, 
+  marginBottom: spacing.md,
+},
+
+
 });
 export default globalStyles;

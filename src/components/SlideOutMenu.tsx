@@ -44,6 +44,8 @@ import {
   FundraisingIcon,
   ProfileIcon,
   WhatsappIcon,
+  TermsAndConditionsIcon,
+  PrivacyPolicyIcon,
 
 } from '../components/icons';
 import { ConferenceAccess } from './conference-access-items';
@@ -101,6 +103,8 @@ const menuItems: MenuItem[] = [
   // { id: 'media', title: 'Media', icon: MediaIcon },
   { id: 'donations', title: 'Donations and Fundraising', icon: DonationsIcon },
   { id: 'contact', title: 'Contact Us', icon: ContactIcon },
+  { id: 'privacyPolicy', title: 'Privacy Policy', icon: PrivacyPolicyIcon },
+  { id: 'termsAndConditions', title: 'Terms and Conditions', icon: TermsAndConditionsIcon },
 ];
 
 // Default social icons configuration
@@ -318,6 +322,9 @@ const SlideOutMenu: React.FC<SlideOutMenuProps> = ({
            )}
             <View style={styles.menuGrid}>{menuItems.map(renderMenuItem)}</View>
           </ScrollView>
+
+{/* <View><Text>Version 1.0.0</Text></View> */}
+
         </ImageBackground>
       </View>
     </Animated.View>

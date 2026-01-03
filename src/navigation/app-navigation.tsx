@@ -42,6 +42,8 @@ import Information from '../pages/information/Information';
 import SubmitAbstract from '../pages/conference/SubmitAbstract';
 import DonationsAndFundraising from '../pages/donations-fundraising/DonationsAndFundraising';
 import SponsorPatient from '../pages/sponsor-patient/SponsorPatient';
+import PrivacyPolicy from '../pages/privacy-policy/PrivacyPolicy';
+import TermsAndConditions from '../pages/terms-and-conditions/TermsAndConditions';
 
 const LoginPage = React.lazy(() =>
   import('../pages/login').then(m => ({ default: m.LoginPage })),
@@ -592,6 +594,18 @@ function AppNavigation() {
     ),
     aboutUs: (
       <AboutUs
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    privacyPolicy: (
+      <PrivacyPolicy
+        onBack={navigate.home}
+        onNavigateToHome={navigate.home}
+      />
+    ),
+    termsAndConditions: (
+      <TermsAndConditions
         onBack={navigate.home}
         onNavigateToHome={navigate.home}
       />

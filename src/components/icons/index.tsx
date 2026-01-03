@@ -106,6 +106,8 @@ import TickIconSvg from '../../assets/images/tick-icon.svg';
 import OtpIconSvg from '../../assets/images/otp-icon.svg';
 import SponsorPatientWIconSvg from '../../assets/images/sponsor-patient-w-icon.svg';
 import WhatsappIconSvg from '../../assets/images/whatsapp-icon.svg';
+import PrivacyPolicyIconSvg from '../../assets/images/privacy-policy-icon.svg';
+import TermsAndConditionsIconSvg from '../../assets/images/terms-and-conditions-icon.svg';
 interface IconProps {
   size?: number;
   color?: string;
@@ -490,3 +492,10 @@ export const WhatsappIcon = ({ size = 24, color, style }: IconProps) => (
   <WhatsappIconSvg width={size} height={size} color={color} style={style} />
 );
 
+export const PrivacyPolicyIcon = ({ size = 24, color, style }: IconProps) => (
+  <PrivacyPolicyIconSvg width={size} height={size} color={color} style={style} />
+);
+
+export const TermsAndConditionsIcon = ({ size = 24, color, style }: IconProps) => (
+  <TermsAndConditionsIconSvg width={size} height={size} color={color} style={style} />
+);

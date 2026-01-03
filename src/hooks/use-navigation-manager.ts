@@ -51,7 +51,9 @@ export type PageType =
   | 'information'
   | 'submitAbstract'
   | 'donationsAndFundraising'
-  | 'sponsorPatient';
+  | 'sponsorPatient'
+  | 'privacyPolicy'
+  | 'termsAndConditions';
 
 export function useNavigationManager() {
   const { isAuthenticated, logout } = useAuth();
@@ -302,6 +304,8 @@ export function useNavigationManager() {
     submitAbstract: () => setCurrentPage('submitAbstract'),
     donationsAndFundraising: () => setCurrentPage('donationsAndFundraising'),
     sponsorPatient: () => setCurrentPage('sponsorPatient'),
+    privacyPolicy: () => setCurrentPage('privacyPolicy'),
+    termsAndConditions: () => setCurrentPage('termsAndConditions'),
   };
 
 

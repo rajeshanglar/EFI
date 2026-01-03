@@ -174,6 +174,12 @@ export const SharedMenu: React.FC<SharedMenuProps> = ({
       case 'delegates':
         navigate.delegateList();
         break;
+      case 'privacyPolicy':
+        navigate.privacyPolicy();
+        break;
+      case 'termsAndConditions':
+        navigate.termsAndConditions();
+        break;
       default:
         console.log('Menu pressed:', id);
       }
